@@ -68,7 +68,7 @@ public class Motivation {
 	}
 
 	/**
-	 * Remove the specified element from the collection if it is in the collection.
+	 * Remove the specify element from the collection if it is in the collection.
 	 * 
 	 * @param quote
 	 *            Element to be removed from collection.

@@ -3,16 +3,16 @@ package com.Personify.base;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import com.Personify.integration.TaskInfo;
-import com.Personify.integration.Messages;
+import com.Personify.integration.Messenger;
 
 /**
- * Task provides an object for managing a task. Each task object will hold
+ * Task provides a object for managing a task. Each task object will hold
  * information about the task name, due date, priority and status. There is also
  * a reminder and motivational message provided in a task object depending on
  * each situation.
  * 
  * @author aaronsum
- * @version 1.1, 2018-03-13
+ * @version 2.0, 2018-03-13
  *
  */
 public class Task {
@@ -22,10 +22,10 @@ public class Task {
 	private Priority priority;
 	private Reminder reminder;
 	private Motivation motivation;
-	private Messages messages;
+	private Messenger messages;
 
 	/**
-	 * Construct an task object with the specify elements. Due date, status and
+	 * Instantiate an task object with the specify elements. Due date, status and
 	 * priority of the task will be initialized with default value, if the specified
 	 * parameters are invalid.
 	 * 
@@ -38,7 +38,7 @@ public class Task {
 	 * @param motivationalQuotes
 	 *            is an object which hold a collections of motivational quotes.
 	 */
-	public Task(final TaskInfo taskInfo, final Messages messages, final Motivation motivationQuotes)
+	public Task(final TaskInfo taskInfo, final Messenger messages, final Motivation motivationQuotes)
 			throws DateTimeParseException {
 		this.messages = messages;
 		name = taskInfo.getTaskName();
@@ -104,11 +104,11 @@ public class Task {
 	}
 
 	/**
-	 * Check the specified element is non empty String.
+	 * Check the specified element is an non empty String.
 	 * 
 	 * @param name
 	 *            String to be checked.
-	 * @return true if the specified element is not empty.
+	 * @return true If the specified element is not empty.
 	 */
 	public static boolean isNameNotEmptyString(final String name) {
 		return !name.isEmpty();
@@ -126,7 +126,7 @@ public class Task {
 	 * 
 	 * @param newName
 	 *            Element for modification of object's name.
-	 * @return true if object's name was changed.
+	 * @return true If task name was changed.
 	 */
 	public boolean changeName(final String newName) {
 		if (isNameValid(newName)) {
@@ -144,7 +144,7 @@ public class Task {
 	 * 
 	 * @param newDueDate
 	 *            Element for modification of due date.
-	 * @return true if the due date was changed.
+	 * @return true If the due date was changed.
 	 */
 	public boolean changeDueDate(final String newDueDate) {
 		if (!(dueDate.toString().equals(newDueDate)) && isDateFormatValid(newDueDate)) {
@@ -199,7 +199,7 @@ public class Task {
 	 * Set the status of the object.
 	 * 
 	 * @param newStatus
-	 *            to be set for the object.
+	 *            To be set for the object.
 	 */
 	public void setStatus(final String newStatus) {
 		status.setStatus(newStatus);
@@ -209,14 +209,14 @@ public class Task {
 	 * Set the priority of the object.
 	 * 
 	 * @param newPriority
-	 *            to be set for the object.
+	 *            To be set for the object.
 	 */
 	public void setPriority(final String newPriority) {
 		priority.setPriority(newPriority);
 	}
-	
+
 	/**
-	 * Convert the object to String.
+	 * Convert the object attributes to String.
 	 */
 	@Override
 	public String toString() {

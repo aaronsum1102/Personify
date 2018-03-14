@@ -1,37 +1,41 @@
 package com.Personify.base;
 
 import java.util.*;
-import com.Personify.integration.Messages;
+import com.Personify.integration.Messenger;
 
 /**
- * Priority provides object to manage priority status of a task. It has a
- * default priority of "high".
+ * Priority responsible for the management of the priority of a task.
  * 
  * @author aaronsum
- * @version 1.0, 2018-03-05
+ * @version 2.0, 2018-03-13
  */
 public class Priority {
 	private static final List<String> PRIORITIES = Arrays.asList("low", "medium", "high");
 	private String priority;
-	private Messages messages;
+	private Messenger messenger;
 
 	/**
-	 * Construct object with default priority of "high".
+	 * Construct object with the specify value. If the value is invalid, the object
+	 * will be instantiated with default value of "high".
 	 */
-	public Priority(final Messages messages, final String priority) {
-		this.messages = messages;
+	public Priority(final Messenger messenger, final String priority) {
+		this.messenger = messenger;
+		setInitialPriority(priority);
+	}
+
+	private void setInitialPriority(final String priority) {
 		if (isValidPriority(priority)) {
 			this.priority = priority;
 		} else {
 			this.priority = "high";
-			messages.addMessage("Invalid priority given. I had set the priority as \"high\".");
+			messenger.addMessage("Invalid priority given. I had set the priority as \"high\".");
 		}
 	}
 
 	/**
-	 * Provide a formatted string of valid priorities.
+	 * Provide a formatted string of all valid priorities.
 	 * 
-	 * @return all valid priorities.
+	 * @return All valid priorities.
 	 */
 	public static String getPriorities() {
 		String priorities = "";
@@ -46,7 +50,7 @@ public class Priority {
 	}
 
 	/**
-	 * Provide priority status of object.
+	 * Provide priority status of an object.
 	 * 
 	 * @return Priority status.
 	 */
@@ -55,11 +59,11 @@ public class Priority {
 	}
 
 	/**
-	 * Access if the specify element is one of the allowable priority.
+	 * Check if the specify element is one of the allowable priority.
 	 * 
 	 * @param priority
 	 *            Element to be checked.
-	 * @return true if the specify element is in default list.
+	 * @return true If the specify element is in default list.
 	 */
 	private boolean isValidPriority(final String priority) {
 		if (PRIORITIES.contains(priority.toLowerCase())) {
@@ -69,11 +73,11 @@ public class Priority {
 	}
 
 	/**
-	 * Access if the specify element is the same as existing priority.
+	 * Check if the specify element is the same as existing priority.
 	 * 
 	 * @param newPriority
 	 *            Element to be checked.
-	 * @return true if the specify element is repeated.
+	 * @return true If the specify element is repeated.
 	 */
 	private boolean isRepeatedPriority(final String newPriority) {
 		if (priority.toLowerCase().equals(newPriority.toLowerCase())) {
@@ -83,25 +87,26 @@ public class Priority {
 	}
 
 	/**
-	 * Modify the priority with the specify element, if it is a valid priority and
-	 * is different from existing priority regardless of its letter case.
+	 * Modify the priority with the specify element. If it is one of the valid
+	 * priority in the list and is unique regardless of its letter case, then the
+	 * priority will be updated.
 	 * 
 	 * @param newPriority
 	 *            Element for modification of the existing priority.
-	 * @return true if priority was modified.
+	 * @return true If priority was modified.
 	 */
 	public boolean setPriority(final String newPriority) {
 		if (isValidPriority(newPriority)) {
 			if (!isRepeatedPriority(newPriority)) {
 				priority = newPriority.toLowerCase();
-				messages.addMessage("Successfully change the priority of the task.");
+				messenger.addMessage("Successfully change the priority of the task.");
 				return true;
 			} else {
-				messages.addMessage(String
+				messenger.addMessage(String
 						.format("Priority is the same as before. Current priority for the task is \"%s\".", priority));
 			}
 		} else {
-			messages.addMessage(
+			messenger.addMessage(
 					String.format("Invalid priority given. Current priority for the task is \"%s\".", priority));
 		}
 		return false;

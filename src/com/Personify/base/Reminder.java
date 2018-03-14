@@ -4,8 +4,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 /**
- * Reminder is an object responsible for providing reminder. The class provide a
- * reminder message to user on the number of day left to due date.
+ * Reminder is an object responsible for providing reminder to the user. The
+ * class provide a reminder message to user on the number of day left to due
+ * date.
  * 
  * @author aaronsum
  * @version 1.0, 2018-03-03
@@ -15,9 +16,10 @@ public class Reminder {
 	private LocalDate dueDate;
 
 	/**
-	 * Constructs an reminder object with a due date.
+	 * Instantiate an reminder object with the specify due date.
 	 * 
 	 * @param dueDate
+	 *            Due date of the object.
 	 */
 	public Reminder(final LocalDate dueDate) {
 		this.dueDate = dueDate;
@@ -33,7 +35,7 @@ public class Reminder {
 	}
 
 	/**
-	 * Provide a reminder message on the number days left to due date.
+	 * Provide a reminder message based on the number day/days left to due date.
 	 */
 	public String getMessage() {
 		long dayLeft = findDaysLeft();
