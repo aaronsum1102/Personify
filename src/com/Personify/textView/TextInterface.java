@@ -7,13 +7,26 @@ import java.util.Scanner;
 import com.Personify.base.Priority;
 import com.Personify.base.Status;
 import com.Personify.controller.Controller;
-import com.Personify.integration.Messages;
+import com.Personify.integration.Messenger;
 import com.Personify.integration.TaskInfo;
 
+/**
+ * Interface for interacting with user.
+ * 
+ * @author aaronsum
+ * @version 2.0, 2018-03-13
+ */
 public class TextInterface {
 	private Controller controller;
-	private Messages messages;
+	private Messenger messages;
 
+	/**
+	 * Instantiate an object for the interacting with user. At the same time it will
+	 * instantiate a {@link Controller} object and {@link Messenger} object.
+	 * 
+	 * @throws IOException
+	 *             If an input or output error occurred during the operation.
+	 */
 	public TextInterface() throws IOException {
 		controller = new Controller();
 		messages = controller.getMessages();
@@ -33,6 +46,15 @@ public class TextInterface {
 		commandReader.nextLine();
 	}
 
+	/**
+	 * Responsible for running of the program until user choose to exit.
+	 * 
+	 * @throws IOException
+	 *             If an input or output error occurred in
+	 *             <code>showWelcomeMessage()</code>.
+	 * @throws NumberFormatException
+	 *             If user gave an input other than number when requested.
+	 */
 	public void startup() throws IOException, NumberFormatException {
 		showWelcomeMessage();
 		boolean isProgramEnd = false;
