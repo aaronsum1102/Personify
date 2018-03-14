@@ -3,22 +3,22 @@ package com.Personify.integration;
 import java.util.*;
 
 public class Messages {
-	private List<String> taskMessages;
+	private List<String> systemMessages;
 
 	public Messages() {
-		taskMessages = new ArrayList<>();
+		systemMessages = new ArrayList<>();
 	}
 
 	public boolean addMessage(String message) {
-		return taskMessages.add(message);
+		return systemMessages.add(message);
 	}
 	
 	public void clearMessages() {
-		taskMessages.clear();
+		systemMessages.clear();
 	}
 	
 	public List<String> getMessages() {
-		return taskMessages;
+		return systemMessages;
 	}
 
 }

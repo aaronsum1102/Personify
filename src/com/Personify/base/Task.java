@@ -104,16 +104,6 @@ public class Task {
 	}
 
 	/**
-	 * Provide a message object associated with task. A message object hold messages
-	 * generated during system operation.
-	 * 
-	 * @return Reminder object.
-	 */
-	public Messages getMessages() {
-		return messages;
-	}
-
-	/**
 	 * Check the specified element is non empty String.
 	 * 
 	 * @param name

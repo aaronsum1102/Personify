@@ -11,12 +11,12 @@ import com.Personify.integration.TaskCollection;
 public class Controller {
 	private TaskCollection tasks;
 	private Messages messages;
-	private Motivation motivationQuotes;
+	private Motivation motivationalQuotes;
 
 	public Controller() throws IOException {
 		messages = new Messages();
-		tasks = new TaskCollection(messages, motivationQuotes);
-		motivationQuotes = new Motivation();
+		motivationalQuotes = new Motivation();
+		tasks = new TaskCollection(messages, motivationalQuotes);
 	}
 
 	public Messages getMessages() {
@@ -29,7 +29,7 @@ public class Controller {
 
 	public void addTask(final TaskInfo TaskInfo) throws IOException {
 		if (isTaskNameValid(TaskInfo.getTaskName())) {
-			Task task = new Task(TaskInfo, messages, motivationQuotes);
+			Task task = new Task(TaskInfo, messages, motivationalQuotes);
 			if (tasks.addTaskToCollection(task)) {
 				messages.addMessage(String.format("Task added. Total task number: %d.", tasks.getTasks().size()));
 				task.getSummary();

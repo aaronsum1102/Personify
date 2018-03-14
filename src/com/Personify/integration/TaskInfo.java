@@ -1,10 +1,10 @@
 package com.Personify.integration;
 
 public class TaskInfo {
-	private String NAME;
-	private String DUE_DATE;
-	private String STATUS;
-	private String PRIORITY;
+	private final String NAME;
+	private final String DUE_DATE;
+	private final String STATUS;
+	private final String PRIORITY;
 
 	public TaskInfo(String name, String dueDate, String status, String priority) {
 		NAME = name;

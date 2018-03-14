@@ -76,14 +76,14 @@ public class TaskFileIO extends FileIO{
 		
 	}
 	
-	private List<String> formattingTaskDateForArchive (List<TaskInfo> tasksToArchive) {
+	private List<String> formattingTaskDataForArchive (List<TaskInfo> tasksToArchive) {
 		return tasksToArchive.stream()
 							.map(taskInfo -> taskInfo.toString())
 							.collect(Collectors.toList());
 	}
 	
 	public void archiveTasks(List<TaskInfo> tasksToArchive) throws IOException {
-		List<String> tasksToWriteToFile = formattingTaskDateForArchive(tasksToArchive);
+		List<String> tasksToWriteToFile = formattingTaskDataForArchive(tasksToArchive);
 		writeTasksToFile(tasksToWriteToFile);
 	}
 }
