@@ -25,7 +25,7 @@ public class Priority {
 
 	private void setInitialPriority(final String priority) {
 		if (isValidPriority(priority)) {
-			this.priority = priority;
+			this.priority = priority.toLowerCase();
 		} else {
 			this.priority = "high";
 			messenger.addMessage("Invalid priority given. I had set the priority as \"high\".");
