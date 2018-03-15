@@ -2,15 +2,18 @@ package com.Personify.integration;
 
 import java.util.*;
 
-public class Messages {
+public class Messenger {
 	private List<String> systemMessages;
 
-	public Messages() {
+	public Messenger() {
 		systemMessages = new ArrayList<>();
 	}
 
 	public boolean addMessage(String message) {
-		return systemMessages.add(message);
+		if (message.length() > 0) {
+			return systemMessages.add(message);
+		}
+		return false;
 	}
 	
 	public void clearMessages() {
