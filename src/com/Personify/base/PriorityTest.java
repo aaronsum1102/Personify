@@ -1,74 +1,117 @@
 package com.Personify.base;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.Personify.integration.Messages;
+import com.Personify.integration.Messenger;
 
 class PriorityTest {
-	Priority p;
-	Messages messages = new Messages();
+	private Priority priority;
+	private Messenger messages = new Messenger();
+	private String initialPriority;
+	private static final String DEFAULT_PRIORITY = "high";
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		p = new Priority(messages, "high");
+		initialPriority = "low";
+		priority = new Priority(messages, initialPriority);
 	}
-
-	@Test
-	void testSetPriorityWithValidPriority() {
-		String priority = "Low";
-		boolean result = p.setPriority(priority);
-		assertEquals(true, result);
-		assertEquals("low", p.getPriority());
+	
+	@AfterEach
+	void tearDown() {
+		priority = null;
 	}
 	
 	@Test
-	void testSetPriorityWithInvalidPriority() {
-		String priority = "Lowa";
-		boolean result = p.setPriority(priority);
+	void testInstantiationOfPriorityObject() {
+		assertEquals(initialPriority, priority.getPriority());
+	}
+	
+	@Test
+	void testInstantiationOfPriorityObjectWithPriorityInCapitalCase() {
+		initialPriority = "LOW";
+		priority = new Priority(messages, initialPriority);
+		assertEquals(initialPriority.toLowerCase(), priority.getPriority());
+	}
+	
+	@Test
+	void testInstantiationOfPriorityObjectWithEmptyString() {
+		initialPriority = "";
+		priority = new Priority(messages, initialPriority);
+		assertEquals(DEFAULT_PRIORITY, priority.getPriority());
+	}
+	
+	@Test
+	void testInstantiationOfPriorityObjectWithNumberWrapInString() {
+		initialPriority = "214";
+		priority = new Priority(messages, initialPriority);
+		assertEquals(DEFAULT_PRIORITY, priority.getPriority());
+	}
+	
+	@Test
+	void testSetPriorityWithNewValueInPriorityCollection() {
+		String newPriority = "Medium";
+		boolean result = priority.setPriority(newPriority);
+		assertEquals(true, result);
+		assertEquals(newPriority.toLowerCase(), priority.getPriority());
+	}
+	
+	@Test
+	void testSetPriorityWithValueNotInValidPriorityCollection() {
+		String newPriority = "Lowa";
+		boolean result = priority.setPriority(newPriority);
 		assertEquals(false, result);
-		assertEquals("high", p.getPriority());
+		assertEquals(initialPriority, priority.getPriority());
 	}
 	
 	@Test
-	void testSetPriorityWithEmptyPriority() {
-		String priority = "";
-		boolean result = p.setPriority(priority);
+	void testSetPriorityWithEmptyString() {
+		String newPriority = "";
+		boolean result = priority.setPriority(newPriority);
 		assertEquals(false, result);
-		assertEquals("high", p.getPriority());
+		assertEquals(initialPriority, priority.getPriority());
 	}
 	
 	@Test
-	void testSetPriorityWithRepeatedPriority() {
-		String priority = "HIGH";
-		boolean result = p.setPriority(priority);
+	void testSetPriorityWithNumberWrapInString() {
+		String newPriority = "124";
+		boolean result = priority.setPriority(newPriority);
 		assertEquals(false, result);
-		assertEquals("high", p.getPriority());
+		assertEquals(initialPriority, priority.getPriority());
 	}
 	
 	@Test
-	void testIsRepeatedPriorityWithLowerCase() {
-		String priority = "medium";
-		boolean result = p.setPriority(priority);
-		assertEquals(true, result);
-		assertEquals("medium", p.getPriority());
+	void testSetPriorityWithSamePriority() {
+		String newPriority = initialPriority;
+		boolean result = priority.setPriority(newPriority);
+		assertEquals(false, result);
+		assertEquals(initialPriority, priority.getPriority());
 	}
 	
 	@Test
-	void testIsRepeatedPriorityWithUpperCase() {
-		String priority = "MEDIUM";
-		boolean result = p.setPriority(priority);
+	void testSetPriorityWithNewPriorityInLowerCase() {
+		String priorityToCheck = "medium";
+		boolean result = priority.setPriority(priorityToCheck);
 		assertEquals(true, result);
-		assertEquals("medium", p.getPriority());
+		assertEquals(priorityToCheck, priority.getPriority());
 	}
 	
 	@Test
-	void testIsRepeatedPriorityWithMixedCase() {
-		String priority = "MeDiUm";
-		boolean result = p.setPriority(priority);
+	void testSetPriorityWithNewPriorityInUpperCase() {
+		String priorityToCheck = "MEDIUM";
+		boolean result = priority.setPriority(priorityToCheck);
 		assertEquals(true, result);
-		assertEquals("medium", p.getPriority());
+		assertEquals(priorityToCheck.toLowerCase(), priority.getPriority());
+	}
+	
+	@Test
+	void testSetPriorityWithNewPriorityInCamelCase() {
+		String priorityToCheck = "mEdiUm";
+		boolean result = priority.setPriority(priorityToCheck);
+		assertEquals(true, result);
+		assertEquals(priorityToCheck.toLowerCase(), priority.getPriority());
 	}
 	
 }

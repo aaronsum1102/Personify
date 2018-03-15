@@ -7,44 +7,53 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.Personify.integration.Messages;
+import com.Personify.integration.Messenger;
 import com.Personify.integration.TaskInfo;
 
 class TaskTest {
 	private Task task;
 	private TaskInfo taskInfo;
 	private Motivation motivationQuotes;
-	private Messages messages;
+	private Messenger messages;
+	private String taskName;
+	private String dueDate;
+	private String status;
+	private String priority;
 	
 	
 	@BeforeEach
 	void setUp() throws Exception {
 		motivationQuotes = new Motivation();
-		messages = new Messages();
-		taskInfo = new TaskInfo("Doing grocery", "2018-03-10", "to do", "high");
+		messages = new Messenger();
+		taskName = "Doing grocery";
+		dueDate =  "2018-03-10";
+		status = "to do";
+		priority = "high";
+		taskInfo = new TaskInfo(taskName, dueDate, status, priority);
 		task = new Task(taskInfo, messages, motivationQuotes);
 	}
 
 	@AfterEach
 	void tearDown() throws Exception {
+		task = null;
 	}
 	
 	@Test
-	void testIsNameNotEmptyStringWithNonEmptyString() {
+	void testNameIsNotEmptyString() {
 		String name = "Doing shopping for Christmas";
 		boolean result =Task.isNameNotEmptyString(name);
 		assertEquals(true, result);
 	}
 	
 	@Test
-	void testIsNameNotEmptyStringWithEmptyString() {
+	void testNameIsEmptyString() {
 		String name = "";
 		boolean result = Task.isNameNotEmptyString(name);
-		assertEquals(false, result);
+		assertEquals(true, !result);
 	}
 
 	@Test
-	void testChangeNameWithDifferentName() {
+	void testChangeNameWithNewName() {
 		String newName = "Doing shopping for Christmas";
 		boolean result = task.changeName(newName);
 		assertEquals(true, result);
@@ -52,19 +61,45 @@ class TaskTest {
 	}
 	
 	@Test
-	void testChangeNameWithSameNameAndPartiallyUpperCase() {
-		String newName = "DOING grocery";
+	void testChangeNameWithRepeatedName() {
+		String newName = taskName;
 		boolean result = task.changeName(newName);
 		assertEquals(false, result);
-		assertEquals("Doing grocery", task.getName());
 	}
 	
 	@Test
-	void testChangeNameWithSameNameAndLowerCase() {
+	void testChangeNameWithRepeatedNameButPartiallyUpperCase() {
+		String newName = "DOING grocery";
+		boolean result = task.changeName(newName);
+		assertEquals(false, result);
+		assertEquals(taskName, task.getName());
+	}
+	
+	@Test
+	void testChangeNameWithRepeatedNameButLowerCase() {
 		String newName = "doing grocery";
 		boolean result = task.changeName(newName);
 		assertEquals(false, result);
-		assertEquals("Doing grocery", task.getName());
+		assertEquals(taskName, task.getName());
+	}
+	
+	@Test
+	void testInitialisationOfDueDate() {
+		assertEquals(LocalDate.parse(dueDate), task.getDueDate());
+	}
+	
+	@Test
+	void testInitialisationOfDueDateWithoutGivenADate() {
+		taskInfo = new TaskInfo(taskName, "", status, priority);
+		task = new Task(taskInfo, messages, motivationQuotes);
+		assertEquals(LocalDate.now(), task.getDueDate());
+	}
+	
+	@Test
+	void testInitialisationOfDueDateWithIncorrectFormat() {
+		taskInfo = new TaskInfo(taskName, "03-02-2018", status, priority);
+		task = new Task(taskInfo, messages, motivationQuotes);
+		assertEquals(LocalDate.now(), task.getDueDate());
 	}
 	
 	@Test
@@ -72,7 +107,7 @@ class TaskTest {
 		String newName = "";
 		boolean result = task.changeName(newName);
 		assertEquals(false, result);
-		assertEquals("Doing grocery", task.getName());
+		assertEquals(taskName, task.getName());
 	}
 
 	@Test
@@ -88,7 +123,7 @@ class TaskTest {
 		String newDueDate = "2018-03-10";
 		boolean result = task.changeDueDate(newDueDate);
 		assertEquals(false, result);
-		assertEquals(LocalDate.parse("2018-03-10"), task.getDueDate());
+		assertEquals(LocalDate.parse(dueDate), task.getDueDate());
 	}
 	
 	@Test
@@ -96,6 +131,28 @@ class TaskTest {
 		String newDueDate = "2018-3-10";
 		boolean result = task.changeDueDate(newDueDate);
 		assertEquals(false, result);
-		assertEquals(LocalDate.parse("2018-03-10"), task.getDueDate());
+		assertEquals(LocalDate.parse(dueDate), task.getDueDate());
+	}
+	
+	@Test
+	void testChangeDueDateWithoutADate() {
+		String newDueDate = "";
+		boolean result = task.changeDueDate(newDueDate);
+		assertEquals(false, result);
+		assertEquals(LocalDate.parse(dueDate), task.getDueDate());
+	}
+	
+	@Test
+	void testSetPriority() {
+		String newPriority = "medium";
+		task.setPriority(newPriority);
+		assertEquals(newPriority, task.getPrioirtyObject().getPriority());
+	}
+	
+	@Test
+	void testSetStatus() {
+		String newStatus = "done";
+		task.setStatus(newStatus);
+		assertEquals(newStatus, task.getStatusObject().getStatus());
 	}
 }
