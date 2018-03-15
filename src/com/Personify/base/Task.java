@@ -72,7 +72,7 @@ public class Task {
 	 * 
 	 * @return Status object.
 	 */
-	public Status getStatus() {
+	public Status getStatusObject() {
 		return status;
 	}
 
@@ -81,7 +81,7 @@ public class Task {
 	 * 
 	 * @return Priority object.
 	 */
-	public Priority getPrioirty() {
+	public Priority getPrioirtyObject() {
 		return priority;
 	}
 
@@ -90,7 +90,7 @@ public class Task {
 	 * 
 	 * @return Reminder object.
 	 */
-	public Reminder getReminder() {
+	public Reminder getReminderObject() {
 		return reminder;
 	}
 
@@ -99,7 +99,7 @@ public class Task {
 	 * 
 	 * @return Motivation object.
 	 */
-	public Motivation getMotivation() {
+	public Motivation getMotivationObject() {
 		return motivation;
 	}
 
@@ -189,7 +189,7 @@ public class Task {
 		messages.addMessage("Due date : " + dueDate);
 		messages.addMessage("Status   : " + status.getStatus());
 		messages.addMessage("Priority : " + priority.getPriority());
-		messages.addMessage("Reminder : " + reminder.getMessage());
+		messages.addMessage("Reminder : " + reminder.getReminder());
 		if (reminder.findDaysLeft() > 1) {
 			messages.addMessage(String.format("\n\"%s\"", motivation.getQuote()));
 		}
