@@ -25,7 +25,7 @@ public class Status {
 
 	private void setInitialStatus(final String status) {
 		if (isValidStatus(status)) {
-			this.status = status;
+			this.status = status.toLowerCase();
 		} else {
 			this.status = "to do";
 			messenger.addMessage("Invalid status given. I had set the status as \"to do\".");
