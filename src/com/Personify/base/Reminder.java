@@ -37,7 +37,7 @@ public class Reminder {
 	/**
 	 * Provide a reminder message based on the number day/days left to due date.
 	 */
-	public String getMessage() {
+	public String getReminder() {
 		long dayLeft = findDaysLeft();
 		if (dayLeft > 1) {
 			return "You have " + dayLeft + " days left to due date. You are on track towards your target. Keep it up.";
