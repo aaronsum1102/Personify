@@ -23,12 +23,14 @@ class MessengerTest {
 	void testAddMessage() {
 		boolean result = messenger.addMessage("Falcon Heavy rocks!");
 		assertEquals(true, result);
+		assertEquals(1, messenger.getMessages().size());
 	}
 	
 	@Test
 	void testAddMessageWithEmptyString() {
 		boolean result = messenger.addMessage("");
 		assertEquals(false, result);
+		assertEquals(0, messenger.getMessages().size());
 	}
 	
 	@Test
