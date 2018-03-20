@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import com.Personify.base.Motivation;
 import com.Personify.base.Task;
+import com.Personify.base.TaskCollection;
 import com.Personify.integration.TaskInfo;
 import com.Personify.integration.Messenger;
-import com.Personify.integration.TaskCollection;
 
 public class Controller {
 	private TaskCollection tasks;

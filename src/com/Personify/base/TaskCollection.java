@@ -1,12 +1,13 @@
-package com.Personify.integration;
+package com.Personify.base;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.Personify.base.Motivation;
-import com.Personify.base.Task;
+import com.Personify.integration.Messenger;
+import com.Personify.integration.TaskFileIO;
+import com.Personify.integration.TaskInfo;
 
 public class TaskCollection {
 	private TaskFileIO taskDataIO;
