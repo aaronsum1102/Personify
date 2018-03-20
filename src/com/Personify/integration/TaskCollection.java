@@ -4,104 +4,130 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import com.Personify.base.Motivation;
 import com.Personify.base.Task;
 
 public class TaskCollection {
 	private TaskFileIO taskDataIO;
-	private ArrayList<Task> tasks;
-	private Messages messages;
+	private List<Task> tasks;
+	private Messenger messenger;
 	private Motivation motivationalQuotes;
 	AtomicInteger taskIndex = new AtomicInteger(1);
 
-	public TaskCollection(final Messages messages, final Motivation motivationalQuotes) {
+	public TaskCollection(final Messenger messenger, final Motivation motivationalQuotes) {
 		tasks = new ArrayList<>();
-		this.messages = messages;
+		this.messenger = messenger;
 		this.motivationalQuotes = motivationalQuotes;
 		taskDataIO = new TaskFileIO();
 	}
 
-	public ArrayList<Task> getTasks() {
+	public List<Task> getTasks() {
 		return tasks;
 	}
 
 	public boolean addTaskToCollection(final Task task) {
-		return tasks.add(task);
+		if (isTaskValid(task.getName())) {
+			messenger.addMessage(String.format("Task added. Total task number: %d.", tasks.size()));
+			task.getSummary();
+			return tasks.add(task);
+		} else if (Task.isNameNotEmptyString(task.getName())) {
+			messenger.addMessage("You have the same task in record. Please give me a new name.");
+		} else {
+			messenger.addMessage("I can't understand the task name.");
+		}
+		return false;
 	}
 
-	public boolean isNotRepeatedTaskInCollection(final String taskName) {
-		return !(tasks.stream()
-						.anyMatch(task -> task.getName().equals(taskName)));
+	private boolean isTaskValid(final String taskName) {
+		if (Task.isNameNotEmptyString(taskName) && isNotRepeatedTaskInCollection(taskName)) {
+			return true;
+		}
+		return false;
 	}
 
-	private void addReminderMessageIfTaskIsEmpty() {
-		messages.addMessage("You don't have any task. Do you want to add a task?");
+	private boolean isNotRepeatedTaskInCollection(final String taskName) {
+		return !(tasks.stream().anyMatch(task -> task.getName().equals(taskName)));
+	}
+
+	private void addReminderMessageIfTasksIsEmpty() {
+		messenger.addMessage("You don't have any task. Do you want to add a task?");
+	}
+
+	private void sortTasksByName() {
+		tasks.sort((firstTaskForComparison, secondTaskForComparison) -> firstTaskForComparison.getName()
+				.compareTo(secondTaskForComparison.getName()));
 	}
 
 	public void getTasksSortedByName() {
 		if (tasks.isEmpty()) {
-			addReminderMessageIfTaskIsEmpty();
+			addReminderMessageIfTasksIsEmpty();
 		} else {
+			sortTasksByName();
 			tasks.stream()
-					.sorted((firstTaskForComparison, secondTaskForComparison) -> firstTaskForComparison.getName()
-							.compareTo(secondTaskForComparison.getName()))
-					.forEach(task -> messages.addMessage(String.format("%d. %s", taskIndex.getAndIncrement(), task)));
+					.forEach(task -> messenger.addMessage(String.format("%d. %s", taskIndex.getAndIncrement(), task)));
 			taskIndex.set(1);
 		}
 	}
-	
-	private List<Task> findSpecificTaskByName (String name) {
-		return tasks.stream()
-						.filter(task -> task.getName().equals(name))
-						.collect(Collectors.toList());
+
+	public boolean isTaskNameValidForEdit(final String taskName) {
+		if (isTaskValid(taskName)) {
+			return true;
+		} else if (!isNotRepeatedTaskInCollection(taskName)) {
+			messenger.addMessage(String.format("No task with the name of \"%s\".", taskName));
+		} else {
+			messenger.addMessage("I can't understand the task name.");
+		}
+		return false;
 	}
 
-	public void editTaskName(final String originalName, final String newName) {
-		findSpecificTaskByName(originalName).stream()
-											.forEach(task -> task.changeName(newName));
+	public void editTaskName(final int taskIndex, final String newName) {
+		Task taskToEdit = tasks.get(taskIndex - 1);
+		taskToEdit.changeName(newName);
 	}
 
-	public void editDueDate(final String originalName, final String newDueDate) {
-		findSpecificTaskByName(originalName).stream()
-				.forEach(task -> task.changeDueDate(newDueDate));
+	public void editDueDate(final int taskIndex, final String newDueDate) {
+		Task taskToEdit = tasks.get(taskIndex - 1);
+		taskToEdit.changeDueDate(newDueDate);
 	}
 
-	public void editStatus(final String originalName, final String newStatus) {
-		findSpecificTaskByName(originalName).stream()
-				.forEach(task -> task.setStatus(newStatus));
+	public void editStatus(final int taskIndex, final String newStatus) {
+		Task taskToEdit = tasks.get(taskIndex - 1);
+		taskToEdit.setStatus(newStatus);
 	}
 
-	public void editPriority(final String originalName, final String newPriority) {
-		findSpecificTaskByName(originalName).stream()	
-				.forEach(task -> task.setPriority(newPriority));
+	public void editPriority(final int taskIndex, final String newPriority) {
+		Task taskToEdit = tasks.get(taskIndex - 1);
+		taskToEdit.setPriority(newPriority);
 	}
-	
+
+	private void readTasksToCollection(Task task) {
+		tasks.add(task);
+	}
+
 	public void readTasksFromFile() throws IOException {
 		taskDataIO.readTasksDataFromDataFile();
 		List<TaskInfo> tasksToRead = taskDataIO.getTasksData();
 		if (!tasksToRead.isEmpty()) {
-			tasksToRead.stream()
-						.forEach(taskData -> {
-												Task task = new Task(taskData, messages, motivationalQuotes);
-												addTaskToCollection(task);
-									 		 });
+			tasksToRead.stream().forEach(taskData -> {
+				Task task = new Task(taskData, messenger, motivationalQuotes);
+				readTasksToCollection(task);
+			});
 		}
 	}
-	
+
 	private List<TaskInfo> prepareTasksDataForArchive() {
 		List<TaskInfo> tasksForArchive = new ArrayList<>();
 		tasks.stream().forEach(task -> {
 			String taskName = task.getName();
 			String dueDate = String.format("%s", task.getDueDate());
-			String status = task.getStatus().getStatus();
-			String priority = task.getPrioirty().getPriority();
+			String status = task.getStatusObject().getStatus();
+			String priority = task.getPrioirtyObject().getPriority();
 			tasksForArchive.add(new TaskInfo(taskName, dueDate, status, priority));
 		});
 		return tasksForArchive;
 	}
-	
+
 	public void writeTasksToFile() throws IOException {
 		List<TaskInfo> tasksToArchive = prepareTasksDataForArchive();
 		taskDataIO.archiveTasks(tasksToArchive);

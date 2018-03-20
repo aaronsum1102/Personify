@@ -10,14 +10,13 @@ public class FileIO {
 	public List<String> readEachLineOfFile(Path pathToFile) throws IOException {	
 		List<String> fileContents = new ArrayList<>();
 		if (Files.isReadable(pathToFile)) {
-			try {
-				fileContents = Files.readAllLines(pathToFile);
-			} catch (IOException e) {
-				System.err.format("Unable to read %s. Please ensure you have correct file name and access.\n", pathToFile.getFileName());
-			}
-		} else {
+			fileContents = Files.readAllLines(pathToFile);
+		} 
+		else if (!Files.exists(pathToFile)) {
 			FileNotFoundException fileNotFound = new FileNotFoundException("\"" + pathToFile.getFileName() + "\"" + " does not exist.");
 			throw fileNotFound;
+		} else {
+			System.err.println("Unable to read \"" + pathToFile.getFileName() + "\".");
 		}
 		return fileContents;
 	}
