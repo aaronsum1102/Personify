@@ -83,7 +83,7 @@ public class TextInterface {
 
 	private void mainOperationLoop() throws IOException, NumberFormatException {
 		boolean isEnding = false;
-		final int COMMAND_TO_EXIT = 5;
+		final int COMMAND_TO_EXIT = command.getMainCommands().size() - 2;
 		while (!isEnding) {
 			showCommandMessage();
 			try {
@@ -151,7 +151,7 @@ public class TextInterface {
 
 	private void editTaskOperationLoop(final Scanner reader) throws IOException {
 		boolean isEnging = false;
-		final int COMMAND_TO_EXIT_CURRENT_MENU = 5;
+		final int COMMAND_TO_EXIT_CURRENT_MENU = command.getEditCommands().size() - 2;
 		int index = 0;
 		while (!isEnging) {
 			try {
@@ -161,7 +161,7 @@ public class TextInterface {
 					System.out.println(INVALID_COMMAND_MESSAGE);
 					continue;
 				}
-				if (inputFromUser != 5) {
+				if (inputFromUser != COMMAND_TO_EXIT_CURRENT_MENU) {
 					index = getTaskNumberToEditFromUser(reader);
 				}
 				switch (inputFromUser) {
