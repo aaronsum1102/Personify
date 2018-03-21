@@ -19,6 +19,7 @@ import com.Personify.integration.TaskInfo;
 public class TextInterface {
 	private Controller controller;
 	private Messenger messenger;
+	private Command command;
 	private String INVALID_COMMAND_MESSAGE = "Warning: Unfortunately, I can't understand you. Please try again";
 
 	/**
@@ -31,6 +32,7 @@ public class TextInterface {
 	public TextInterface() throws IOException {
 		controller = new Controller();
 		messenger = controller.getMessages();
+		command = new Command();
 	}
 
 	private void showMessagesWithHeaders(final List<String> messages) {
@@ -69,12 +71,7 @@ public class TextInterface {
 	}
 
 	private void showCommandMessage() {
-		messenger.addMessage("How can I serve you? Give me a number and I will show you the magic.");
-		messenger.addMessage("(1) Show the name of all your tasks.");
-		messenger.addMessage("(2) Add new task.");
-		messenger.addMessage("(3) Edit Task.");
-		messenger.addMessage("(4) Save and quit.");
-		showMessagesWithHeaders(messenger.getMessages());
+		showMessagesWithHeaders(command.getMainCommands());
 	}
 
 	private boolean isCommandSelectionValid(final int CommandToExit, final int userSelection) {
@@ -86,7 +83,7 @@ public class TextInterface {
 
 	private void mainOperationLoop() throws IOException, NumberFormatException {
 		boolean isEnding = false;
-		final int COMMAND_TO_EXIT = 4;
+		final int COMMAND_TO_EXIT = command.getMainCommands().size() - 2;
 		while (!isEnding) {
 			showCommandMessage();
 			try {
@@ -110,6 +107,11 @@ public class TextInterface {
 					editTaskOperationLoop(commandReader);
 					continue;
 				case 4:
+					controller.removeAllTasks();
+					showMessagesWithHeaders(controller.getSystemMessages());
+					toProceed(commandReader);
+					continue;
+				case 5:
 					isEnding = true;
 					controller.writeTaskDataToSystem();
 					System.out.println("Good bye!");
@@ -137,13 +139,7 @@ public class TextInterface {
 	}
 
 	private void showSubCommandMessageForEditingTask() {
-		messenger.addMessage("Which item do you want to edit?");
-		messenger.addMessage("(1) Task name.");
-		messenger.addMessage("(2) Due Date.");
-		messenger.addMessage("(3) Status.");
-		messenger.addMessage("(4) Priority.");
-		messenger.addMessage("(5) Go back to previous menu.");
-		showMessagesWithHeaders(messenger.getMessages());
+		showMessagesWithHeaders(command.getEditCommands());
 	}
 
 	private int getTaskNumberToEditFromUser(final Scanner reader) {
@@ -155,7 +151,7 @@ public class TextInterface {
 
 	private void editTaskOperationLoop(final Scanner reader) throws IOException {
 		boolean isEnging = false;
-		final int COMMAND_TO_EXIT_CURRENT_MENU = 5;
+		final int COMMAND_TO_EXIT_CURRENT_MENU = command.getEditCommands().size() - 2;
 		int index = 0;
 		while (!isEnging) {
 			try {
@@ -165,7 +161,7 @@ public class TextInterface {
 					System.out.println(INVALID_COMMAND_MESSAGE);
 					continue;
 				}
-				if (inputFromUser != 5) {
+				if (inputFromUser != COMMAND_TO_EXIT_CURRENT_MENU) {
 					index = getTaskNumberToEditFromUser(reader);
 				}
 				switch (inputFromUser) {

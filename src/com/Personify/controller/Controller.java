@@ -72,4 +72,8 @@ public class Controller {
 	public void writeTaskDataToSystem() throws IOException {
 		tasks.writeTasksToFile();
 	}
+	
+	public void removeAllTasks() {
+		tasks.removeAllTasks();
+	}
 }

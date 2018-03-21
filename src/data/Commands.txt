@@ -1,0 +1,16 @@
+main menu
+How can I serve you? Give me a number and I will show you the magic.
+
+(1) Show the name of all your tasks.
+(2) Add new task.
+(3) Edit task.
+(4) Clear all tasks.
+(5) Save and quit.
+edit menu
+Which item do you want to edit?
+
+(1) Task name.
+(2) Due Date.
+(3) Status.
+(4) Priority.
+(5) Go back to previous menu.
