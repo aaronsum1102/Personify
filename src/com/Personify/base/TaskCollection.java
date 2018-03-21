@@ -133,5 +133,13 @@ public class TaskCollection {
 		List<TaskInfo> tasksToArchive = prepareTasksDataForArchive();
 		taskDataIO.archiveTasks(tasksToArchive);
 	}
-
+	
+	public void removeAllTasks() {
+		if (tasks.isEmpty()) {
+			messenger.addMessage("You have no task to remove.");
+		} else {
+			tasks.clear();
+			messenger.addMessage("All tasks were removed.");
+		}
+	}
 }

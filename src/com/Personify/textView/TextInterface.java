@@ -73,7 +73,8 @@ public class TextInterface {
 		messenger.addMessage("(1) Show the name of all your tasks.");
 		messenger.addMessage("(2) Add new task.");
 		messenger.addMessage("(3) Edit Task.");
-		messenger.addMessage("(4) Save and quit.");
+		messenger.addMessage("(4) Clear all tasks.");
+		messenger.addMessage("(5) Save and quit.");
 		showMessagesWithHeaders(messenger.getMessages());
 	}
 
@@ -86,7 +87,7 @@ public class TextInterface {
 
 	private void mainOperationLoop() throws IOException, NumberFormatException {
 		boolean isEnding = false;
-		final int COMMAND_TO_EXIT = 4;
+		final int COMMAND_TO_EXIT = 5;
 		while (!isEnding) {
 			showCommandMessage();
 			try {
@@ -110,6 +111,11 @@ public class TextInterface {
 					editTaskOperationLoop(commandReader);
 					continue;
 				case 4:
+					controller.removeAllTasks();
+					showMessagesWithHeaders(controller.getSystemMessages());
+					toProceed(commandReader);
+					continue;
+				case 5:
 					isEnding = true;
 					controller.writeTaskDataToSystem();
 					System.out.println("Good bye!");
