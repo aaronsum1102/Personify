@@ -2,8 +2,10 @@ package com.Personify.base;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.Personify.integration.Messenger;
 import com.Personify.integration.TaskFileIO;
@@ -54,21 +56,44 @@ public class TaskCollection {
 	private void addReminderMessageIfTasksIsEmpty() {
 		messenger.addMessage("You don't have any task. Do you want to add a task?");
 	}
-
-	private void sortTasksByName() {
-		tasks.sort((firstTaskForComparison, secondTaskForComparison) -> firstTaskForComparison.getName()
-				.compareTo(secondTaskForComparison.getName()));
+	
+	private void getTasksIntoFormat(List<Task> tasks) {
+		messenger.addMessage("   Task Name; Due Date; Status; Priority");
+		tasks.stream()
+			.forEach(task -> messenger.addMessage(String.format("%d. %s", taskIndex.getAndIncrement(), task)));
+		taskIndex.set(1);
 	}
 
-	public void getTasksSortedByName() {
+	private void sortTasksByDueDate(List<Task> tasks) {
+		tasks.sort((firstTask, secondTask) -> Long.compare(firstTask.getReminderObject().findDaysLeft(), secondTask.getReminderObject().findDaysLeft()));
+		Collections.reverse(tasks);
+	}
+	
+	private void sortTasksByDueDateForDisplay(List<Task> tasks) {
 		if (tasks.isEmpty()) {
 			addReminderMessageIfTasksIsEmpty();
 		} else {
-			sortTasksByName();
-			tasks.stream()
-					.forEach(task -> messenger.addMessage(String.format("%d. %s", taskIndex.getAndIncrement(), task)));
-			taskIndex.set(1);
+			sortTasksByDueDate(tasks);
+			getTasksIntoFormat(tasks);
 		}
+	}
+	
+	public void getAllTasks() {
+		sortTasksByDueDateForDisplay(tasks);
+	}
+	
+	public void getTasksWithSpecificStatus(String status) {
+		List<Task> filteredTasks = tasks.stream()
+										.filter(task -> task.getStatusObject().getStatus().equals(status))
+										.collect(Collectors.toList());
+		sortTasksByDueDateForDisplay(filteredTasks);
+	}
+	
+	public void getTasksToComplete() {
+		List<Task> filteredTasks = tasks.stream()
+										.filter(task -> !(task.getStatusObject().getStatus().equals("done")))
+										.collect(Collectors.toList());
+		sortTasksByDueDateForDisplay(filteredTasks);
 	}
 
 	public boolean isTaskNameValidForEdit(final String taskName) {

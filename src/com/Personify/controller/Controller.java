@@ -30,12 +30,22 @@ public class Controller {
 	public List<String> getSystemMessages() {
 		return messenger.getMessages();
 	}
-
-	public List<String> getAllTasksSortedByName() {
-		tasks.getTasksSortedByName();
+	
+	public List<String> getAllTasks() {
+		tasks.getAllTasks();
+		return messenger.getMessages();
+	}
+	
+	public List<String> getTasksWithSpecificStatus(String status) {
+		tasks.getTasksWithSpecificStatus(status);
 		return messenger.getMessages();
 	}
 
+	public List<String> getTasksToComplete() {
+		tasks.getTasksToComplete();
+		return messenger.getMessages();
+	}
+	
 	public void clearMessages() {
 		messenger.clearMessages();
 	}
