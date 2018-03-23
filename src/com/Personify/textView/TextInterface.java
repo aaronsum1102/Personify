@@ -18,7 +18,9 @@ import com.Personify.integration.TaskInfo;
 public class TextInterface {
 	private Controller controller;
 	private Messenger messenger;
-	private Command command;
+	private MainMenu mainMenu;
+	private ShowTasksMenu showTasksMenu;
+	private EditTaskMenu editTaskMenu;
 	private Deque<Integer> menuStack;
 	private String INVALID_COMMAND_MESSAGE = "Warning: Unfortunately, I can't understand you. Please try again";
 	private final int INDEX_OF_MAIN_MENU = 1;
@@ -37,7 +39,9 @@ public class TextInterface {
 	public TextInterface() throws IOException {
 		controller = new Controller();
 		messenger = controller.getMessages();
-		command = new Command(messenger);
+		mainMenu = new MainMenu();
+		showTasksMenu = new ShowTasksMenu();
+		editTaskMenu = new EditTaskMenu();
 		menuStack = new ArrayDeque<>();
 	}
 
@@ -102,10 +106,10 @@ public class TextInterface {
 		}
 	}
 
-	private void showCommandMessage() {
-		command.getMainCommands();
-		showMessagesWithHeaders(messenger.getMessages());
-	}
+//	private void showCommandMessage() {
+//		command.getMainCommands();
+//		showMessagesWithHeaders(messenger.getMessages());
+//	}
 
 	private TaskInfo getTaskInfoFromUser(final Scanner taskInfoReader) {
 		System.out.println("Please give a name for your task.");
@@ -122,12 +126,12 @@ public class TextInterface {
 
 	private boolean mainMenuOperation(boolean isEnding, Scanner commandReader) throws IOException {
 		final int NO_OF_ELEMENT_TO_EXCLUDE = 2;
-		final int COMMAND_TO_EXIT = command.getMainCommandsSize() - NO_OF_ELEMENT_TO_EXCLUDE;
+		final int COMMAND_TO_EXIT = mainMenu.getMainMenu().size() - NO_OF_ELEMENT_TO_EXCLUDE;
 		boolean isToEndProgram = false;
 		
 		while (!isEnding) {
 			try {
-				showCommandMessage();
+				showMessagesWithHeaders(mainMenu.getMainMenu());
 				int inputFromUser = Integer.parseInt(commandReader.nextLine());
 				invalidCommandWarning(COMMAND_TO_EXIT, inputFromUser);
 				switch (inputFromUser) {
@@ -163,18 +167,18 @@ public class TextInterface {
 		return isToEndProgram;
 	}
 
-	private void showTasksSelectionCommand() {
-		command.getShowTasksCommands();
-		showMessagesWithHeaders(messenger.getMessages());
-	}
+//	private void showTasksSelectionCommand() {
+//		command.getShowTasksCommands();
+//		showMessagesWithHeaders(messenger.getMessages());
+//	}
 
 	private void showTaskOperation(boolean isEnding, Scanner commandReader) {
 		final int NO_OF_ELEMENT_TO_EXCLUDE = 2;
-		final int COMMAND_TO_EXIT = command.getShowTasksCommandsSize() - NO_OF_ELEMENT_TO_EXCLUDE;
+		final int COMMAND_TO_EXIT = showTasksMenu.getShowTasksMenu().size() - NO_OF_ELEMENT_TO_EXCLUDE;
 		
 		while (!isEnding) {
 			try {
-				showTasksSelectionCommand();
+				showMessagesWithHeaders(showTasksMenu.getShowTasksMenu());
 				int inputFromUser = Integer.parseInt(commandReader.nextLine());
 				invalidCommandWarning(COMMAND_TO_EXIT, inputFromUser);
 				switch (inputFromUser) {
@@ -204,10 +208,10 @@ public class TextInterface {
 		}
 	}
 
-	private void showSubCommandMessageForEditingTask() {
-		command.getEditCommands();
-		showMessagesWithHeaders(messenger.getMessages());
-	}
+//	private void showSubCommandMessageForEditingTask() {
+//		command.getEditCommands();
+//		showMessagesWithHeaders(messenger.getMessages());
+//	}
 
 	private int getTaskNumberToEditFromUser(final Scanner reader) {
 		messenger.addMessage("You have the following tasks in my record:");
@@ -218,12 +222,12 @@ public class TextInterface {
 
 	private void editTaskOperation(boolean isEnding, Scanner commandReader) {
 		final int NO_OF_ELEMENT_TO_EXCLUDE = 2;
-		final int COMMAND_TO_EXIT_CURRENT_MENU = command.getEditCommandsSize() - NO_OF_ELEMENT_TO_EXCLUDE;
+		final int COMMAND_TO_EXIT_CURRENT_MENU = editTaskMenu.getEditTaskMenu().size() - NO_OF_ELEMENT_TO_EXCLUDE;
 		int taskIndex = 0;
 
 		while (!isEnding) {
 			try {
-				showSubCommandMessageForEditingTask();
+				showMessagesWithHeaders(editTaskMenu.getEditTaskMenu());
 				int inputFromUser = Integer.parseInt(commandReader.nextLine());
 				invalidCommandWarning(COMMAND_TO_EXIT_CURRENT_MENU, inputFromUser);
 				switch (inputFromUser) {
