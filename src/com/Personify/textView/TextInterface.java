@@ -18,14 +18,9 @@ import com.Personify.integration.TaskInfo;
 public class TextInterface {
 	private Controller controller;
 	private Messenger messenger;
-	private MainMenu mainMenu;
-	private ShowTasksMenu showTasksMenu;
-	private EditTaskMenu editTaskMenu;
-	private Deque<Integer> menuStack;
+	private Menu menu;
+	private Deque<String> menuStack;
 	private String INVALID_COMMAND_MESSAGE = "Warning: Unfortunately, I can't understand you. Please try again";
-	private final int INDEX_OF_MAIN_MENU = 1;
-	private final int INDEX_OF_SHOW_TASKS_MENU = 2;
-	private final int INDEX_OF_EDIT_MENU = 3;
 
 	/**
 	 * Instantiate an object for the interacting with user. At the same time it will
@@ -39,9 +34,7 @@ public class TextInterface {
 	public TextInterface() throws IOException {
 		controller = new Controller();
 		messenger = controller.getMessages();
-		mainMenu = new MainMenu();
-		showTasksMenu = new ShowTasksMenu();
-		editTaskMenu = new EditTaskMenu();
+		menu = new Menu();
 		menuStack = new ArrayDeque<>();
 	}
 
@@ -84,16 +77,16 @@ public class TextInterface {
 		boolean isEnding = false;
 		Scanner commandReader = new Scanner(System.in);
 		while (!isEnding) {
-			if (menuStack.isEmpty()) menuStack.add(INDEX_OF_MAIN_MENU);
-			int index = menuStack.pop();
-			switch (index) {
-				case 1:
+			if (menuStack.isEmpty()) menuStack.add("main");
+			String menu = menuStack.pop();
+			switch (menu) {
+				case "main":
 					isEnding = mainMenuOperation(isEnding, commandReader);
 					continue;
-				case 2:
+				case "show task":
 					showTaskOperation(isEnding, commandReader);
 					continue;
-				case 3:
+				case "edit task":
 					editTaskOperation(isEnding, commandReader);
 					continue;
 			}
@@ -105,11 +98,6 @@ public class TextInterface {
 			System.out.println(INVALID_COMMAND_MESSAGE);
 		}
 	}
-
-//	private void showCommandMessage() {
-//		command.getMainCommands();
-//		showMessagesWithHeaders(messenger.getMessages());
-//	}
 
 	private TaskInfo getTaskInfoFromUser(final Scanner taskInfoReader) {
 		System.out.println("Please give a name for your task.");
@@ -126,17 +114,17 @@ public class TextInterface {
 
 	private boolean mainMenuOperation(boolean isEnding, Scanner commandReader) throws IOException {
 		final int NO_OF_ELEMENT_TO_EXCLUDE = 2;
-		final int COMMAND_TO_EXIT = mainMenu.getMainMenu().size() - NO_OF_ELEMENT_TO_EXCLUDE;
+		final int COMMAND_TO_EXIT = menu.getMenu("main").size() - NO_OF_ELEMENT_TO_EXCLUDE;
 		boolean isToEndProgram = false;
 		
 		while (!isEnding) {
 			try {
-				showMessagesWithHeaders(mainMenu.getMainMenu());
+				showMessagesWithHeaders(menu.getMenu("main"));
 				int inputFromUser = Integer.parseInt(commandReader.nextLine());
 				invalidCommandWarning(COMMAND_TO_EXIT, inputFromUser);
 				switch (inputFromUser) {
 					case 1:
-						menuStack.add(INDEX_OF_SHOW_TASKS_MENU);
+						menuStack.add("show task");
 						isEnding = true;
 						break;
 					case 2:
@@ -145,7 +133,7 @@ public class TextInterface {
 						toProceed(commandReader);
 						continue;
 					case 3:
-						menuStack.add(INDEX_OF_EDIT_MENU);
+						menuStack.add("edit task");
 						isEnding = true;
 						break;
 					case 4:
@@ -167,18 +155,13 @@ public class TextInterface {
 		return isToEndProgram;
 	}
 
-//	private void showTasksSelectionCommand() {
-//		command.getShowTasksCommands();
-//		showMessagesWithHeaders(messenger.getMessages());
-//	}
-
 	private void showTaskOperation(boolean isEnding, Scanner commandReader) {
 		final int NO_OF_ELEMENT_TO_EXCLUDE = 2;
-		final int COMMAND_TO_EXIT = showTasksMenu.getShowTasksMenu().size() - NO_OF_ELEMENT_TO_EXCLUDE;
+		final int COMMAND_TO_EXIT = menu.getMenu("show task").size() - NO_OF_ELEMENT_TO_EXCLUDE;
 		
 		while (!isEnding) {
 			try {
-				showMessagesWithHeaders(showTasksMenu.getShowTasksMenu());
+				showMessagesWithHeaders(menu.getMenu("show task"));
 				int inputFromUser = Integer.parseInt(commandReader.nextLine());
 				invalidCommandWarning(COMMAND_TO_EXIT, inputFromUser);
 				switch (inputFromUser) {
@@ -208,11 +191,6 @@ public class TextInterface {
 		}
 	}
 
-//	private void showSubCommandMessageForEditingTask() {
-//		command.getEditCommands();
-//		showMessagesWithHeaders(messenger.getMessages());
-//	}
-
 	private int getTaskNumberToEditFromUser(final Scanner reader) {
 		messenger.addMessage("You have the following tasks in my record:");
 		showMessagesWithHeaders(controller.getAllTasks());
@@ -222,12 +200,12 @@ public class TextInterface {
 
 	private void editTaskOperation(boolean isEnding, Scanner commandReader) {
 		final int NO_OF_ELEMENT_TO_EXCLUDE = 2;
-		final int COMMAND_TO_EXIT_CURRENT_MENU = editTaskMenu.getEditTaskMenu().size() - NO_OF_ELEMENT_TO_EXCLUDE;
+		final int COMMAND_TO_EXIT_CURRENT_MENU = menu.getMenu("edit task").size() - NO_OF_ELEMENT_TO_EXCLUDE;
 		int taskIndex = 0;
 
 		while (!isEnding) {
 			try {
-				showMessagesWithHeaders(editTaskMenu.getEditTaskMenu());
+				showMessagesWithHeaders(menu.getMenu("edit task"));
 				int inputFromUser = Integer.parseInt(commandReader.nextLine());
 				invalidCommandWarning(COMMAND_TO_EXIT_CURRENT_MENU, inputFromUser);
 				switch (inputFromUser) {
