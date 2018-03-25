@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit;
  *
  */
 public class Reminder {
-	private LocalDate dueDate;
+	private final LocalDate dueDate;
 
 	/**
 	 * Instantiate an reminder object with the specify due date.

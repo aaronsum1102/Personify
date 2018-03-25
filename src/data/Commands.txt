@@ -1,12 +1,25 @@
-main menu
++
+main
 How can I serve you? Give me a number and I will show you the magic.
 
-(1) Show the name of all your tasks.
+(1) Show tasks.
 (2) Add new task.
 (3) Edit task.
 (4) Clear all tasks.
 (5) Save and quit.
-edit menu
+-
++
+show task
+How do you like to show your tasks?
+
+(1) show all tasks.
+(2) show tasks to complete.
+(3) show tasks that were done.
+(4) show overdue tasks.
+(5) Go back to previous menu.
+-
++
+edit task
 Which item do you want to edit?
 
 (1) Task name.
@@ -14,3 +27,4 @@ Which item do you want to edit?
 (3) Status.
 (4) Priority.
 (5) Go back to previous menu.
+-

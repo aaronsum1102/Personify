@@ -1,207 +1,281 @@
 package com.Personify.textView;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.Personify.base.Priority;
 import com.Personify.base.Status;
+import com.Personify.base.Task;
 import com.Personify.controller.Controller;
-import com.Personify.integration.Messenger;
 import com.Personify.integration.TaskInfo;
 
 /**
  * Interface for interacting with user.
- * 
+ *
  * @author aaronsum
- * @version 2.0, 2018-03-13
+ * @version 2.0, 2018-03-13§
  */
 public class TextInterface {
-	private Controller controller;
-	private Messenger messenger;
-	private Command command;
-	private String INVALID_COMMAND_MESSAGE = "Warning: Unfortunately, I can't understand you. Please try again";
+    private final List<String> messages;
+    private Controller controller;
+    private Menu menu;
+    private Deque<String> menuStack;
+    private Scanner commandReader;
 
-	/**
-	 * Instantiate an object for the interacting with user. At the same time it will
-	 * instantiate a {@link Controller} object and {@link Messenger} object.
-	 * 
-	 * @throws IOException
-	 *             If an input or output error occurred during the operation.
-	 */
-	public TextInterface() throws IOException {
-		controller = new Controller();
-		messenger = controller.getMessages();
-		command = new Command();
-	}
+    /**
+     * Instantiate an object for the interacting with user. At the same time it will
+     * instantiate a {@link Controller} object.
+     *
+     * @throws IOException If an input or output error occurred during the operation.
+     */
+    public TextInterface() throws IOException {
+        messages = new ArrayList<>();
+        controller = new Controller();
+        menu = new Menu();
+        menuStack = new ArrayDeque<>();
+        commandReader = new Scanner(System.in);
+    }
 
-	private void showMessagesWithHeaders(final List<String> messages) {
-		if (!messages.isEmpty()) {
-			System.out.println("----------------------------------Personify----------------------------------");
-			messages.stream().forEach(System.out::println);
-			System.out.println("-----------------------------------------------------------------------------");
-			controller.clearMessages();
-		}
-	}
+    private void showMessagesWithHeaders() {
+        if (!messages.isEmpty()) {
+            System.out.println("----------------------------------Personify----------------------------------");
+            messages.forEach(System.out::println);
+            System.out.println("-----------------------------------------------------------------------------");
+            this.messages.clear();
+        }
+    }
 
-	private void toProceed(final Scanner commandReader) {
-		System.out.println("press \"ENTER\" to continue...");
-		commandReader.nextLine();
-	}
+    private void toProceed() {
+        System.out.println("press \"ENTER\" to continue...");
+        commandReader.nextLine();
+    }
 
-	/**
-	 * Responsible for running of the program until user choose to exit.
-	 * 
-	 * @throws IOException
-	 *             If an input or output error occurred in
-	 *             <code>showWelcomeMessage()</code>.
-	 * @throws NumberFormatException
-	 *             If user gave an input other than number when requested.
-	 */
-	public void startup() throws IOException, NumberFormatException {
-		showWelcomeMessage();
-		mainOperationLoop();
-	}
+    /**
+     * Responsible for running of the program until user choose to exit.
+     *
+     * @throws IOException           If an input or output error occurred in
+     *                               <code>showWelcomeMessage()</code>.
+     * @throws NumberFormatException If user gave an input other than number when requested.
+     */
+    public void startup() throws IOException {
+        showWelcomeMessage();
+        operationLoop();
+    }
 
-	private void showWelcomeMessage() throws IOException {
-		messenger.addMessage("Welcome!");
-		controller.readTaskDataToSystem();
-		int numberOfTaskInRecord = controller.getTasks().getTasks().size();
-		messenger.addMessage(String.format("You have %d task in my record.\n", numberOfTaskInRecord));
-	}
+    private void showWelcomeMessage() throws IOException {
+        controller.readTaskDataToSystem();
+        messages.add("Welcome!");
+        messages.add(String.format("You have %d task in my record.\n", controller.getTasksSize()));
+    }
 
-	private void showCommandMessage() {
-		showMessagesWithHeaders(command.getMainCommands());
-	}
+    private void operationLoop() {
+        boolean isEnding = false;
 
-	private boolean isCommandSelectionValid(final int CommandToExit, final int userSelection) {
-		if (0 < userSelection && userSelection <= CommandToExit) {
-			return true;
-		}
-		return false;
-	}
+        while (!isEnding) {
+            if (menuStack.isEmpty()) menuStack.add("main");
+            String menu = menuStack.pop();
+            try {
+                switch (menu) {
+                    case "main":
+                        isEnding = mainMenuOperation();
+                        continue;
+                    case "show task":
+                        showTaskOperation();
+                        continue;
+                    case "edit task":
+                        editTaskOperation();
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Warning: I'm smart enough to know you didn't given me a number.");
+                menuStack.add(menu);
+                toProceed();
+            } catch (InvalidCommandException | IllegalArgumentException e){
+                System.out.println(e.getMessage());
+                menuStack.add(menu);
+                toProceed();
+            }
+        }
+    }
 
-	private void mainOperationLoop() throws IOException, NumberFormatException {
-		boolean isEnding = false;
-		final int COMMAND_TO_EXIT = command.getMainCommands().size() - 2;
-		while (!isEnding) {
-			showCommandMessage();
-			try {
-				Scanner commandReader = new Scanner(System.in);
-				int inputFromUser = Integer.parseInt(commandReader.nextLine());
-				if (!(isCommandSelectionValid(COMMAND_TO_EXIT, inputFromUser))) {
-					System.out.println(INVALID_COMMAND_MESSAGE);
-					continue;
-				}
-				switch (inputFromUser) {
-				case 1:
-					showMessagesWithHeaders(controller.getAllTasksSortedByName());
-					toProceed(commandReader);
-					continue;
-				case 2:
-					controller.addTask(getTaskInfoFromUser(commandReader));
-					showMessagesWithHeaders(controller.getSystemMessages());
-					toProceed(commandReader);
-					continue;
-				case 3:
-					editTaskOperationLoop(commandReader);
-					continue;
-				case 4:
-					controller.removeAllTasks();
-					showMessagesWithHeaders(controller.getSystemMessages());
-					toProceed(commandReader);
-					continue;
-				case 5:
-					isEnding = true;
-					controller.writeTaskDataToSystem();
-					System.out.println("Good bye!");
-					commandReader.close();
-					break;
-				}
-			} catch (NumberFormatException e) {
-				System.out.println(INVALID_COMMAND_MESSAGE);
-			}
-		}
+    private void isValidCommand(final int maxAllowNumber, final int userSelection) throws InvalidCommandException {
+        if (!(0 < userSelection && userSelection <= maxAllowNumber)) {
+            throw new InvalidCommandException(userSelection);
+        }
+    }
 
-	}
+    private TaskInfo getInputFromUser(){
+        System.out.println("Please give a name for your task.");
+        String taskName = commandReader.nextLine();
+        controller.isTaskNameValid(taskName);
+        System.out.println("Please give a due date in format of YYYY-MM-DD.");
+        System.out.println("Tips: Default due date is today's date");
+        String taskDueDate = commandReader.nextLine();
+        System.out.format("Please give a status for your task . Valid status is %s.\n", Status.getStatuses());
+        System.out.println("Tips: Default status is \"to do\"");
+        String taskStatus = commandReader.nextLine();
+        System.out.format("Please give a priority for your task. Valid priority is %s.\n", Priority.getPriorities());
+        System.out.println("Tips: Default priority is \"high\"");
+        String taskPriority = commandReader.nextLine();
+        return new TaskInfo(taskName, taskDueDate, taskStatus, taskPriority);
+    }
 
-	private TaskInfo getTaskInfoFromUser(final Scanner taskInfoReader) {
-		System.out.println("Please give a name for your task.");
-		String taskName = taskInfoReader.nextLine();
-		System.out.println("Please give a due date in format of YYYY-MM-DD.");
-		String taskDueDate = taskInfoReader.nextLine();
-		System.out.format("Plase give a status for your task . Valid status is %s.\n", Status.getStatuses());
-		String taskStatus = taskInfoReader.nextLine();
-		System.out.format("Please give a priority for your task. Valid priority is %s.\n", Priority.getPriorities());
-		String taskPriority = taskInfoReader.nextLine();
-		TaskInfo newTaskInfo = new TaskInfo(taskName, taskDueDate, taskStatus, taskPriority);
-		return newTaskInfo;
-	}
+    private void removeAllTask() {
+        if (controller.removeAllTasks()) {
+            messages.add("All tasks were removed.");
+        } else {
+            messages.add("You have no task to remove.");
+        }
+    }
 
-	private void showSubCommandMessageForEditingTask() {
-		showMessagesWithHeaders(command.getEditCommands());
-	}
+    private boolean mainMenuOperation() throws InvalidCommandException {
+        final String menuName = "main";
+        final int noOfElementToSubtractForFormatting = 2;
+        final int commandToExit = menu.getMenu(menuName).size() - noOfElementToSubtractForFormatting;
 
-	private int getTaskNumberToEditFromUser(final Scanner reader) {
-		messenger.addMessage("You have the following tasks in my record:");
-		showMessagesWithHeaders(controller.getAllTasksSortedByName());
-		System.out.println("Please give me the number of the task that you would like to edit.");
-		return Integer.parseInt(reader.nextLine());
-	}
+        messages.addAll(menu.getMenu(menuName));
+        showMessagesWithHeaders();
+        int inputFromUser = Integer.parseInt(commandReader.nextLine());
+        isValidCommand(commandToExit, inputFromUser);
+        switch (inputFromUser) {
+            case 1:
+                menuStack.add("show task");
+                break;
+            case 2:
+                messages.add(controller.addTaskAndGetSummary(getInputFromUser()));
+                showMessagesWithHeaders();
+                toProceed();
+                break;
+            case 3:
+                menuStack.add("edit task");
+                break;
+            case 4:
+                removeAllTask();
+                showMessagesWithHeaders();
+                toProceed();
+                 break;
+            case 5:
+                controller.writeTaskDataToSystem();
+                System.out.println("Good bye!");
+                return true;
+        }
+        return false;
+    }
 
-	private void editTaskOperationLoop(final Scanner reader) throws IOException {
-		boolean isEnging = false;
-		final int COMMAND_TO_EXIT_CURRENT_MENU = command.getEditCommands().size() - 2;
-		int index = 0;
-		while (!isEnging) {
-			try {
-				showSubCommandMessageForEditingTask();
-				int inputFromUser = Integer.parseInt(reader.nextLine());
-				if (!isCommandSelectionValid(COMMAND_TO_EXIT_CURRENT_MENU, inputFromUser)) {
-					System.out.println(INVALID_COMMAND_MESSAGE);
-					continue;
-				}
-				if (inputFromUser != COMMAND_TO_EXIT_CURRENT_MENU) {
-					index = getTaskNumberToEditFromUser(reader);
-				}
-				switch (inputFromUser) {
-				case 1:
-					System.out.println("Please give me a new name for the task.");
-					String newName = reader.nextLine();
-					if (controller.isTaskNameValidForEdit(newName)) {
-						controller.editTaskName(index, newName);
-					}
-					showMessagesWithHeaders(controller.getSystemMessages());
-					toProceed(reader);
-					continue;
-				case 2:
-					System.out.println("Please give me a new due date with the format of \"YYYY-MM-DD\".");
-					String newDueDate = reader.nextLine();
-					controller.editDueDate(index, newDueDate);
-					showMessagesWithHeaders(controller.getSystemMessages());
-					toProceed(reader);
-					continue;
-				case 3:
-					System.out.format("Please give me a new status. Valid status is %s.\n", Status.getStatuses());
-					String newStatus = reader.nextLine();
-					controller.editTaskStatus(index, newStatus);
-					showMessagesWithHeaders(controller.getSystemMessages());
-					toProceed(reader);
-					continue;
-				case 4:
-					System.out.format("Please give a new priority. Valid priority is %s.\n", Priority.getPriorities());
-					String newPriority = reader.nextLine();
-					controller.editTaskPriority(index, newPriority);
-					showMessagesWithHeaders(controller.getSystemMessages());
-					toProceed(reader);
-					continue;
-				case 5:
-					isEnging = true;
-					break;
-				}
-			} catch (NumberFormatException e) {
-				System.out.println(INVALID_COMMAND_MESSAGE);
-			} 
-		}
-	}
+    private void getTasksIntoFormatForDisplay (List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            messages.add("You don't have any task. Do you want to add a task?");
+        } else {
+            AtomicInteger taskIndex = new AtomicInteger(1);
+            String column1 = "Task Name";
+            String column2 = "Due Date";
+            String column3 = "Status";
+            String column4 = "Priority";
+            messages.add(String.format("%3s%-30s%-15s%-15s%-15s", " ", column1, column2, column3, column4));
+            tasks.forEach(task -> messages.add(String.format("%-3d%s", taskIndex.getAndIncrement(), task.toString())));
+        }
+    }
+
+    private void showTaskOperation() throws InvalidCommandException {
+        final String menuName ="show task";
+        final int noOfElementsToExclude = 2;
+        final int commandToExit = menu.getMenu(menuName).size() - noOfElementsToExclude;
+
+        messages.addAll(menu.getMenu(menuName));
+        showMessagesWithHeaders();
+        int inputFromUser = Integer.parseInt(commandReader.nextLine());
+        isValidCommand(commandToExit, inputFromUser);
+        switch (inputFromUser) {
+            case 1:
+                getTasksIntoFormatForDisplay(controller.getAllTasks());
+                showMessagesWithHeaders();
+                toProceed();
+                break;
+            case 2:
+                getTasksIntoFormatForDisplay(controller.getTasksToComplete());
+                showMessagesWithHeaders();
+                toProceed();
+                break;
+            case 3:
+                getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus("done"));
+                showMessagesWithHeaders();
+                toProceed();
+                break;
+            case 4:
+                getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus("overdue"));
+                showMessagesWithHeaders();
+                toProceed();
+                break;
+            case 5:
+                break;
+        }
+        if (inputFromUser != commandToExit) menuStack.add(menuName);
+    }
+
+    private int getTaskNumberToEditFromUser() {
+        messages.add("You have the following tasks:");
+        getTasksIntoFormatForDisplay(controller.getAllTasks());
+        messages.add("");
+        messages.add("Please give me the number of the task that you would like to edit.");
+        showMessagesWithHeaders();
+        return Integer.parseInt(commandReader.nextLine());
+    }
+
+    private void editTaskOperation() throws InvalidCommandException {
+        final String menuName = "edit task";
+        final int noOfElementToExclude = 2;
+        final int commandToExit = menu.getMenu(menuName).size() - noOfElementToExclude;
+
+        messages.addAll(menu.getMenu(menuName));
+        showMessagesWithHeaders();
+        int inputFromUser = Integer.parseInt(commandReader.nextLine());
+        isValidCommand(commandToExit, inputFromUser);
+        switch (inputFromUser) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                int taskIndex = getTaskNumberToEditFromUser();
+                isValidCommand(controller.getTasksSize(), taskIndex);
+                switch (inputFromUser) {
+                    case 1:
+                        System.out.println("Please give me a new name for the task.");
+                        String newName = commandReader.nextLine();
+                        if (controller.isTaskNameValid(newName)) {
+                            controller.editTaskName(taskIndex, newName);
+                            messages.add(String.format("Successfully change task name to %s.", newName));
+                        }
+                        showMessagesWithHeaders();
+                        toProceed();
+                        break;
+                    case 2:
+                        System.out.println("Please give me a new due date with the format of \"YYYY-MM-DD\".");
+                        String newDueDate = commandReader.nextLine();
+                        controller.editDueDate(taskIndex, newDueDate);
+                        messages.add("Successfully change the due date.");
+                        showMessagesWithHeaders();
+                        toProceed();
+                        break;
+                    case 3:
+                        System.out.format("Please give me a new status. Valid status is %s.\n", Status.getStatuses());
+                        String newStatus = commandReader.nextLine();
+                        controller.editTaskStatus(taskIndex, newStatus);
+                        messages.add("Successfully change the status of the task.");
+                        showMessagesWithHeaders();
+                        toProceed();
+                        break;
+                    case 4:
+                        System.out.format("Please give a new priority. Valid priority is %s.\n", Priority.getPriorities());
+                        String newPriority = commandReader.nextLine();
+                        controller.editTaskPriority(taskIndex, newPriority);
+                        messages.add("Successfully change the priority of the task.");
+                        showMessagesWithHeaders();
+                        toProceed();
+                        break;
+                }
+            case 5:
+                break;
+        }
+        if (inputFromUser != commandToExit) menuStack.add(menuName);
+    }
 }

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class TaskFileIO extends FileIO{
 	private final FilePath TASK_FILE_PATH;
 	private static final int NO_OF_PARAMETERS_FOR_EACH_TASK = 4;
-	private List<TaskInfo> tasksData;
+	private final List<TaskInfo> tasksData;
 	
 	public TaskFileIO () {
 		tasksData = new ArrayList<>();
@@ -36,13 +36,13 @@ public class TaskFileIO extends FileIO{
 	}
 	
 	private void readTaskToTaskInfoCollection() throws IOException {
-		String taskName = "";
-		String dueDate = "";
-		String status = "";
-		String priority = "";
+		String taskName;
+		String dueDate;
+		String status;
+        String priority;
 		List<String> eachTask = readEachLineOfFile(TASK_FILE_PATH.getPathToFile());
-		List<String> tokenizedTaskData = tokenizeTasksDetails(eachTask);
-		Iterator<String> it = tokenizedTaskData.iterator();
+		List<String> tokenizeTaskData = tokenizeTasksDetails(eachTask);
+		Iterator<String> it = tokenizeTaskData.iterator();
 		while (it.hasNext()) {
 			taskName = it.next();
 			dueDate = it.next();
@@ -63,12 +63,12 @@ public class TaskFileIO extends FileIO{
 		}
 	}
 		
-	private void writeTasksToFile(List<String> tasksToWriteToFile) throws IOException {
+	private void writeTasksToFile(List<String> tasksToWriteToFile) {
 		Charset charset = Charset.forName("UTF-8");
-		try (BufferedWriter writter = Files.newBufferedWriter(TASK_FILE_PATH.getPathToFile(), charset)) {
+		try (BufferedWriter writer = Files.newBufferedWriter(TASK_FILE_PATH.getPathToFile(), charset)) {
 			for (String taskInfo : tasksToWriteToFile) {
-				writter.write(taskInfo);
-				writter.newLine();
+				writer.write(taskInfo);
+				writer.newLine();
 			}
 		} catch (IOException e) {
 			System.err.format("IOException: %s%n", e);
@@ -78,11 +78,11 @@ public class TaskFileIO extends FileIO{
 	
 	private List<String> formattingTaskDataForArchive (List<TaskInfo> tasksToArchive) {
 		return tasksToArchive.stream()
-							.map(taskInfo -> taskInfo.toString())
+							.map(TaskInfo::toString)
 							.collect(Collectors.toList());
 	}
 	
-	public void archiveTasks(List<TaskInfo> tasksToArchive) throws IOException {
+	public void archiveTasks(List<TaskInfo> tasksToArchive) {
 		List<String> tasksToWriteToFile = formattingTaskDataForArchive(tasksToArchive);
 		writeTasksToFile(tasksToWriteToFile);
 	}

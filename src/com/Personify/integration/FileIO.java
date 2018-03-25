@@ -13,8 +13,7 @@ public class FileIO {
 			fileContents = Files.readAllLines(pathToFile);
 		} 
 		else if (!Files.exists(pathToFile)) {
-			FileNotFoundException fileNotFound = new FileNotFoundException("\"" + pathToFile.getFileName() + "\"" + " does not exist.");
-			throw fileNotFound;
+			throw new FileNotFoundException("\"" + pathToFile.getFileName() + "\"" + " does not exist.");
 		} else {
 			System.err.println("Unable to read \"" + pathToFile.getFileName() + "\".");
 		}

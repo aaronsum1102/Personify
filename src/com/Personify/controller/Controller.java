@@ -6,54 +6,46 @@ import com.Personify.base.Motivation;
 import com.Personify.base.Task;
 import com.Personify.base.TaskCollection;
 import com.Personify.integration.TaskInfo;
-import com.Personify.integration.Messenger;
 
 public class Controller {
 	private TaskCollection tasks;
-	private Messenger messenger;
-	private Motivation motivationalQuotes;
+	private final Motivation motivationalQuotes;
 
 	public Controller() throws IOException {
-		messenger = new Messenger();
 		motivationalQuotes = new Motivation();
-		tasks = new TaskCollection(messenger, motivationalQuotes);
+		tasks = new TaskCollection(motivationalQuotes);
 	}
 
-	public Messenger getMessages() {
-		return messenger;
+	public int getTasksSize() {
+		return tasks.getTasksSize();
 	}
 
-	public TaskCollection getTasks() {
-		return tasks;
-	}
-
-	public List<String> getSystemMessages() {
-		return messenger.getMessages();
-	}
-
-	public List<String> getAllTasksSortedByName() {
-		tasks.getTasksSortedByName();
-		return messenger.getMessages();
-	}
-
-	public void clearMessages() {
-		messenger.clearMessages();
+	public List<Task> getAllTasks() {
+		return tasks.getAllTasks();
 	}
 	
-	public void addTask(final TaskInfo TaskInfo) throws IOException {
-		Task task = new Task(TaskInfo, messenger, motivationalQuotes);
-		tasks.addTaskToCollection(task);
+	public List<Task> getTasksWithSpecificStatus(String status) {
+		return tasks.getTasksWithSpecificStatus(status);
 	}
 
-	public boolean isTaskNameValidForEdit(final String taskName) {
-		return tasks.isTaskNameValidForEdit(taskName);
+	public List<Task> getTasksToComplete() {
+		return tasks.getTasksToComplete();
+	}
+	
+	public String addTaskAndGetSummary(final TaskInfo TaskInfo) throws IllegalArgumentException {
+		Task task = new Task(TaskInfo, motivationalQuotes);
+		return tasks.getAddTaskSummary(task);
+	}
+
+	public boolean isTaskNameValid(final String taskName) {
+		return tasks.isTaskNameValid(taskName);
 	}
 
 	public void editTaskName(final int index, final String newName) {
 		tasks.editTaskName(index, newName);
 	}
 	
-	public void editDueDate(final int index, final String newDueDate) {
+	public void editDueDate(final int index, final String newDueDate) throws IllegalArgumentException {
 		tasks.editDueDate(index, newDueDate);
 	}
 	
@@ -69,11 +61,11 @@ public class Controller {
 		tasks.readTasksFromFile();
 	}
 	
-	public void writeTaskDataToSystem() throws IOException {
+	public void writeTaskDataToSystem()  {
 		tasks.writeTasksToFile();
 	}
 	
-	public void removeAllTasks() {
-		tasks.removeAllTasks();
+	public boolean removeAllTasks() {
+		return tasks.removeAllTasks();
 	}
 }
