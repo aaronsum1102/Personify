@@ -7,7 +7,7 @@ public class TaskInfo {
 	private final String PRIORITY;
 
 	public TaskInfo(String name, String dueDate, String status, String priority) {
-		NAME = name;
+	    NAME = name;
 		DUE_DATE = dueDate;
 		STATUS = status;
 		PRIORITY = priority;

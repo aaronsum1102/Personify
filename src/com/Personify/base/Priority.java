@@ -1,7 +1,6 @@
 package com.Personify.base;
 
 import java.util.*;
-import com.Personify.integration.Messenger;
 
 /**
  * Priority responsible for the management of the priority of a task.
@@ -12,23 +11,20 @@ import com.Personify.integration.Messenger;
 public class Priority {
 	private static final List<String> PRIORITIES = Arrays.asList("low", "medium", "high");
 	private String priority;
-	private Messenger messenger;
 
 	/**
 	 * Construct object with the specify value. If the value is invalid, the object
 	 * will be instantiated with default value of "high".
 	 */
-	public Priority(final Messenger messenger, final String priority) {
-		this.messenger = messenger;
-		setInitialPriority(priority);
+	public Priority(final String priority) {
+		this.priority = setInitialPriority(priority);
 	}
 
-	private void setInitialPriority(final String priority) {
+	private String setInitialPriority(final String priority) {
 		if (isValidPriority(priority)) {
-			this.priority = priority.toLowerCase();
+			return priority.toLowerCase();
 		} else {
-			this.priority = "high";
-			messenger.addMessage("Invalid priority given. I had set the priority as \"high\".");
+			return "high";
 		}
 	}
 
@@ -66,10 +62,7 @@ public class Priority {
 	 * @return true If the specify element is in default list.
 	 */
 	private boolean isValidPriority(final String priority) {
-		if (PRIORITIES.contains(priority.toLowerCase())) {
-			return true;
-		}
-		return false;
+		return PRIORITIES.contains(priority.toLowerCase());
 	}
 
 	/**
@@ -80,10 +73,7 @@ public class Priority {
 	 * @return true If the specify element is repeated.
 	 */
 	private boolean isRepeatedPriority(final String newPriority) {
-		if (priority.toLowerCase().equals(newPriority.toLowerCase())) {
-			return true;
-		}
-		return false;
+		return priority.toLowerCase().equals(newPriority.toLowerCase());
 	}
 
 	/**
@@ -93,22 +83,18 @@ public class Priority {
 	 * 
 	 * @param newPriority
 	 *            Element for modification of the existing priority.
-	 * @return true If priority was modified.
 	 */
-	public boolean setPriority(final String newPriority) {
-		if (isValidPriority(newPriority)) {
+	public void setPriority(final String newPriority) {
+		if (newPriority.isEmpty()) {
+			throw new IllegalArgumentException("Warning: Hey, you didn't type in anything!");
+		} else if (isValidPriority(newPriority)) {
 			if (!isRepeatedPriority(newPriority)) {
 				priority = newPriority.toLowerCase();
-				messenger.addMessage("Successfully change the priority of the task.");
-				return true;
 			} else {
-				messenger.addMessage(String
-						.format("Priority is the same as before. Current priority for the task is \"%s\".", priority));
+				throw new IllegalArgumentException("Warning: You didn't give me a new priority.");
 			}
 		} else {
-			messenger.addMessage(
-					String.format("Invalid priority given. Current priority for the task is \"%s\".", priority));
+			throw new IllegalArgumentException("Warning: That is not a valid priority.");
 		}
-		return false;
 	}
 }

@@ -10,8 +10,8 @@ How can I serve you? Give me a number and I will show you the magic.
 -
 +
 show task
-
 How do you like to show your tasks?
+
 (1) show all tasks.
 (2) show tasks to complete.
 (3) show tasks that were done.
@@ -20,7 +20,6 @@ How do you like to show your tasks?
 -
 +
 edit task
-
 Which item do you want to edit?
 
 (1) Task name.

@@ -1,6 +1,7 @@
 package com.Personify.startup;
 
 import java.io.IOException;
+
 import com.Personify.textView.TextInterface;
 
 /**
@@ -9,7 +10,7 @@ import com.Personify.textView.TextInterface;
  * @author aaronsum
  * @version 2.0, 2018-03-13
  */
-public class Main {
+class Main {
 
 	/**
 	 * Startup the system operation loop.
