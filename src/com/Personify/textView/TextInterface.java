@@ -85,12 +85,15 @@ public class TextInterface {
                         continue;
                     case "edit task":
                         editTaskOperation();
+                        continue;
+                    case "delete task":
+                        deleteTaskOperation();
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Warning: I'm smart enough to know you didn't given me a number.");
+                System.out.println("Warning: I'm smart enough to know you didn't given me a number. Don't try to challenge me.");
                 menuStack.add(menu);
                 toProceed();
-            } catch (InvalidCommandException | IllegalArgumentException e){
+            } catch (InvalidCommandException | IllegalArgumentException e) {
                 System.out.println(e.getMessage());
                 menuStack.add(menu);
                 toProceed();
@@ -104,7 +107,7 @@ public class TextInterface {
         }
     }
 
-    private TaskInfo getInputFromUser(){
+    private TaskInfo getInputFromUser() {
         System.out.println("Please give a name for your task.");
         String taskName = commandReader.nextLine();
         controller.isTaskNameValid(taskName);
@@ -150,10 +153,8 @@ public class TextInterface {
                 menuStack.add("edit task");
                 break;
             case 4:
-                removeAllTask();
-                showMessagesWithHeaders();
-                toProceed();
-                 break;
+                menuStack.add("delete task");
+                break;
             case 5:
                 controller.writeTaskDataToSystem();
                 System.out.println("Good bye!");
@@ -162,7 +163,7 @@ public class TextInterface {
         return false;
     }
 
-    private void getTasksIntoFormatForDisplay (List<Task> tasks) {
+    private void getTasksIntoFormatForDisplay(List<Task> tasks) {
         if (tasks.isEmpty()) {
             messages.add("You don't have any task. Do you want to add a task?");
         } else {
@@ -177,7 +178,7 @@ public class TextInterface {
     }
 
     private void showTaskOperation() throws InvalidCommandException {
-        final String menuName ="show task";
+        final String menuName = "show task";
         final int noOfElementsToExclude = 2;
         final int commandToExit = menu.getMenu(menuName).size() - noOfElementsToExclude;
 
@@ -274,6 +275,35 @@ public class TextInterface {
                         break;
                 }
             case 5:
+                break;
+        }
+        if (inputFromUser != commandToExit) menuStack.add(menuName);
+    }
+
+    private void deleteTaskOperation() throws InvalidCommandException {
+        final String menuName = "delete task";
+        final int noOfElementToExclude = 2;
+        final int commandToExit = menu.getMenu(menuName).size() - noOfElementToExclude;
+
+        messages.addAll(menu.getMenu(menuName));
+        showMessagesWithHeaders();
+        int inputFromUser = Integer.parseInt(commandReader.nextLine());
+        isValidCommand(commandToExit, inputFromUser);
+        switch (inputFromUser) {
+            case 1:
+                int taskIndex = getTaskNumberToEditFromUser();
+                isValidCommand(controller.getTasksSize(), taskIndex);
+                controller.deleteSpecificTask(taskIndex);
+                messages.add("Task deleted.");
+                showMessagesWithHeaders();
+                toProceed();
+                break;
+            case 2:
+                removeAllTask();
+                showMessagesWithHeaders();
+                toProceed();
+                break;
+            case 3:
                 break;
         }
         if (inputFromUser != commandToExit) menuStack.add(menuName);

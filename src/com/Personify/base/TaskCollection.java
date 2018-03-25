@@ -130,4 +130,8 @@ public class TaskCollection {
         }
         return false;
     }
+
+    public void deleteSpecificTask(int index) {
+        tasks.remove(index-1);
+    }
 }
