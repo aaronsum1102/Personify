@@ -206,7 +206,6 @@ public class TextInterface {
                 getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus("overdue"));
                 showMessagesWithHeaders();
                 toProceed();
-                break;
             case 5:
                 break;
         }
@@ -304,6 +303,16 @@ public class TextInterface {
                 toProceed();
                 break;
             case 3:
+                List<Task> filteredTasks = controller.getTasksWithSpecificStatus("done");
+                if (filteredTasks.isEmpty()) {
+                    messages.add("You don't have any tasks to remove.");
+                } else {
+                    controller.deleteTasksThatWereDone(filteredTasks);
+                    messages.add(String.format("I have deleted %d task for you", filteredTasks.size()));
+                }
+                showMessagesWithHeaders();
+                toProceed();
+            case 4:
                 break;
         }
         if (inputFromUser != commandToExit) menuStack.add(menuName);

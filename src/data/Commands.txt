@@ -34,5 +34,6 @@ Which option do you want?
 
 (1) Delete specific task.
 (2) Clear all tasks.
-(3) Go back to main menu.
+(3) Delete all tasks that were mark as "done".
+(4) Go back to main menu.
 -

@@ -73,4 +73,8 @@ public class Controller {
     public void deleteSpecificTask(int index) {
         tasks.deleteSpecificTask(index);
     }
+
+    public void deleteTasksThatWereDone(List<Task> filteredTasks) {
+        tasks.deleteTasksThatWereDone(filteredTasks);
+    }
 }
