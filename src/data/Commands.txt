@@ -5,7 +5,7 @@ How can I serve you? Give me a number and I will show you the magic.
 (1) Show tasks.
 (2) Add new task.
 (3) Edit task.
-(4) Clear all tasks.
+(4) Delete task.
 (5) Save and quit.
 -
 +
@@ -16,7 +16,7 @@ How do you like to show your tasks?
 (2) show tasks to complete.
 (3) show tasks that were done.
 (4) show overdue tasks.
-(5) Go back to previous menu.
+(5) Go back to main menu.
 -
 +
 edit task
@@ -26,5 +26,14 @@ Which item do you want to edit?
 (2) Due Date.
 (3) Status.
 (4) Priority.
-(5) Go back to previous menu.
+(5) Go back to main menu.
+-
++
+delete task
+Which option do you want?
+
+(1) Delete specific task.
+(2) Clear all tasks.
+(3) Delete all tasks that were mark as "done".
+(4) Go back to main menu.
 -

@@ -130,4 +130,12 @@ public class TaskCollection {
         }
         return false;
     }
+
+    public void deleteSpecificTask(final int index) {
+        tasks.remove(index-1);
+    }
+
+    public void deleteTasksThatWereDone(final List<Task> tasks) {
+        this.tasks.removeAll(tasks);
+    }
 }
