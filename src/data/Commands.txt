@@ -1,4 +1,12 @@
 +
+startup
+Hi!, I am Personify. Your personal assistant with simplicity in my heart.
+
+(1) Are you an existing user?
+(2) Or do you want to create an account?
+(3) Quit.
+-
++
 main
 How can I serve you? Give me a number and I will show you the magic.
 

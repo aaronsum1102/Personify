@@ -15,10 +15,10 @@ public class TaskCollection {
     private final List<Task> tasks;
     private final Motivation motivationalQuotes;
 
-    public TaskCollection(final Motivation motivationalQuotes) {
+    public TaskCollection(final Motivation motivationalQuotes, final String userProfile) {
         tasks = new ArrayList<>();
         this.motivationalQuotes = motivationalQuotes;
-        taskDataIO = new TaskFileIO();
+        taskDataIO = new TaskFileIO(userProfile);
     }
 
     public int getTasksSize() {
