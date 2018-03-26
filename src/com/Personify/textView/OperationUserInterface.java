@@ -11,17 +11,14 @@ import com.Personify.controller.Controller;
 import com.Personify.integration.TaskInfo;
 
 /**
- * Interface for interacting with user.
+ * UserInterface for interacting with user.
  *
  * @author aaronsum
  * @version 2.0, 2018-03-13§
  */
-public class TextInterface {
-    private final List<String> messages;
+public class OperationUserInterface extends UserInterface {
     private Controller controller;
-    private Menu menu;
     private Deque<String> menuStack;
-    private Scanner commandReader;
 
     /**
      * Instantiate an object for the interacting with user. At the same time it will
@@ -29,36 +26,20 @@ public class TextInterface {
      *
      * @throws IOException If an input or output error occurred during the operation.
      */
-    public TextInterface() throws IOException {
-        messages = new ArrayList<>();
-        controller = new Controller();
-        menu = new Menu();
+    public OperationUserInterface(final Controller controller, final String currentUserProfileInUse) throws IOException {
+        super();
+        this.controller = controller;
+        controller.afterLogIn(currentUserProfileInUse);
         menuStack = new ArrayDeque<>();
-        commandReader = new Scanner(System.in);
-    }
-
-    private void showMessagesWithHeaders() {
-        if (!messages.isEmpty()) {
-            System.out.println("----------------------------------Personify----------------------------------");
-            messages.forEach(System.out::println);
-            System.out.println("-----------------------------------------------------------------------------");
-            this.messages.clear();
-        }
-    }
-
-    private void toProceed() {
-        System.out.println("press \"ENTER\" to continue...");
-        commandReader.nextLine();
     }
 
     /**
      * Responsible for running of the program until user choose to exit.
      *
-     * @throws IOException           If an input or output error occurred in
-     *                               <code>showWelcomeMessage()</code>.
-     * @throws NumberFormatException If user gave an input other than number when requested.
+     * @throws IOException If an input or output error occurred in
+     *                     <code>showWelcomeMessage()</code>.
      */
-    public void startup() throws IOException {
+    public void operation() throws IOException {
         showWelcomeMessage();
         operationLoop();
     }
@@ -71,7 +52,6 @@ public class TextInterface {
 
     private void operationLoop() {
         boolean isEnding = false;
-
         while (!isEnding) {
             if (menuStack.isEmpty()) menuStack.add("main");
             String menu = menuStack.pop();
@@ -101,11 +81,6 @@ public class TextInterface {
         }
     }
 
-    private void isValidCommand(final int maxAllowNumber, final int userSelection) throws InvalidCommandException {
-        if (!(0 < userSelection && userSelection <= maxAllowNumber)) {
-            throw new InvalidCommandException(userSelection);
-        }
-    }
 
     private TaskInfo getInputFromUser() {
         System.out.println("Please give a name for your task.");

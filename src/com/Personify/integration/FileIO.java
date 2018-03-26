@@ -1,7 +1,9 @@
 package com.Personify.integration;
 
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.*;
 
@@ -19,4 +21,17 @@ public class FileIO {
 		}
 		return fileContents;
 	}
+
+	public void writeTaskToFile(final Path pathToFile, List<String> information) {
+		Charset charset = Charset.forName("UTF-8");
+		try (BufferedWriter writer = Files.newBufferedWriter(pathToFile, charset)) {
+			for (String info : information) {
+				writer.write(info);
+				writer.newLine();
+			}
+		} catch (IOException e) {
+			System.err.format("IOException: %s%n", e);
+		}
+	}
+
 }

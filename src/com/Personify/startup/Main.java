@@ -2,7 +2,8 @@ package com.Personify.startup;
 
 import java.io.IOException;
 
-import com.Personify.textView.TextInterface;
+import com.Personify.textView.OperationUserInterface;
+import com.Personify.textView.UserManagementInterface;
 
 /**
  * Initialized the Personify program.
@@ -21,7 +22,11 @@ class Main {
 	 *             If an input or output error occurred.
 	 */
 	public static void main(String[] args) throws IOException {
-		TextInterface view = new TextInterface();
-		view.startup();
+        UserManagementInterface userManagementInterface = new UserManagementInterface();
+        if(userManagementInterface.startup()) {
+            String currentUser = userManagementInterface.getCurrentUserProfileInUse();
+            OperationUserInterface view = new OperationUserInterface(userManagementInterface.getController(), currentUser);
+            view.operation();
+        }
 	}
 }

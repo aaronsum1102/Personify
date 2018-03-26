@@ -3,18 +3,21 @@ package com.Personify.controller;
 import java.io.IOException;
 import java.util.List;
 
-import com.Personify.base.Motivation;
-import com.Personify.base.Task;
-import com.Personify.base.TaskCollection;
+import com.Personify.base.*;
 import com.Personify.integration.TaskInfo;
 
 public class Controller {
     private TaskCollection tasks;
-    private final Motivation motivationalQuotes;
+    private Motivation motivationalQuotes;
+    private final UserManagement userManagement;
 
     public Controller() throws IOException {
+        userManagement = new UserManagement();
+    }
+
+    public void afterLogIn(final String userProfileName) throws IOException {
         motivationalQuotes = new Motivation();
-        tasks = new TaskCollection(motivationalQuotes);
+        tasks = new TaskCollection(motivationalQuotes, userProfileName);
     }
 
     public int getTasksSize() {
@@ -76,5 +79,21 @@ public class Controller {
 
     public void deleteTasksThatWereDone(List<Task> filteredTasks) {
         tasks.deleteTasksThatWereDone(filteredTasks);
+    }
+
+    public boolean logIn(final String userName, final String password) {
+        return userManagement.logIn(userName, password);
+    }
+
+    public void saveUserProfile() {
+        userManagement.saveUserProfile();
+    }
+
+    public void createUser(final String userName, final String password) throws IllegalUserInfoException {
+        userManagement.createUser(userName, password);
+    }
+
+    public boolean validateNewUserName(final String userName) throws IllegalUserInfoException {
+        return userManagement.validateNewUser(userName);
     }
 }
