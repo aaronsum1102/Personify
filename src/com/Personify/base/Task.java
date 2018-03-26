@@ -160,7 +160,7 @@ public class Task {
      * message and motivational quotes.
      */
     public String getSummary() {
-        String summary = String.format("\nHere is a summary of the task that you had just added.\n");
+        String summary = "\nHere is a summary of the task that you had just added.\n";
         summary += String.format("Task name: %s\n", name);
         summary += String.format("Due date : %s\n", dueDate);
         summary += String.format("Status   : %s\n", status.getStatus());
