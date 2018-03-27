@@ -1,22 +1,21 @@
 package com.Personify.controller;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.Personify.base.*;
 import com.Personify.integration.TaskInfo;
 
+import java.util.List;
+
 public class Controller {
+    private final UserManagement userManagement;
     private TaskCollection tasks;
     private Motivation motivationalQuotes;
-    private final UserManagement userManagement;
 
-    public Controller() throws IOException {
+    public Controller() {
         userManagement = new UserManagement();
     }
 
-    public void afterLogIn(final String userProfileName) throws IOException {
-        motivationalQuotes = new Motivation();
+    public void afterLogIn(final String userProfileName) {
+        motivationalQuotes = new Motivation(userProfileName);
         tasks = new TaskCollection(motivationalQuotes, userProfileName);
     }
 
@@ -43,7 +42,7 @@ public class Controller {
 
     public String addWorkTaskAndGetSummary(final TaskInfo TaskInfo, final String collaborator) throws IllegalArgumentException {
         Task task = new WorkTask(TaskInfo, motivationalQuotes);
-        ((WorkTask)task).addCollaborators(collaborator);
+        ((WorkTask) task).addCollaborators(collaborator);
         return tasks.getAddTaskSummary(task);
     }
 
@@ -71,7 +70,7 @@ public class Controller {
         tasks.setAttribute(index, newInfo);
     }
 
-    public void setRemarks (final int index, final String remarks) {
+    public void setRemarks(final int index, final String remarks) {
         tasks.setRemarks(index, remarks);
     }
 
@@ -79,8 +78,8 @@ public class Controller {
         tasks.readTasksToSystem();
     }
 
-    public void writeTaskDataToSystem() {
-        tasks.writeTasksToFile();
+    public void writeTaskDataToSystem(final String userName) {
+        tasks.writeTasksToFile(userName);
     }
 
     public boolean removeAllTasks() {
@@ -91,16 +90,20 @@ public class Controller {
         tasks.deleteSpecificTask(index);
     }
 
-    public void deleteTasksThatWereDone(List<Task> filteredTasks) {
+    public void deleteTasksThatWereDone(final List<Task> filteredTasks) {
         tasks.deleteTasksThatWereDone(filteredTasks);
     }
 
-    public boolean logIn(final String userName, final String password) {
-        return userManagement.logIn(userName, password);
+    public boolean userInfoValidation(final String userName, final String password) {
+        return userManagement.userInfoValidation(userName, password);
     }
 
     public void saveUserProfile() {
         userManagement.saveUserProfile();
+    }
+
+    public void saveUserMotivationalQuotes(final String userName){
+        motivationalQuotes.writeMotivationalQuoteToFIle(userName);
     }
 
     public void createUser(final String userName, final String password) throws IllegalUserInfoException {
@@ -109,5 +112,33 @@ public class Controller {
 
     public boolean validateNewUserName(final String userName) throws IllegalUserInfoException {
         return userManagement.validateNewUser(userName);
+    }
+
+    public void editUserName(final String currentUserName, final String newUserName) {
+        userManagement.editUserName(currentUserName, newUserName);
+    }
+
+    public void editPassword(final String currentUserName, final String currentPassword, final String newPassword) throws IllegalUserInfoException {
+        userManagement.editPassword(currentUserName, currentPassword, newPassword);
+    }
+
+    public String showAllMotivationalQuote(){
+        return motivationalQuotes.toString();
+    }
+
+    public void addMotivationalQuote(final String quote) {
+        motivationalQuotes.addQuote(quote);
+    }
+
+    public int getMotivationalQuotesSize() {
+        return motivationalQuotes.getQuotes().size();
+    }
+
+    public void deleteSpecificQuote(final int index) {
+        motivationalQuotes.removeQuote(index);
+    }
+
+    public void deleteAllQuotes() {
+        motivationalQuotes.removeAllQuote();
     }
 }

@@ -1,9 +1,9 @@
 package com.Personify.base;
 
+import com.Personify.integration.TaskInfo;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-
-import com.Personify.integration.TaskInfo;
 
 /**
  * Task provides a object for managing a task. Each task object will hold
@@ -14,14 +14,14 @@ import com.Personify.integration.TaskInfo;
  * @author aaronsum
  * @version 2.0, 2018-03-13
  */
-public abstract class  Task {
-    private String name;
-    private LocalDate dueDate;
+public abstract class Task {
     private final Status status;
     private final Priority priority;
     private final Reminder reminder;
     private final Motivation motivation;
     String remarks;
+    private String name;
+    private LocalDate dueDate;
 
     /**
      * Instantiate an task object with the specify elements. Due date, status and
@@ -40,6 +40,16 @@ public abstract class  Task {
         reminder = new Reminder(this.dueDate);
         motivation = motivationQuotes;
         remarks = taskInfo.getRemarks();
+    }
+
+    /**
+     * Check the specified element is an non empty String.
+     *
+     * @param name String to be checked.
+     * @return true If the specified element is not empty.
+     */
+    public static boolean isNameNotEmptyString(final String name) {
+        return !name.isEmpty();
     }
 
     /**
@@ -87,28 +97,12 @@ public abstract class  Task {
         return reminder;
     }
 
-
     public String getRemarks() {
         return remarks;
     }
 
-    /**
-     * Provide a motivation object associated with the object.
-     *
-     * @return Motivation object.
-     */
-    public Motivation getMotivationObject() {
-        return motivation;
-    }
-
-    /**
-     * Check the specified element is an non empty String.
-     *
-     * @param name String to be checked.
-     * @return true If the specified element is not empty.
-     */
-    public static boolean isNameNotEmptyString(final String name) {
-        return !name.isEmpty();
+    public void setRemarks(final String remarks) {
+        this.remarks = remarks;
     }
 
     private boolean isNameValid(final String name) {
@@ -146,7 +140,7 @@ public abstract class  Task {
         }
     }
 
-    private boolean isDateFormatValid(final String date){
+    private boolean isDateFormatValid(final String date) {
         try {
             LocalDate.parse(date);
             return true;
@@ -193,10 +187,6 @@ public abstract class  Task {
      */
     public void setPriority(final String newPriority) {
         priority.setPriority(newPriority);
-    }
-
-    public void setRemarks(final String remarks) {
-        this.remarks = remarks;
     }
 
     String getMotivationalQuote() {

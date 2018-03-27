@@ -1,16 +1,16 @@
 package com.Personify.integration;
 
 public class TaskTableColumnName {
-    String column1 = "Task Name";
-    String column2 = "Due Date";
-    String column3 = "Status";
-    String column4 = "Priority";
-    String column5 = "Details/Collaborators";
-    String column6 = "Remarks";
+    private static final String COLUMN1 = "Task Name";
+    private static final String COLUMN2 = "Due Date";
+    private static final String COLUMN3 = "Status";
+    private static final String COLUMN4 = "Priority";
+    private static final String COLUMN5 = "Details/Collaborators";
+    private static final String COLUMN6 = "Remarks";
 
     @Override
     public String toString() {
         return String.format("%3s%-30s%-15s%-15s%-15s%-30s%-30s", " ",
-                column1, column2, column3, column4, column5, column6);
+                COLUMN1, COLUMN2, COLUMN3, COLUMN4, COLUMN5, COLUMN6);
     }
 }

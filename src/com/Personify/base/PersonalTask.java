@@ -10,12 +10,12 @@ public class PersonalTask extends Task {
         this.details = details;
     }
 
-    public void setDetails (final String newDetails) {
-        details = newDetails;
-    }
-
     public String getDetails() {
         return details;
+    }
+
+    public void setDetails(final String newDetails) {
+        details = newDetails;
     }
 
     @Override

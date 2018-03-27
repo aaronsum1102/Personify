@@ -33,14 +33,14 @@ public class TaskFileIO extends FileIO {
         return tasksInfo;
     }
 
-    private List<SubTaskInfo> readTaskToTaskInfoCollection() throws IOException {
+    private List<SubTaskInfo> readTaskToTaskInfoCollection() {
         List<SubTaskInfo> tasksData = new ArrayList<>();
         String className;
         String taskName;
         String dueDate;
         String status;
         String priority;
-        String remarks = "";
+        String remarks;
         String typeSpecificAttribute = "";
         List<String> eachTask = readEachLineOfFile(TASK_FILE_PATH.getPathToFile());
         List<String> tokenizeTaskData = tokenizeTasksDetails(eachTask);
@@ -70,14 +70,10 @@ public class TaskFileIO extends FileIO {
     }
 
 
-    public List<SubTaskInfo> readTasksDataFromDataFile(){
-        List<SubTaskInfo>taskData = new ArrayList<>();
-        try {
-            if (isTaskDataFileExistsAndReadable()) {
-                taskData = readTaskToTaskInfoCollection();
-            }
-        } catch (IOException e) {
-            System.err.println("IO error while reading file.");
+    public List<SubTaskInfo> readTasksDataFromDataFile() {
+        List<SubTaskInfo> taskData = new ArrayList<>();
+        if (isTaskDataFileExistsAndReadable()) {
+            taskData = readTaskToTaskInfoCollection();
         }
         return taskData;
     }
@@ -87,8 +83,8 @@ public class TaskFileIO extends FileIO {
         tasks.forEach(task -> {
             String className = task.getClass().getSimpleName();
             String name = task.getName();
-            String dueDate= task.getDueDate().toString();
-            String status= task.getStatusObject().getStatus();
+            String dueDate = task.getDueDate().toString();
+            String status = task.getStatusObject().getStatus();
             String priority = task.getPriorityObject().getPriority();
             String remarks = task.getRemarks();
             String typeSpecificAttribute = "";
@@ -111,14 +107,20 @@ public class TaskFileIO extends FileIO {
         return dataToWriteToFile;
     }
 
-    private void writeToFile(List<String> tasksToWriteToFile) {
+    private void writeToFile(final List<String> tasksToWriteToFile, final String userName) {
+        try {
+            Files.deleteIfExists(TASK_FILE_PATH.getPathToFile());
+        } catch (IOException e) {
+            System.err.println("IO error while manipulating file.");
+        }
+        final FilePath newFile = new FilePath("src/data", String.format("%s_tasksData.csv", userName));
         FileIO writeFile = new FileIO();
-        writeFile.writeTaskToFile(TASK_FILE_PATH.getPathToFile(), tasksToWriteToFile);
+        writeFile.writeTaskToFile(newFile.getPathToFile(), tasksToWriteToFile);
     }
 
-    public void writeTasksToFile(List<Task> tasks) {
+    public void writeTasksToFile(final List<Task> tasks, final String userName) {
         List<SubTaskInfo> tasksToArchive = prepareTasksDataForArchive(tasks);
         List<String> tasksToWriteToFile = formattingTaskDataForArchive(tasksToArchive);
-        writeToFile(tasksToWriteToFile);
+        writeToFile(tasksToWriteToFile, userName);
     }
 }

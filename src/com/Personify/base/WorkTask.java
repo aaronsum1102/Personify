@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkTask extends Task {
-    private List<String> collaborators;
+    private final List<String> collaborators;
 
     public WorkTask(final TaskInfo taskInfo, final Motivation motivationQuotes) {
         super(taskInfo, motivationQuotes);
@@ -19,7 +19,7 @@ public class WorkTask extends Task {
 
     public String getCollaborators() {
         String collaboratorsString = collaborators.toString();
-        return collaboratorsString.substring(1, collaboratorsString.length()-1);
+        return collaboratorsString.substring(1, collaboratorsString.length() - 1);
     }
 
     @Override

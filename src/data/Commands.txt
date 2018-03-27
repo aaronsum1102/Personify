@@ -57,10 +57,14 @@ Which option do you want?
 (4) Go back to main menu.
 -
 +
-personalise system
+personalise
+Which option to you want?
+
 (1) Change username.
 (2) Change password.
-(3) Add motivational quote.
-(4) Delete all motivational quote.
-(5) Go back to main menu.
+(3) Show all motivational quote.
+(4) Add motivational quote.
+(5) Delete specific motivational quote.
+(6) Delete all motivational quote.
+(7) Go back to main menu.
 -

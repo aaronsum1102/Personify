@@ -1,9 +1,9 @@
 package com.Personify.integration;
 
 public class SubTaskInfo {
-    private String className;
-    private TaskInfo taskInfo;
-    private String typeSpecificAttribute;
+    private final String className;
+    private final TaskInfo taskInfo;
+    private final String typeSpecificAttribute;
 
     SubTaskInfo(String className, TaskInfo taskInfo, String typeSpecificAttribute) {
         this.className = className;

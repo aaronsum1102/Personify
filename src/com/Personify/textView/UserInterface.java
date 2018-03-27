@@ -1,16 +1,15 @@
 package com.Personify.textView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 class UserInterface {
-    Scanner commandReader;
-    Menu menu;
-    List<String> messages;
+    final Scanner commandReader;
+    final Menu menu;
+    final List<String> messages;
 
-    UserInterface() throws IOException {
+    UserInterface() {
         commandReader = new Scanner(System.in);
         menu = new Menu();
         messages = new ArrayList<>();
@@ -23,13 +22,13 @@ class UserInterface {
             String upperDashLine = "";
             String lowerDashLine = "";
             int i = 0;
-            while(i < dashLineLength) {
-                upperDashLine += "-";
+            while (i < dashLineLength) {
+                upperDashLine = upperDashLine.concat("-");
                 i++;
             }
             i = 0;
-            while(i < dashLineLength * 2 + appNameLength) {
-                lowerDashLine += "-";
+            while (i < dashLineLength * 2 + appNameLength) {
+                lowerDashLine = lowerDashLine.concat("-");
                 i++;
             }
             System.out.println(upperDashLine + "Personify" + upperDashLine);

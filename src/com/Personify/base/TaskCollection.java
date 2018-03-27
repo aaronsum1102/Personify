@@ -51,7 +51,7 @@ public class TaskCollection {
         return tasks;
     }
 
-    public List<Task> getTasksWithSpecificStatus(String status) {
+    public List<Task> getTasksWithSpecificStatus(final String status) {
         List<Task> filteredTasks = tasks.stream()
                 .filter(task -> task.getStatusObject().getStatus().equals(status))
                 .collect(Collectors.toList());
@@ -134,8 +134,8 @@ public class TaskCollection {
         tasks = readTasksFromFile();
     }
 
-    public void writeTasksToFile() {
-        taskDataIO.writeTasksToFile(tasks);
+    public void writeTasksToFile(final String userName) {
+        taskDataIO.writeTasksToFile(tasks, userName);
     }
 
     public boolean removeAllTasks() {
