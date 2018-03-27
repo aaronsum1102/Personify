@@ -36,8 +36,14 @@ public class Controller {
         return tasks.getTasksToComplete();
     }
 
-    public String addTaskAndGetSummary(final TaskInfo TaskInfo) throws IllegalArgumentException {
-        Task task = new Task(TaskInfo, motivationalQuotes);
+    public String addPersonalTaskAndGetSummary(final TaskInfo TaskInfo, final String details) throws IllegalArgumentException {
+        Task task = new PersonalTask(TaskInfo, motivationalQuotes, details);
+        return tasks.getAddTaskSummary(task);
+    }
+
+    public String addWorkTaskAndGetSummary(final TaskInfo TaskInfo, final String collaborator) throws IllegalArgumentException {
+        Task task = new WorkTask(TaskInfo, motivationalQuotes);
+        ((WorkTask)task).addCollaborators(collaborator);
         return tasks.getAddTaskSummary(task);
     }
 
@@ -61,8 +67,8 @@ public class Controller {
         tasks.editPriority(index, newPriority);
     }
 
-    public void readTaskDataToSystem() throws IOException {
-        tasks.readTasksFromFile();
+    public void readTaskDataToSystem() {
+        tasks.readTasksToSystem();
     }
 
     public void writeTaskDataToSystem() {

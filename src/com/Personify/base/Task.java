@@ -14,13 +14,14 @@ import com.Personify.integration.TaskInfo;
  * @author aaronsum
  * @version 2.0, 2018-03-13
  */
-public class Task {
+public abstract class  Task {
     private String name;
     private LocalDate dueDate;
     private final Status status;
     private final Priority priority;
     private final Reminder reminder;
     private final Motivation motivation;
+    String remarks;
 
     /**
      * Instantiate an task object with the specify elements. Due date, status and
@@ -38,6 +39,7 @@ public class Task {
         priority = new Priority(taskInfo.getTaskPriority());
         reminder = new Reminder(this.dueDate);
         motivation = motivationQuotes;
+        remarks = "";
     }
 
     /**
@@ -167,7 +169,7 @@ public class Task {
         summary += String.format("Priority : %s\n", priority.getPriority());
         summary += String.format("Reminder : %s\n", reminder.getReminder());
         if (reminder.findDaysLeft() > 1) {
-            summary += String.format(String.format("\n\"%s\"", motivation.getQuote()));
+            summary += String.format("\n\"%s\"", motivation.getQuote());
         }
         return summary;
     }
@@ -188,6 +190,10 @@ public class Task {
      */
     public void setPriority(final String newPriority) {
         priority.setPriority(newPriority);
+    }
+
+    public void setRemarks(final String remarks) {
+        this.remarks = remarks;
     }
 
     /**

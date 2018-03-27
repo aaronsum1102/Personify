@@ -17,6 +17,14 @@ How can I serve you? Give me a number and I will show you the magic.
 (5) Save and quit.
 -
 +
+add task
+What type of task do you like to add?
+
+(1) Personal.
+(2) Work.
+(3) Go back to main menu.
+-
++
 show task
 How do you like to show your tasks?
 
@@ -24,7 +32,7 @@ How do you like to show your tasks?
 (2) show tasks to complete.
 (3) show tasks that were done.
 (4) show overdue tasks.
-(5) Go back to main menu.
+(5) Go back to show task menu.
 -
 +
 edit task

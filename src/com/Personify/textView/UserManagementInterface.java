@@ -22,7 +22,7 @@ public class UserManagementInterface extends UserInterface{
     }
 
     private boolean logIn() {
-        System.out.print("UserManagement Name: ");
+        System.out.print("Username: ");
         String userName = commandReader.nextLine();
         currentUserProfileInUse = userName;
         System.out.print("Password : ");
@@ -31,7 +31,7 @@ public class UserManagementInterface extends UserInterface{
     }
 
     private void createUser() throws IllegalUserInfoException {
-        System.out.print("UserManagement Name: ");
+        System.out.print("Username: ");
         String userName = commandReader.nextLine();
         controller.validateNewUserName(userName);
         System.out.println("\nHint: Password should be alphanumeric and contains minimum 6 characters.");

@@ -1,18 +1,15 @@
 package com.Personify.base;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.Personify.integration.SubTaskInfo;
 import com.Personify.integration.TaskFileIO;
-import com.Personify.integration.TaskInfo;
 
 public class TaskCollection {
     private final TaskFileIO taskDataIO;
-    private final List<Task> tasks;
+    private List<Task> tasks;
     private final Motivation motivationalQuotes;
 
     public TaskCollection(final Motivation motivationalQuotes, final String userProfile) {
@@ -91,36 +88,40 @@ public class TaskCollection {
         taskToEdit.setPriority(newPriority);
     }
 
-    private void readTasksToCollection(Task task) {
-        tasks.add(task);
-    }
-
-    public void readTasksFromFile() throws IOException {
-        taskDataIO.readTasksDataFromDataFile();
-        List<TaskInfo> tasksToRead = taskDataIO.getTasksData();
+    private List<Task> readTasksFromFile() {
+        List<Task> tasksFromFile = new ArrayList<>();
+        List<SubTaskInfo> tasksToRead = taskDataIO.readTasksDataFromDataFile();
         if (!tasksToRead.isEmpty()) {
             tasksToRead.forEach(taskData -> {
-                Task task = new Task(taskData, motivationalQuotes);
-                readTasksToCollection(task);
+                String className = taskData.getClassName();
+                switch (className) {
+                    case "com.Personify.base.PersonalTask":
+                        Task task = new PersonalTask(taskData.getTaskInfo(), motivationalQuotes, taskData.getTypeSpecificAttribute());
+                        tasksFromFile.add(task);
+                        break;
+                    case "com.Personify.base.WorkTask":
+                        task = new WorkTask(taskData.getTaskInfo(), motivationalQuotes);
+                        List<String> collaborators = new ArrayList<>();
+                        if (!(taskData.getTypeSpecificAttribute().isEmpty())) {
+                            Scanner tokenizer = new Scanner(taskData.getTypeSpecificAttribute());
+                            tokenizer.useDelimiter(", ");
+                            collaborators.add(tokenizer.next());
+                            collaborators.forEach(((WorkTask) task)::addCollaborators);
+                        }
+                        tasksFromFile.add(task);
+                        break;
+                }
             });
         }
+        return tasksFromFile;
     }
 
-    private List<TaskInfo> prepareTasksDataForArchive() {
-        List<TaskInfo> tasksForArchive = new ArrayList<>();
-        tasks.forEach(task -> {
-            String taskName = task.getName();
-            String dueDate = task.getDueDate().toString();
-            String status = task.getStatusObject().getStatus();
-            String priority = task.getPriorityObject().getPriority();
-            tasksForArchive.add(new TaskInfo(taskName, dueDate, status, priority));
-        });
-        return tasksForArchive;
+    public void readTasksToSystem() {
+        tasks = readTasksFromFile();
     }
 
     public void writeTasksToFile() {
-        List<TaskInfo> tasksToArchive = prepareTasksDataForArchive();
-        taskDataIO.archiveTasks(tasksToArchive);
+        taskDataIO.writeTasksToFile(tasks);
     }
 
     public boolean removeAllTasks() {

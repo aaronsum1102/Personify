@@ -36,15 +36,13 @@ public class OperationUserInterface extends UserInterface {
     /**
      * Responsible for running of the program until user choose to exit.
      *
-     * @throws IOException If an input or output error occurred in
-     *                     <code>showWelcomeMessage()</code>.
      */
-    public void operation() throws IOException {
+    public void operation() {
         showWelcomeMessage();
         operationLoop();
     }
 
-    private void showWelcomeMessage() throws IOException {
+    private void showWelcomeMessage() {
         controller.readTaskDataToSystem();
         messages.add("Welcome!");
         messages.add(String.format("You have %d task in my record.\n", controller.getTasksSize()));
@@ -59,6 +57,9 @@ public class OperationUserInterface extends UserInterface {
                 switch (menu) {
                     case "main":
                         isEnding = mainMenuOperation();
+                        continue;
+                    case "add task":
+                        addTaskOperation();
                         continue;
                     case "show task":
                         showTaskOperation();
@@ -120,9 +121,7 @@ public class OperationUserInterface extends UserInterface {
                 menuStack.add("show task");
                 break;
             case 2:
-                messages.add(controller.addTaskAndGetSummary(getInputFromUser()));
-                showMessagesWithHeaders();
-                toProceed();
+                menuStack.add("add task");
                 break;
             case 3:
                 menuStack.add("edit task");
@@ -138,6 +137,46 @@ public class OperationUserInterface extends UserInterface {
         return false;
     }
 
+    private String addPersonalTask(final TaskInfo newTaskInfo) {
+        System.out.println("Please give me the details of the task.");
+        final String details = commandReader.nextLine();
+        return controller.addPersonalTaskAndGetSummary(newTaskInfo, details);
+    }
+
+    private String addWorkTask(final TaskInfo newTaskInfo) {
+        System.out.println("Please give me collaborator\'s name of this task.");
+        final String collaboratorName = commandReader.nextLine();
+        return controller.addWorkTaskAndGetSummary(newTaskInfo, collaboratorName);
+    }
+
+    private void addTaskOperation() throws InvalidCommandException {
+        final String menuName = "add task";
+        final int noOfElementsToExclude = 2;
+        final int commandToExit = menu.getMenu(menuName).size() - noOfElementsToExclude;
+        messages.addAll(menu.getMenu(menuName));
+        showMessagesWithHeaders();
+        int inputFromUser = Integer.parseInt(commandReader.nextLine());
+        isValidCommand(commandToExit, inputFromUser);
+
+        switch (inputFromUser) {
+            case 1: case 2:
+                final TaskInfo newTaskInfo = getInputFromUser();
+                switch(inputFromUser) {
+                    case 1:
+                        messages.add(addPersonalTask(newTaskInfo));
+                        break;
+                    case 2:
+                        messages.add(addWorkTask(newTaskInfo));
+                        break;
+                }
+                showMessagesWithHeaders();
+                toProceed();
+            case 3:
+                break;
+        }
+        if (inputFromUser != commandToExit) menuStack.add(menuName);
+    }
+
     private void getTasksIntoFormatForDisplay(List<Task> tasks) {
         if (tasks.isEmpty()) {
             messages.add("You don't have any task. Do you want to add a task?");
@@ -147,7 +186,8 @@ public class OperationUserInterface extends UserInterface {
             String column2 = "Due Date";
             String column3 = "Status";
             String column4 = "Priority";
-            messages.add(String.format("%3s%-30s%-15s%-15s%-15s", " ", column1, column2, column3, column4));
+            String column5 = "Details/Collaborators";
+            messages.add(String.format("%3s%-30s%-15s%-15s%-15s%-20s", " ", column1, column2, column3, column4, column5));
             tasks.forEach(task -> messages.add(String.format("%-3d%s", taskIndex.getAndIncrement(), task.toString())));
         }
     }
@@ -292,4 +332,10 @@ public class OperationUserInterface extends UserInterface {
         }
         if (inputFromUser != commandToExit) menuStack.add(menuName);
     }
+
+    //TODO add collaborator
+    //TODO add details for personal task.
+    //TODO add task summary.
+    //TODO Layout for show task
+    //TODO add remarks.
 }
