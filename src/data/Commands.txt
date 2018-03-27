@@ -69,3 +69,11 @@ Which option to you want?
 (6) Delete all motivational quote.
 (7) Go back to main menu.
 -
++
+task type
+"Which type of tasks do you want to show?"
+
+(1) Personal task.
+(2) Work task.
+(3) Go back to "show task" menu.
+-

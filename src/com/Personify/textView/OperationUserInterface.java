@@ -201,6 +201,24 @@ public class OperationUserInterface extends UserInterface {
         }
     }
 
+    private String getTaskTypeOperation() throws InvalidCommandException {
+        final int noOfElementsToExclude = 2;
+        final int commandToExit = menu.getMenu("task type").size() - noOfElementsToExclude;
+        messages.addAll(menu.getMenu("task type"));
+        showMessagesWithHeaders();
+        int inputFromUser = Integer.parseInt(commandReader.nextLine());
+        isValidCommand(commandToExit, inputFromUser);
+        switch (inputFromUser) {
+            case 1:
+                return "PersonalTask";
+            case 2:
+                return "WorkTask";
+            case 3:
+                break;
+        }
+        return "";
+    }
+
     private void showTaskOperation(final String menuName) throws InvalidCommandException {
         final int noOfElementsToExclude = 2;
         final int commandToExit = menu.getMenu(menuName).size() - noOfElementsToExclude;
@@ -209,18 +227,28 @@ public class OperationUserInterface extends UserInterface {
         showMessagesWithHeaders();
         int inputFromUser = Integer.parseInt(commandReader.nextLine());
         isValidCommand(commandToExit, inputFromUser);
+        String taskType;
         switch (inputFromUser) {
             case 1:
                 getTasksIntoFormatForDisplay(controller.getAllTasks());
                 break;
             case 2:
-                getTasksIntoFormatForDisplay(controller.getTasksToComplete());
+                taskType = getTaskTypeOperation();
+                if (!taskType.isEmpty()) {
+                    getTasksIntoFormatForDisplay(controller.getTasksToComplete(taskType));
+                }
                 break;
             case 3:
-                getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus("done"));
+                taskType = getTaskTypeOperation();
+                if (!taskType.isEmpty()) {
+                    getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus(taskType, "done"));
+                }
                 break;
             case 4:
-                getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus("overdue"));
+                taskType = getTaskTypeOperation();
+                if (!taskType.isEmpty()) {
+                    getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus(taskType, "overdue"));
+                }
             case 5:
                 break;
         }
@@ -337,7 +365,7 @@ public class OperationUserInterface extends UserInterface {
                 removeAllTask();
                 break;
             case 3:
-                List<Task> filteredTasks = controller.getTasksWithSpecificStatus("done");
+                List<Task> filteredTasks = controller.getTasksWithSpecificStatus("Task","done");
                 if (filteredTasks.isEmpty()) {
                     messages.add("You don't have any tasks to remove.");
                 } else {

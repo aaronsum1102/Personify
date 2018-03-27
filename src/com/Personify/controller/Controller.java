@@ -32,12 +32,12 @@ public class Controller {
         return tasks.getWorkTask();
     }
 
-    public List<Task> getTasksWithSpecificStatus(String status) {
-        return tasks.getTasksWithSpecificStatus(status);
+    public List<Task> getTasksWithSpecificStatus(final String taskType, final String status) {
+        return tasks.getTasksWithSpecificStatusAndType(taskType, status);
     }
 
-    public List<Task> getTasksToComplete() {
-        return tasks.getTasksToComplete();
+    public List<Task> getTasksToComplete(final String taskType) {
+        return tasks.getTasksToCompleteWithSpecificType(taskType);
     }
 
     public String addPersonalTaskAndGetSummary(final TaskInfo TaskInfo, final String details) throws IllegalArgumentException {

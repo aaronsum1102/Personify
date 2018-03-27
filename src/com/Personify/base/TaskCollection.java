@@ -11,6 +11,7 @@ public class TaskCollection {
     private final Motivation motivationalQuotes;
     private List<Task> tasks;
     private List<Task> workTasks;
+    private List<Task> personalTasks;
 
     public TaskCollection(final Motivation motivationalQuotes, final String userProfile) {
         tasks = new ArrayList<>();
@@ -46,9 +47,9 @@ public class TaskCollection {
         Collections.reverse(tasks);
     }
 
-    private void filterWorkTask() {
-        workTasks =  tasks.stream()
-                .filter(task -> task.getClass().getSimpleName().equals("WorkTask"))
+    private List<Task> filterTaskByType(final String TaskClassName) {
+        return tasks.stream()
+                .filter(task -> task.getClass().getSimpleName().equals(TaskClassName))
                 .collect(Collectors.toList());
     }
 
@@ -62,18 +63,40 @@ public class TaskCollection {
         return workTasks;
     }
 
-    public List<Task> getTasksWithSpecificStatus(final String status) {
-        List<Task> filteredTasks = tasks.stream()
+    private List<Task> getTasksWithSpecificStatus(final List<Task> tasks, final String status) {
+        return tasks.stream()
                 .filter(task -> task.getStatusObject().getStatus().equals(status))
                 .collect(Collectors.toList());
+    }
+
+    public List<Task> getTasksWithSpecificStatusAndType(final String taskType, final String status) {
+        List<Task> filteredTasks = new ArrayList<>();
+        switch (taskType) {
+            case "WorkTask":
+                filteredTasks = getTasksWithSpecificStatus(workTasks, status);
+            case "PersonalTask":
+                filteredTasks = getTasksWithSpecificStatus(personalTasks, status);
+            case "Task":
+                filteredTasks = getTasksWithSpecificStatus(tasks, status);
+        }
         sortTasksByDueDate(filteredTasks);
         return filteredTasks;
     }
 
-    public List<Task> getTasksToComplete() {
-        List<Task> filteredTasks = tasks.stream()
+    private List<Task> getTasksToComplete(final List<Task> tasks) {
+        return tasks.stream()
                 .filter(task -> !(task.getStatusObject().getStatus().equals("done")))
                 .collect(Collectors.toList());
+    }
+
+    public List<Task> getTasksToCompleteWithSpecificType(final String taskType) {
+        List<Task> filteredTasks = new ArrayList<>();
+        switch (taskType) {
+            case "WorkTask":
+                filteredTasks = getTasksToComplete(workTasks);
+            case "PersonalTask":
+                filteredTasks = getTasksToComplete(personalTasks);
+        }
         sortTasksByDueDate(filteredTasks);
         return filteredTasks;
     }
@@ -155,7 +178,8 @@ public class TaskCollection {
 
     public void readTasksToSystem() {
         tasks = readTasksFromFile();
-        filterWorkTask();
+        workTasks = filterTaskByType("WorkTask");
+        personalTasks = filterTaskByType("PersonalTask");
     }
 
     public void writeTasksToFile(final String userName) {
