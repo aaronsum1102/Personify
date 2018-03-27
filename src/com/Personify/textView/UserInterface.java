@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-class UserInterface {
+abstract class UserInterface {
     final Scanner commandReader;
     final Menu menu;
     final List<String> messages;

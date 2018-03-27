@@ -93,7 +93,7 @@ public class TaskFileIO extends FileIO {
                     typeSpecificAttribute = ((PersonalTask) task).getDetails();
                     break;
                 case "WorkTask":
-                    typeSpecificAttribute = ((WorkTask) task).getCollaborators();
+                    typeSpecificAttribute = ((WorkTask) task).getCollaboratorsAsString();
             }
             TaskInfo taskInfo = new TaskInfo(name, dueDate, status, priority, remarks);
             tasksForArchive.add(new SubTaskInfo(className, taskInfo, typeSpecificAttribute));

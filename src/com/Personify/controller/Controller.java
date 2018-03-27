@@ -17,6 +17,7 @@ public class Controller {
     public void afterLogIn(final String userProfileName) {
         motivationalQuotes = new Motivation(userProfileName);
         tasks = new TaskCollection(motivationalQuotes, userProfileName);
+        readTaskDataToSystem();
     }
 
     public int getTasksSize() {
@@ -25,6 +26,10 @@ public class Controller {
 
     public List<Task> getAllTasks() {
         return tasks.getAllTasks();
+    }
+
+    public List<Task> getAllWorkTasks() {
+        return tasks.getWorkTask();
     }
 
     public List<Task> getTasksWithSpecificStatus(String status) {
@@ -66,6 +71,18 @@ public class Controller {
         tasks.editPriority(index, newPriority);
     }
 
+    public String getCollaboratorsForDisplay(final int index) {
+        return tasks.getCollaboratorsForDisplay(index);
+    }
+
+    public int getCollaboratorsSize(final int index) {
+        return tasks.getCollaboratorsSize(index);
+    }
+
+    public void deleteCollaborator(final int taskIndex, final int collaboratorIndex) {
+        tasks.deleteSpecificCollaborator(taskIndex, collaboratorIndex);
+    }
+
     public void setAttribute(final int index, final String newInfo) {
         tasks.setAttribute(index, newInfo);
     }
@@ -74,7 +91,7 @@ public class Controller {
         tasks.setRemarks(index, remarks);
     }
 
-    public void readTaskDataToSystem() {
+    private void readTaskDataToSystem() {
         tasks.readTasksToSystem();
     }
 

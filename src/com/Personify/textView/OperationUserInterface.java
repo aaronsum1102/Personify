@@ -45,7 +45,6 @@ public class OperationUserInterface extends UserInterface {
     }
 
     private void showWelcomeMessage() {
-        controller.readTaskDataToSystem();
         messages.add("Welcome!");
         messages.add(String.format("You have %d task in my record.\n", controller.getTasksSize()));
     }
@@ -230,11 +229,27 @@ public class OperationUserInterface extends UserInterface {
         if (inputFromUser != commandToExit) menuStack.add(menuName);
     }
 
-    private int getTaskNumberToEditFromUser() {
+    private int getTaskNumberToEditFromUser(final List<Task> tasks) {
         messages.add("You have the following tasks:");
-        getTasksIntoFormatForDisplay(controller.getAllTasks());
+        getTasksIntoFormatForDisplay(tasks);
         messages.add("");
         messages.add("Please give me the number of the task that you would like to edit.");
+        showMessagesWithHeaders();
+        return Integer.parseInt(commandReader.nextLine());
+    }
+
+    private void deleteSpecificCollaborator() throws InvalidCommandException {
+        int workTaskIndex = getTaskNumberToEditFromUser(controller.getAllWorkTasks());
+        isValidCommand(controller.getAllWorkTasks().size(), workTaskIndex);
+        int collaboratorNumberToEdit = getCollaboratorNumberToEditFromUser(workTaskIndex);
+        isValidCommand(controller.getCollaboratorsSize(workTaskIndex), workTaskIndex);
+        controller.deleteCollaborator(workTaskIndex, collaboratorNumberToEdit);
+        messages.add("Successfully change collaborator name or details of the task.");
+    }
+
+    private int getCollaboratorNumberToEditFromUser(final int index){
+        messages.add(controller.getCollaboratorsForDisplay(index));
+        messages.add("\nPlease give me the number of the task that you would like to edit.");
         showMessagesWithHeaders();
         return Integer.parseInt(commandReader.nextLine());
     }
@@ -248,8 +263,8 @@ public class OperationUserInterface extends UserInterface {
         int inputFromUser = Integer.parseInt(commandReader.nextLine());
         isValidCommand(commandToExit, inputFromUser);
         switch (inputFromUser) {
-            case 1: case 2: case 3: case 4: case 5: case 6:
-                int taskIndex = getTaskNumberToEditFromUser();
+            case 1: case 2: case 3: case 4: case 5: case 7:
+                int taskIndex = getTaskNumberToEditFromUser(controller.getAllTasks());
                 isValidCommand(controller.getTasksSize(), taskIndex);
                 switch (inputFromUser) {
                     case 1:
@@ -284,18 +299,23 @@ public class OperationUserInterface extends UserInterface {
                         controller.setAttribute(taskIndex, newInfo);
                         messages.add("Successfully change collaborator name or details of the task.");
                         break;
-                    case 6:
+                    case 7:
                         System.out.println("Please give me the remarks for the task.");
                         String remarks = commandReader.nextLine();
                         controller.setRemarks(taskIndex, remarks);
                         messages.add("Successfully change collaborator name or details of the task.");
                         break;
                 }
-                showMessagesWithHeaders();
-                toProceed();
-            case 7:
                 break;
+            case 6:
+                deleteSpecificCollaborator();
+                break;
+            case 8:
+                break;
+
         }
+        showMessagesWithHeaders();
+        toProceed();
         if (inputFromUser != commandToExit) menuStack.add(menuName);
     }
 
@@ -308,7 +328,7 @@ public class OperationUserInterface extends UserInterface {
         isValidCommand(commandToExit, inputFromUser);
         switch (inputFromUser) {
             case 1:
-                int taskIndex = getTaskNumberToEditFromUser();
+                int taskIndex = getTaskNumberToEditFromUser(controller.getAllTasks());
                 isValidCommand(controller.getTasksSize(), taskIndex);
                 controller.deleteSpecificTask(taskIndex);
                 messages.add("Task deleted.");

@@ -10,6 +10,7 @@ public class TaskCollection {
     private final TaskFileIO taskDataIO;
     private final Motivation motivationalQuotes;
     private List<Task> tasks;
+    private List<Task> workTasks;
 
     public TaskCollection(final Motivation motivationalQuotes, final String userProfile) {
         tasks = new ArrayList<>();
@@ -45,10 +46,20 @@ public class TaskCollection {
         Collections.reverse(tasks);
     }
 
+    private void filterWorkTask() {
+        workTasks =  tasks.stream()
+                .filter(task -> task.getClass().getSimpleName().equals("WorkTask"))
+                .collect(Collectors.toList());
+    }
 
     public List<Task> getAllTasks() {
         sortTasksByDueDate(tasks);
         return tasks;
+    }
+
+    public List<Task> getWorkTask() {
+        sortTasksByDueDate(workTasks);
+        return workTasks;
     }
 
     public List<Task> getTasksWithSpecificStatus(final String status) {
@@ -85,6 +96,18 @@ public class TaskCollection {
     public void editPriority(final int taskIndex, final String newPriority) {
         Task taskToEdit = tasks.get(taskIndex - 1);
         taskToEdit.setPriority(newPriority);
+    }
+
+    public String getCollaboratorsForDisplay(final int taskIndex) {
+        return ((WorkTask) workTasks.get(taskIndex - 1)).getCollaboratorsForDisplay();
+    }
+
+    public int getCollaboratorsSize(final int taskIndex){
+        return ((WorkTask) workTasks.get(taskIndex - 1)).getCollaborators().size();
+    }
+
+    public void deleteSpecificCollaborator(final int taskIndex, final int collaboratorIndex){
+        ((WorkTask) workTasks.get(taskIndex - 1)).getCollaborators().remove(collaboratorIndex-1);
     }
 
     public void setAttribute(final int taskIndex, final String newInfo) {
@@ -132,6 +155,7 @@ public class TaskCollection {
 
     public void readTasksToSystem() {
         tasks = readTasksFromFile();
+        filterWorkTask();
     }
 
     public void writeTasksToFile(final String userName) {

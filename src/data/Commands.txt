@@ -33,7 +33,7 @@ How do you like to show your tasks?
 (2) show tasks to complete.
 (3) show tasks that were done.
 (4) show overdue tasks.
-(5) Go back to show task menu.
+(5) Go back to main menu.
 -
 +
 edit task
@@ -44,8 +44,9 @@ Which item do you want to edit?
 (3) Status.
 (4) Priority.
 (5) Add collaborator/details of task.
-(6) Set remarks for tasks.
-(7) Go back to main menu.
+(6) Remove collaborator.
+(7) Set remarks for tasks.
+(8) Go back to main menu.
 -
 +
 delete task
