@@ -17,10 +17,24 @@ class UserInterface {
     }
 
     void showMessagesWithHeaders() {
+        final int dashLineLength = 70;
+        final int appNameLength = 9;
         if (!messages.isEmpty()) {
-            System.out.println("----------------------------------Personify----------------------------------");
+            String upperDashLine = "";
+            String lowerDashLine = "";
+            int i = 0;
+            while(i < dashLineLength) {
+                upperDashLine += "-";
+                i++;
+            }
+            i = 0;
+            while(i < dashLineLength * 2 + appNameLength) {
+                lowerDashLine += "-";
+                i++;
+            }
+            System.out.println(upperDashLine + "Personify" + upperDashLine);
             messages.forEach(System.out::println);
-            System.out.println("-----------------------------------------------------------------------------");
+            System.out.println(lowerDashLine);
         }
         messages.clear();
     }

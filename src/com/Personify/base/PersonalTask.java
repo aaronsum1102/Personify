@@ -20,7 +20,14 @@ public class PersonalTask extends Task {
 
     @Override
     public String toString() {
-        return String.format("%-75s%-20s%-20s", super.toString(), details, remarks);
+        return String.format("%-75s%-30s%-30s", super.toString(), details, remarks);
 
+    }
+
+    public String getSummary() {
+        String summary = super.getSummary();
+        summary += (details + "\n");
+        summary += super.getMotivationalQuote();
+        return summary;
     }
 }

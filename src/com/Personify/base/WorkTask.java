@@ -25,6 +25,13 @@ public class WorkTask extends Task {
     @Override
     public String toString() {
         String collaboratorsName = getCollaborators();
-        return String.format("%-75s%-20s%-20s", super.toString(), collaboratorsName, remarks);
+        return String.format("%-75s%-30s%-30s", super.toString(), collaboratorsName, remarks);
+    }
+
+    public String getSummary() {
+        String summary = super.getSummary();
+        summary += (getCollaborators() + "\n");
+        summary += super.getMotivationalQuote();
+        return summary;
     }
 }
