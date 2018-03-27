@@ -1,16 +1,15 @@
 package com.Personify.base;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.Personify.integration.SubTaskInfo;
 import com.Personify.integration.TaskFileIO;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class TaskCollection {
     private final TaskFileIO taskDataIO;
-    private List<Task> tasks;
     private final Motivation motivationalQuotes;
+    private List<Task> tasks;
 
     public TaskCollection(final Motivation motivationalQuotes, final String userProfile) {
         tasks = new ArrayList<>();
@@ -30,7 +29,7 @@ public class TaskCollection {
     public boolean isTaskNameValid(final String taskName) {
         if (Task.isNameNotEmptyString(taskName) && isNotRepeatedTaskInCollection(taskName)) {
             return true;
-        } else if(!isNotRepeatedTaskInCollection(taskName)) {
+        } else if (!isNotRepeatedTaskInCollection(taskName)) {
             throw new IllegalArgumentException("Warning: You have the same task already. Please give me a new name.");
         } else {
             throw new IllegalArgumentException("Warning: Hey, you didn't type in anything!");
@@ -54,16 +53,16 @@ public class TaskCollection {
 
     public List<Task> getTasksWithSpecificStatus(String status) {
         List<Task> filteredTasks = tasks.stream()
-                                        .filter(task -> task.getStatusObject().getStatus().equals(status))
-                                        .collect(Collectors.toList());
+                .filter(task -> task.getStatusObject().getStatus().equals(status))
+                .collect(Collectors.toList());
         sortTasksByDueDate(filteredTasks);
         return filteredTasks;
     }
 
     public List<Task> getTasksToComplete() {
         List<Task> filteredTasks = tasks.stream()
-                                        .filter(task -> !(task.getStatusObject().getStatus().equals("done")))
-                                        .collect(Collectors.toList());
+                .filter(task -> !(task.getStatusObject().getStatus().equals("done")))
+                .collect(Collectors.toList());
         sortTasksByDueDate(filteredTasks);
         return filteredTasks;
     }
@@ -88,6 +87,21 @@ public class TaskCollection {
         taskToEdit.setPriority(newPriority);
     }
 
+    public void setAttribute(final int taskIndex, final String newInfo) {
+        Task taskToEdit = tasks.get(taskIndex - 1);
+        String className = taskToEdit.getClass().getSimpleName();
+        if (className.equals("WorkTask")) {
+            ((WorkTask) taskToEdit).addCollaborators(newInfo);
+        } else {
+            ((PersonalTask) taskToEdit).setDetails(newInfo);
+        }
+    }
+
+    public void setRemarks(final int index, final String remarks) {
+        Task taskToEdit = tasks.get(index - 1);
+        taskToEdit.setRemarks(remarks);
+    }
+
     private List<Task> readTasksFromFile() {
         List<Task> tasksFromFile = new ArrayList<>();
         List<SubTaskInfo> tasksToRead = taskDataIO.readTasksDataFromDataFile();
@@ -95,11 +109,11 @@ public class TaskCollection {
             tasksToRead.forEach(taskData -> {
                 String className = taskData.getClassName();
                 switch (className) {
-                    case "com.Personify.base.PersonalTask":
+                    case "PersonalTask":
                         Task task = new PersonalTask(taskData.getTaskInfo(), motivationalQuotes, taskData.getTypeSpecificAttribute());
                         tasksFromFile.add(task);
                         break;
-                    case "com.Personify.base.WorkTask":
+                    case "WorkTask":
                         task = new WorkTask(taskData.getTaskInfo(), motivationalQuotes);
                         List<String> collaborators = new ArrayList<>();
                         if (!(taskData.getTypeSpecificAttribute().isEmpty())) {
@@ -133,7 +147,7 @@ public class TaskCollection {
     }
 
     public void deleteSpecificTask(final int index) {
-        tasks.remove(index-1);
+        tasks.remove(index - 1);
     }
 
     public void deleteTasksThatWereDone(final List<Task> tasks) {

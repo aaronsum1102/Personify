@@ -9,6 +9,7 @@ import com.Personify.base.Status;
 import com.Personify.base.Task;
 import com.Personify.controller.Controller;
 import com.Personify.integration.TaskInfo;
+import com.Personify.integration.TaskTableColumnName;
 
 /**
  * UserInterface for interacting with user.
@@ -96,7 +97,9 @@ public class OperationUserInterface extends UserInterface {
         System.out.format("Please give a priority for your task. Valid priority is %s.\n", Priority.getPriorities());
         System.out.println("Tips: Default priority is \"high\"");
         String taskPriority = commandReader.nextLine();
-        return new TaskInfo(taskName, taskDueDate, taskStatus, taskPriority);
+        System.out.println("Please give me any remarks you want to add for the task.");
+        String remarks = commandReader.nextLine();
+        return new TaskInfo(taskName, taskDueDate, taskStatus, taskPriority, remarks);
     }
 
     private void removeAllTask() {
@@ -130,6 +133,8 @@ public class OperationUserInterface extends UserInterface {
                 menuStack.add("delete task");
                 break;
             case 5:
+                menuStack.add("personalise system");
+            case 6:
                 controller.writeTaskDataToSystem();
                 System.out.println("Good bye!");
                 return true;
@@ -182,12 +187,8 @@ public class OperationUserInterface extends UserInterface {
             messages.add("You don't have any task. Do you want to add a task?");
         } else {
             AtomicInteger taskIndex = new AtomicInteger(1);
-            String column1 = "Task Name";
-            String column2 = "Due Date";
-            String column3 = "Status";
-            String column4 = "Priority";
-            String column5 = "Details/Collaborators";
-            messages.add(String.format("%3s%-30s%-15s%-15s%-15s%-20s", " ", column1, column2, column3, column4, column5));
+            TaskTableColumnName columnName = new TaskTableColumnName();
+            messages.add(columnName.toString());
             tasks.forEach(task -> messages.add(String.format("%-3d%s", taskIndex.getAndIncrement(), task.toString())));
         }
     }
@@ -246,10 +247,7 @@ public class OperationUserInterface extends UserInterface {
         int inputFromUser = Integer.parseInt(commandReader.nextLine());
         isValidCommand(commandToExit, inputFromUser);
         switch (inputFromUser) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
+            case 1: case 2: case 3: case 4: case 5: case 6:
                 int taskIndex = getTaskNumberToEditFromUser();
                 isValidCommand(controller.getTasksSize(), taskIndex);
                 switch (inputFromUser) {
@@ -287,8 +285,24 @@ public class OperationUserInterface extends UserInterface {
                         showMessagesWithHeaders();
                         toProceed();
                         break;
+                    case 5:
+                        System.out.println("Please give me the collaborator name or details for the task.");
+                        String newInfo = commandReader.nextLine();
+                        controller.setAttribute(taskIndex, newInfo);
+                        messages.add("Successfully change collaborator name or details of the task.");
+                        showMessagesWithHeaders();
+                        toProceed();
+                        break;
+                    case 6:
+                        System.out.println("Please give me the remarks for the task.");
+                        String remarks = commandReader.nextLine();
+                        controller.setRemarks(taskIndex, remarks);
+                        messages.add("Successfully change collaborator name or details of the task.");
+                        showMessagesWithHeaders();
+                        toProceed();
+                        break;
                 }
-            case 5:
+            case 7:
                 break;
         }
         if (inputFromUser != commandToExit) menuStack.add(menuName);
@@ -332,10 +346,4 @@ public class OperationUserInterface extends UserInterface {
         }
         if (inputFromUser != commandToExit) menuStack.add(menuName);
     }
-
-    //TODO add collaborator
-    //TODO add details for personal task.
-    //TODO add task summary.
-    //TODO Layout for show task
-    //TODO add remarks.
 }

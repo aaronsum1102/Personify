@@ -14,16 +14,10 @@ import java.util.Scanner;
 public class TaskFileIO extends FileIO {
     private static final int NO_OF_PARAMETERS_FOR_EACH_TASK = 4;
     private final FilePath TASK_FILE_PATH;
-    //private final List<SubTaskInfo> tasksData;
 
     public TaskFileIO(final String userProfile) {
-        //tasksData = new ArrayList<>();
         TASK_FILE_PATH = new FilePath("src/data", String.format("%s_tasksData.csv", userProfile));
     }
-
-//    public List<SubTaskInfo> getTasksData() {
-//        return tasksData;
-//    }
 
     private List<String> tokenizeTasksDetails(List<String> tasks) {
         int arraySize = NO_OF_PARAMETERS_FOR_EACH_TASK * tasks.size();
@@ -46,6 +40,7 @@ public class TaskFileIO extends FileIO {
         String dueDate;
         String status;
         String priority;
+        String remarks = "";
         String typeSpecificAttribute = "";
         List<String> eachTask = readEachLineOfFile(TASK_FILE_PATH.getPathToFile());
         List<String> tokenizeTaskData = tokenizeTasksDetails(eachTask);
@@ -56,13 +51,16 @@ public class TaskFileIO extends FileIO {
             dueDate = it.next();
             status = it.next();
             priority = it.next();
+            remarks = it.next();
             String next = it.next();
             if (!(next.equals("-"))) {
+                it.next();
                 typeSpecificAttribute = next;
             }
-            TaskInfo taskInfo = new TaskInfo(taskName, dueDate, status, priority);
+            TaskInfo taskInfo = new TaskInfo(taskName, dueDate, status, priority, remarks);
             SubTaskInfo info = new SubTaskInfo(className, taskInfo, typeSpecificAttribute);
             tasksData.add(info);
+            typeSpecificAttribute = "";
         }
         return tasksData;
     }
@@ -87,11 +85,12 @@ public class TaskFileIO extends FileIO {
     private List<SubTaskInfo> prepareTasksDataForArchive(List<Task> tasks) {
         List<SubTaskInfo> tasksForArchive = new ArrayList<>();
         tasks.forEach(task -> {
-            String className = task.getClass().getName();
+            String className = task.getClass().getSimpleName();
             String name = task.getName();
             String dueDate= task.getDueDate().toString();
             String status= task.getStatusObject().getStatus();
             String priority = task.getPriorityObject().getPriority();
+            String remarks = task.getRemarks();
             String typeSpecificAttribute = "";
             switch (className) {
                 case "PersonalTask":
@@ -100,7 +99,7 @@ public class TaskFileIO extends FileIO {
                 case "WorkTask":
                     typeSpecificAttribute = ((WorkTask) task).getCollaborators();
             }
-            TaskInfo taskInfo = new TaskInfo(name, dueDate, status, priority);
+            TaskInfo taskInfo = new TaskInfo(name, dueDate, status, priority, remarks);
             tasksForArchive.add(new SubTaskInfo(className, taskInfo, typeSpecificAttribute));
         });
         return tasksForArchive;
@@ -108,7 +107,7 @@ public class TaskFileIO extends FileIO {
 
     private List<String> formattingTaskDataForArchive(List<SubTaskInfo> tasksToArchive) {
         List<String> dataToWriteToFile = new ArrayList<>();
-        tasksToArchive.forEach(innerList -> dataToWriteToFile.add((innerList.toString() + "-;")));
+        tasksToArchive.forEach(innerList -> dataToWriteToFile.add((innerList.toString() + ";-;")));
         return dataToWriteToFile;
     }
 

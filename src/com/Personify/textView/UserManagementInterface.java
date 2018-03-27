@@ -25,7 +25,7 @@ public class UserManagementInterface extends UserInterface{
         System.out.print("Username: ");
         String userName = commandReader.nextLine();
         currentUserProfileInUse = userName;
-        System.out.print("Password : ");
+        System.out.print("Password: ");
         String password = commandReader.nextLine();
         return controller.logIn(userName, password);
     }
@@ -35,7 +35,7 @@ public class UserManagementInterface extends UserInterface{
         String userName = commandReader.nextLine();
         controller.validateNewUserName(userName);
         System.out.println("\nHint: Password should be alphanumeric and contains minimum 6 characters.");
-        System.out.print("Password : ");
+        System.out.print("Password: ");
         String password = commandReader.nextLine();
         controller.createUser(userName,password);
     }
@@ -65,8 +65,8 @@ public class UserManagementInterface extends UserInterface{
                         } else {
                             logInCounter++;
                             System.err.println("Warning: Invalid user name or password.");
+                            toProceed();
                         }
-                        toProceed();
                         break;
                     case 2:
                         createUser();

@@ -14,7 +14,8 @@ How can I serve you? Give me a number and I will show you the magic.
 (2) Add new task.
 (3) Edit task.
 (4) Delete task.
-(5) Save and quit.
+(5) Personalise system.
+(6) Save and quit.
 -
 +
 add task
@@ -42,7 +43,9 @@ Which item do you want to edit?
 (2) Due Date.
 (3) Status.
 (4) Priority.
-(5) Go back to main menu.
+(5) Add collaborator/details of task.
+(6) Set remarks for tasks.
+(7) Go back to main menu.
 -
 +
 delete task
@@ -52,4 +55,12 @@ Which option do you want?
 (2) Clear all tasks.
 (3) Delete all tasks that were mark as "done".
 (4) Go back to main menu.
+-
++
+personalise system
+(1) Change username.
+(2) Change password.
+(3) Add motivational quote.
+(4) Delete all motivational quote.
+(5) Go back to main menu.
 -

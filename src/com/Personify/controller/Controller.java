@@ -67,6 +67,14 @@ public class Controller {
         tasks.editPriority(index, newPriority);
     }
 
+    public void setAttribute(final int index, final String newInfo) {
+        tasks.setAttribute(index, newInfo);
+    }
+
+    public void setRemarks (final int index, final String remarks) {
+        tasks.setRemarks(index, remarks);
+    }
+
     public void readTaskDataToSystem() {
         tasks.readTasksToSystem();
     }

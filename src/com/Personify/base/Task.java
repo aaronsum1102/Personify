@@ -39,7 +39,7 @@ public abstract class  Task {
         priority = new Priority(taskInfo.getTaskPriority());
         reminder = new Reminder(this.dueDate);
         motivation = motivationQuotes;
-        remarks = "";
+        remarks = taskInfo.getRemarks();
     }
 
     /**
@@ -85,6 +85,11 @@ public abstract class  Task {
      */
     public Reminder getReminderObject() {
         return reminder;
+    }
+
+
+    public String getRemarks() {
+        return remarks;
     }
 
     /**
@@ -168,9 +173,7 @@ public abstract class  Task {
         summary += String.format("Status   : %s\n", status.getStatus());
         summary += String.format("Priority : %s\n", priority.getPriority());
         summary += String.format("Reminder : %s\n", reminder.getReminder());
-        if (reminder.findDaysLeft() > 1) {
-            summary += String.format("\n\"%s\"", motivation.getQuote());
-        }
+
         return summary;
     }
 
@@ -194,6 +197,13 @@ public abstract class  Task {
 
     public void setRemarks(final String remarks) {
         this.remarks = remarks;
+    }
+
+    String getMotivationalQuote() {
+        if (reminder.findDaysLeft() > 1) {
+            return String.format("\n\"%s\"", motivation.getQuote());
+        }
+        return "";
     }
 
     /**
