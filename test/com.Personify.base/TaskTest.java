@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import com.Personify.base.Motivation;
 import com.Personify.base.Task;
-import com.Personify.integration.Messenger;
 import com.Personify.integration.TaskInfo;
 
 class TaskTest {
@@ -35,7 +34,7 @@ class TaskTest {
 	}
 
 	@AfterEach
-	void tearDown() throws Exception {
+	void tearDown() {
 		task = null;
 	}
 
@@ -147,7 +146,7 @@ class TaskTest {
 	void testSetPriority() {
 		String newPriority = "medium";
 		task.setPriority(newPriority);
-		assertEquals(newPriority, task.getPrioirtyObject().getPriority());
+		assertEquals(newPriority, task.getPriorityObject().getPriority());
 	}
 
 	@Test

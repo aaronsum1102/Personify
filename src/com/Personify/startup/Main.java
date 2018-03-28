@@ -20,7 +20,8 @@ class Main {
         UserManagementInterface userManagementInterface = new UserManagementInterface();
         if (userManagementInterface.startup()) {
             String currentUser = userManagementInterface.getCurrentUserProfileInUse();
-            OperationUserInterface view = new OperationUserInterface(userManagementInterface.getController(), currentUser);
+            OperationUserInterface view = new OperationUserInterface(userManagementInterface.getController(),
+                    currentUser);
             view.operation();
         }
     }

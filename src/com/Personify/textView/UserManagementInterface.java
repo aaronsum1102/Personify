@@ -2,6 +2,7 @@ package com.Personify.textView;
 
 import com.Personify.base.IllegalUserInfoException;
 import com.Personify.controller.Controller;
+import com.Personify.integration.StatusTracker;
 
 public class UserManagementInterface extends UserInterface {
     private final Controller controller;
@@ -38,55 +39,56 @@ public class UserManagementInterface extends UserInterface {
         controller.createUser(userName, password);
     }
 
+    private void switchLoginOptions(final int userChoices, final StatusTracker<Boolean, Integer> tracker)
+            throws IllegalUserInfoException {
+        switch (userChoices) {
+            case 1:
+                Boolean isLogin = logIn();
+                if (isLogin) {
+                    tracker.setStatus(isLogin);
+                } else {
+                    Integer counter = tracker.getTrackerIndex();
+                    tracker.setTrackerIndex(++counter);
+                    System.err.println("Warning: Invalid user name or password.");
+                }
+                break;
+            case 2:
+                createUser();
+                System.out.println("Congrats! You can log in the system now.");
+                tracker.setTrackerIndex(1);
+                break;
+            case 3:
+                System.out.println("Good bye!");
+                commandReader.close();
+                System.exit(0);
+                break;
+        }
+    }
+
     public boolean startup() {
-        boolean isEnding = false;
-        boolean isLogIn = false;
+        boolean isLogin = false;
         int logInCounter = 1;
-        while (!isEnding) {
+        StatusTracker<Boolean, Integer> tracker = new StatusTracker<>(isLogin, logInCounter);
+        while (!isLogin) {
+            if (tracker.getTrackerIndex() >= 4) {
+                System.err.println("Warning: Maximum attempt for login exceeded!");
+                System.exit(0);
+            }
             try {
-                int userChoices;
-                if (logInCounter >= 4) {
-                    System.err.println("Warning: Maximum attempt for login exceeded!");
-                    System.exit(0);
-                }
-                messages.addAll(menu.getMenu("startup"));
-                showMessagesWithHeaders();
-
-                userChoices = Integer.parseInt(commandReader.nextLine());
-                isValidCommand(3, userChoices);
-
-                switch (userChoices) {
-                    case 1:
-                        isLogIn = logIn();
-                        if (isLogIn) {
-                            isEnding = true;
-                        } else {
-                            logInCounter++;
-                            System.err.println("Warning: Invalid user name or password.");
-                        }
-                        break;
-                    case 2:
-                        createUser();
-                        System.out.println("Congrats! You can log in the system now.");
-                        logInCounter = 1;
-                        break;
-                    case 3:
-                        System.out.println("Good bye!");
-                        commandReader.close();
-                        System.exit(0);
-                        break;
-                }
-                toProceed();
+                final String menuName = "startup";
+                final int commandToExit = getCommandNoToExitAndDisplayMenu(menuName);
+                int userChoices = getUserInputSelectionAndSanityCheck(commandToExit);
+                switchLoginOptions(userChoices, tracker);
+                isLogin = tracker.getStatus();
             } catch (NumberFormatException e) {
                 System.err.println("Warning: I'm smart enough to know you didn't given me a number. Don't try to challenge me.");
-                toProceed();
             } catch (InvalidCommandException | IllegalUserInfoException e) {
                 System.err.println(e.getMessage());
-                toProceed();
             } finally {
+                toProceed();
                 controller.saveUserProfile();
             }
         }
-        return isLogIn;
+        return tracker.getStatus();
     }
 }

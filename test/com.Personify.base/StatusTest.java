@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.Personify.base.Status;
-import com.Personify.integration.Messenger;
 
 class StatusTest {
 	private Status status;
@@ -14,7 +13,7 @@ class StatusTest {
 	private static final String DEFAULT_STATUS = "to do";
 
 	@BeforeEach
-	void setup() throws Exception {
+	void setup() {
 		status = new Status(messages, "to do");
 	}
 	
@@ -86,7 +85,7 @@ class StatusTest {
 	}
 	
 	@Test
-	void testSetStatusWithValidSatusInMixedCase() {
+	void testSetStatusWithValidStatusInMixedCase() {
 		String newStatus = "DoNe";
 		boolean result = status.setStatus(newStatus);
 		assertEquals(true, result);

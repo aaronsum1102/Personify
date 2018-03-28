@@ -44,8 +44,13 @@ public class WorkTask extends Task {
 
     public String getSummary() {
         String summary = super.getSummary();
-        summary += (getCollaboratorsAsString() + "\n");
-        summary += super.getMotivationalQuote();
+        summary += String.format("%-12s%-2s%s\n", "Remarks", ":", remarks);
+        summary += String.format("%-12s%-2s%s\n", "Collaborator", ":", getCollaboratorsAsString());
+        summary += String.format("%-12s%-2s%s\n", "Reminder", ":", reminder.getReminder());
+        String motivationalQuote = super.getMotivationalQuote();
+        if (!motivationalQuote.isEmpty()) {
+            summary += String.format("\nReminder : \n\"%s\".", super.getMotivationalQuote());
+        }
         return summary;
     }
 }

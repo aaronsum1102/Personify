@@ -11,11 +11,11 @@ class FilePathTest {
 	private FilePath path;
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 	}
 
 	@AfterEach
-	void tearDown() throws Exception {
+	void tearDown() {
 		path = null;
 	}
 

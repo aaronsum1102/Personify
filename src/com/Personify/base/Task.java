@@ -17,7 +17,7 @@ import java.time.format.DateTimeParseException;
 public abstract class Task {
     private final Status status;
     private final Priority priority;
-    private final Reminder reminder;
+    final Reminder reminder;
     private final Motivation motivation;
     String remarks;
     private String name;
@@ -35,8 +35,8 @@ public abstract class Task {
     public Task(final TaskInfo taskInfo, final Motivation motivationQuotes) {
         name = taskInfo.getTaskName();
         dueDate = setInitialDueDate(taskInfo.getTaskDueDate());
-        status = new Status(taskInfo.getTaskStatus());
-        priority = new Priority(taskInfo.getTaskPriority());
+        status = new Status(taskInfo.getTaskStatus(), dueDate);
+        priority = new Priority(taskInfo.getTaskPriority(), dueDate);
         reminder = new Reminder(this.dueDate);
         motivation = motivationQuotes;
         remarks = taskInfo.getRemarks();
@@ -136,7 +136,8 @@ public abstract class Task {
         } else if (isDateFormatValid(newDueDate)) {
             throw new IllegalArgumentException("Warning: You didn't give me a date with correct format.");
         } else {
-            throw new IllegalArgumentException(String.format("Warning: You didn't give me a new due date. Current due date is %s.", dueDate));
+            throw new IllegalArgumentException(String.format("Warning: You didn't give me a new due date. " +
+                    "Current due date is %s.", dueDate));
         }
     }
 
@@ -161,13 +162,11 @@ public abstract class Task {
      * message and motivational quotes.
      */
     public String getSummary() {
-        String summary = "\nHere is a summary of the task that you had just added.\n";
-        summary += String.format("Task name: %s\n", name);
-        summary += String.format("Due date : %s\n", dueDate);
-        summary += String.format("Status   : %s\n", status.getStatus());
-        summary += String.format("Priority : %s\n", priority.getPriority());
-        summary += String.format("Reminder : %s\n", reminder.getReminder());
-
+        String summary = "Here is a summary of the task that you had just added.\n";
+        summary += String.format("%-12s%-2s%s\n", "Task name", ":", name);
+        summary += String.format("%-12s%-2s%s\n", "Due date", ":", dueDate);
+        summary += String.format("%-12s%-2s%s\n", "Status", ":", status.getStatus());
+        summary += String.format("%-12s%-2s%s\n", "Priority", ":", priority.getPriority());
         return summary;
     }
 
@@ -191,7 +190,7 @@ public abstract class Task {
 
     String getMotivationalQuote() {
         if (reminder.findDaysLeft() > 1) {
-            return String.format("\n\"%s\"", motivation.getQuote());
+            return motivation.getQuote();
         }
         return "";
     }

@@ -1,5 +1,6 @@
 package com.Personify.base;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,12 +12,14 @@ import java.util.List;
 public class Priority {
     private static final List<String> PRIORITIES = Arrays.asList("low", "medium", "high");
     private String priority;
+    private final LocalDate dueDate;
 
     /**
      * Construct object with the specify value. If the value is invalid, the object
      * will be instantiated with default value of "high".
      */
-    public Priority(final String priority) {
+    public Priority(final String priority, final LocalDate dueDate) {
+        this.dueDate = dueDate;
         this.priority = setInitialPriority(priority);
     }
 
@@ -38,10 +41,14 @@ public class Priority {
     }
 
     private String setInitialPriority(final String priority) {
-        if (isValidPriority(priority)) {
-            return priority.toLowerCase();
-        } else {
+        if (dueDate.compareTo(LocalDate.now()) < 0){
             return "high";
+        } else {
+            if (isValidPriority(priority)) {
+                return priority.toLowerCase();
+            } else {
+                return "high";
+            }
         }
     }
 

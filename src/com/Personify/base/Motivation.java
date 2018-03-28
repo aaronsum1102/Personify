@@ -18,13 +18,17 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Motivation {
     private final List<String> quotes;
-    private final FilePath motivationalQuoteFile;
+    private FilePath motivationalQuoteFile;
+    private final static FilePath defaultPathToQuoteFile = new FilePath("src/data", "motivationalQuotes.txt");
 
     /**
      * Construct motivation object with a default collection of quote.
      */
     public Motivation(final String userName) {
         motivationalQuoteFile = new FilePath("src/data", String.format("%s_motivationalQuotes.txt", userName));
+        if (!Files.exists(motivationalQuoteFile.getPathToFile())){
+            motivationalQuoteFile = defaultPathToQuoteFile;
+        }
         FileIO motivationalQuotesFile = new FileIO();
         quotes = motivationalQuotesFile.readEachLineOfFile(motivationalQuoteFile.getPathToFile());
     }
@@ -97,7 +101,9 @@ public class Motivation {
 
     public void writeMotivationalQuoteToFIle(final String userName) {
         try {
-            Files.deleteIfExists(motivationalQuoteFile.getPathToFile());
+            if (!motivationalQuoteFile.equals(defaultPathToQuoteFile)) {
+                Files.deleteIfExists(motivationalQuoteFile.getPathToFile());
+            }
         } catch (IOException e) {
             System.err.println("IO error while manipulating file.");
         }

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TaskFileIO extends FileIO {
-    private static final int NO_OF_PARAMETERS_FOR_EACH_TASK = 4;
     private final FilePath TASK_FILE_PATH;
 
     public TaskFileIO(final String userProfile) {
@@ -20,8 +19,7 @@ public class TaskFileIO extends FileIO {
     }
 
     private List<String> tokenizeTasksDetails(List<String> tasks) {
-        int arraySize = NO_OF_PARAMETERS_FOR_EACH_TASK * tasks.size();
-        List<String> tasksInfo = new ArrayList<>(arraySize);
+        List<String> tasksInfo = new ArrayList<>();
         for (String task : tasks) {
             Scanner scanner = new Scanner(task);
             scanner.useDelimiter(";");

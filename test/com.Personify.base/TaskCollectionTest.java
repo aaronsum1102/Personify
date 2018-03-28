@@ -2,7 +2,6 @@
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOException;
 import java.time.format.DateTimeParseException;
 
 import org.junit.jupiter.api.AfterEach;
@@ -12,15 +11,14 @@ import org.junit.jupiter.api.Test;
 import com.Personify.base.Motivation;
 import com.Personify.base.Task;
 import com.Personify.base.TaskCollection;
-import com.Personify.integration.Messenger;
 import com.Personify.integration.TaskInfo;
 
 class TaskCollectionTest {
-	TaskCollection holder;
-	Messenger taskMessages;
-	Motivation motivationalQuotes;
-	TaskInfo taskInfo;
-	Task task;
+	private TaskCollection holder;
+	private Messenger taskMessages;
+	private Motivation motivationalQuotes;
+	private TaskInfo taskInfo;
+	private Task task;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -29,7 +27,7 @@ class TaskCollectionTest {
 		holder = new TaskCollection(taskMessages, motivationalQuotes);
 		taskInfo = new TaskInfo("laundry", "2018-03-10", "in progress", "medium");
 		task = new Task(taskInfo, taskMessages, motivationalQuotes);
-		holder.addTaskToCollection(task);
+		holder.getAddTaskSummary(task);
 	}
 
 	@AfterEach
@@ -39,27 +37,27 @@ class TaskCollectionTest {
 	}
 
 	@Test
-	void testAddTask() throws IOException, DateTimeParseException {
+	void testAddTask() throws DateTimeParseException {
 		taskInfo = new TaskInfo("shopping", "", "", "");
 		Task task = new Task(taskInfo, taskMessages, motivationalQuotes);
-		boolean result = holder.addTaskToCollection(task);
+		boolean result = holder.getAddTaskSummary(task);
 		assertEquals(true, result);
 	}
 
 	@Test
-	void testAddTaskWithEmptyTaskName() throws IOException, DateTimeParseException {
+	void testAddTaskWithEmptyTaskName() throws DateTimeParseException {
 		taskInfo = new TaskInfo("", "", "", "");
 		Task task = new Task(taskInfo, taskMessages, motivationalQuotes);
-		boolean result = holder.addTaskToCollection(task);
+		boolean result = holder.getAddTaskSummary(task);
 		assertEquals(false, result);
 	}
 	
 	@Test
-	void testAddTaskWithRepeatedTaskName() throws IOException, DateTimeParseException {
+	void testAddTaskWithRepeatedTaskName() throws DateTimeParseException {
 		taskInfo = new TaskInfo("laundry", "", "", "");
 		Task task = new Task(taskInfo, taskMessages, motivationalQuotes);
 		taskMessages.clearMessages();
-		boolean result = holder.addTaskToCollection(task);
+		boolean result = holder.getAddTaskSummary(task);
 		assertEquals(false, result);
 		String expectedMessage = "You have the same task in record. Please give me a new name.";
 		boolean actualResult = taskMessages.getMessages().contains(expectedMessage);
@@ -70,7 +68,7 @@ class TaskCollectionTest {
 	void testGetTaskSortedByName() {
 		TaskInfo newTaskInfo = new TaskInfo("baking", "2018-03-15", "in progress", "low");
 		Task newTask = new Task(newTaskInfo, taskMessages, motivationalQuotes);
-		holder.addTaskToCollection(newTask);
+		holder.getAddTaskSummary(newTask);
 		holder.getTasksSortedByName();
 		String expectedResult = "1. " + newTask.toString();
 		assertEquals(true, taskMessages.getMessages().contains(expectedResult));	

@@ -1,5 +1,6 @@
 package com.Personify.base;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,12 +12,14 @@ import java.util.List;
 public class Status {
     private static final List<String> STATUSES = Arrays.asList("to do", "in progress", "done", "overdue");
     private String status;
+    private final LocalDate dueDate;
 
     /**
      * Construct object with the specify value. If the value is invalid, object will
      * created with default value of "to do".
      */
-    public Status(final String status) {
+    public Status(final String status, final LocalDate dueDate) {
+        this.dueDate = dueDate;
         this.status = setInitialStatus(status);
     }
 
@@ -38,10 +41,14 @@ public class Status {
     }
 
     private String setInitialStatus(final String status) {
-        if (isValidStatus(status)) {
-            return status.toLowerCase();
+        if (dueDate.compareTo(LocalDate.now()) < 0) {
+            return "overdue";
         } else {
-            return "to do";
+            if (isValidStatus(status)) {
+                return status.toLowerCase();
+            } else {
+                return "to do";
+            }
         }
     }
 
