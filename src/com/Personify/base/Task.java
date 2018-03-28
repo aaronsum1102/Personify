@@ -17,7 +17,7 @@ import java.time.format.DateTimeParseException;
 public abstract class Task {
     private final Status status;
     private final Priority priority;
-    private final Reminder reminder;
+    final Reminder reminder;
     private final Motivation motivation;
     String remarks;
     private String name;
@@ -161,13 +161,11 @@ public abstract class Task {
      * message and motivational quotes.
      */
     public String getSummary() {
-        String summary = "\nHere is a summary of the task that you had just added.\n";
-        summary += String.format("Task name: %s\n", name);
-        summary += String.format("Due date : %s\n", dueDate);
-        summary += String.format("Status   : %s\n", status.getStatus());
-        summary += String.format("Priority : %s\n", priority.getPriority());
-        summary += String.format("Reminder : %s\n", reminder.getReminder());
-
+        String summary = "Here is a summary of the task that you had just added.\n";
+        summary += String.format("%-12s%-2s%s\n", "Task name", ":", name);
+        summary += String.format("%-12s%-2s%s\n", "Due date", ":", dueDate);
+        summary += String.format("%-12s%-2s%s\n", "Status", ":", status.getStatus());
+        summary += String.format("%-12s%-2s%s\n", "Priority", ":", priority.getPriority());
         return summary;
     }
 
@@ -191,7 +189,7 @@ public abstract class Task {
 
     String getMotivationalQuote() {
         if (reminder.findDaysLeft() > 1) {
-            return String.format("\n\"%s\"", motivation.getQuote());
+            return motivation.getQuote();
         }
         return "";
     }

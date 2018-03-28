@@ -8,6 +8,7 @@ import com.Personify.controller.Controller;
 import com.Personify.integration.TaskInfo;
 import com.Personify.integration.TaskTableColumnName;
 
+import java.time.LocalDate;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -85,13 +86,12 @@ public class OperationUserInterface extends UserInterface {
         }
     }
 
-
     private TaskInfo getInputFromUser() {
         System.out.println("Please give a name for your task.");
         String taskName = commandReader.nextLine();
         controller.isTaskNameValid(taskName);
         System.out.println("Please give a due date in format of YYYY-MM-DD.");
-        System.out.println("Tips: Default due date is today's date");
+        System.out.println("Tips: Default due date is today's date, " + LocalDate.now().toString() + ".");
         String taskDueDate = commandReader.nextLine();
         System.out.format("Please give a status for your task . Valid status is %s.\n", Status.getStatuses());
         System.out.println("Tips: Default status is \"to do\"");
