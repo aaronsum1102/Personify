@@ -1,19 +1,17 @@
 package com.Personify.base;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.Personify.integration.SubTaskInfo;
 import com.Personify.integration.TaskFileIO;
-import com.Personify.integration.TaskInfo;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TaskCollection {
     private final TaskFileIO taskDataIO;
-    private final List<Task> tasks;
     private final Motivation motivationalQuotes;
+    private List<Task> tasks;
+    private List<Task> workTasks;
+    private List<Task> personalTasks;
 
     public TaskCollection(final Motivation motivationalQuotes, final String userProfile) {
         tasks = new ArrayList<>();
@@ -33,7 +31,7 @@ public class TaskCollection {
     public boolean isTaskNameValid(final String taskName) {
         if (Task.isNameNotEmptyString(taskName) && isNotRepeatedTaskInCollection(taskName)) {
             return true;
-        } else if(!isNotRepeatedTaskInCollection(taskName)) {
+        } else if (!isNotRepeatedTaskInCollection(taskName)) {
             throw new IllegalArgumentException("Warning: You have the same task already. Please give me a new name.");
         } else {
             throw new IllegalArgumentException("Warning: Hey, you didn't type in anything!");
@@ -49,24 +47,56 @@ public class TaskCollection {
         Collections.reverse(tasks);
     }
 
+    private List<Task> filterTaskByType(final String TaskClassName) {
+        return tasks.stream()
+                .filter(task -> task.getClass().getSimpleName().equals(TaskClassName))
+                .collect(Collectors.toList());
+    }
 
     public List<Task> getAllTasks() {
         sortTasksByDueDate(tasks);
         return tasks;
     }
 
-    public List<Task> getTasksWithSpecificStatus(String status) {
-        List<Task> filteredTasks = tasks.stream()
-                                        .filter(task -> task.getStatusObject().getStatus().equals(status))
-                                        .collect(Collectors.toList());
+    public List<Task> getWorkTask() {
+        sortTasksByDueDate(workTasks);
+        return workTasks;
+    }
+
+    private List<Task> getTasksWithSpecificStatus(final List<Task> tasks, final String status) {
+        return tasks.stream()
+                .filter(task -> task.getStatusObject().getStatus().equals(status))
+                .collect(Collectors.toList());
+    }
+
+    public List<Task> getTasksWithSpecificStatusAndType(final String taskType, final String status) {
+        List<Task> filteredTasks = new ArrayList<>();
+        switch (taskType) {
+            case "WorkTask":
+                filteredTasks = getTasksWithSpecificStatus(workTasks, status);
+            case "PersonalTask":
+                filteredTasks = getTasksWithSpecificStatus(personalTasks, status);
+            case "Task":
+                filteredTasks = getTasksWithSpecificStatus(tasks, status);
+        }
         sortTasksByDueDate(filteredTasks);
         return filteredTasks;
     }
 
-    public List<Task> getTasksToComplete() {
-        List<Task> filteredTasks = tasks.stream()
-                                        .filter(task -> !(task.getStatusObject().getStatus().equals("done")))
-                                        .collect(Collectors.toList());
+    private List<Task> getTasksToComplete(final List<Task> tasks) {
+        return tasks.stream()
+                .filter(task -> !(task.getStatusObject().getStatus().equals("done")))
+                .collect(Collectors.toList());
+    }
+
+    public List<Task> getTasksToCompleteWithSpecificType(final String taskType) {
+        List<Task> filteredTasks = new ArrayList<>();
+        switch (taskType) {
+            case "WorkTask":
+                filteredTasks = getTasksToComplete(workTasks);
+            case "PersonalTask":
+                filteredTasks = getTasksToComplete(personalTasks);
+        }
         sortTasksByDueDate(filteredTasks);
         return filteredTasks;
     }
@@ -91,36 +121,69 @@ public class TaskCollection {
         taskToEdit.setPriority(newPriority);
     }
 
-    private void readTasksToCollection(Task task) {
-        tasks.add(task);
+    public String getCollaboratorsForDisplay(final int taskIndex) {
+        return ((WorkTask) workTasks.get(taskIndex - 1)).getCollaboratorsForDisplay();
     }
 
-    public void readTasksFromFile() throws IOException {
-        taskDataIO.readTasksDataFromDataFile();
-        List<TaskInfo> tasksToRead = taskDataIO.getTasksData();
-        if (!tasksToRead.isEmpty()) {
-            tasksToRead.forEach(taskData -> {
-                Task task = new Task(taskData, motivationalQuotes);
-                readTasksToCollection(task);
-            });
+    public int getCollaboratorsSize(final int taskIndex){
+        return ((WorkTask) workTasks.get(taskIndex - 1)).getCollaborators().size();
+    }
+
+    public void deleteSpecificCollaborator(final int taskIndex, final int collaboratorIndex){
+        ((WorkTask) workTasks.get(taskIndex - 1)).getCollaborators().remove(collaboratorIndex-1);
+    }
+
+    public void setAttribute(final int taskIndex, final String newInfo) {
+        Task taskToEdit = tasks.get(taskIndex - 1);
+        String className = taskToEdit.getClass().getSimpleName();
+        if (className.equals("WorkTask")) {
+            ((WorkTask) taskToEdit).addCollaborators(newInfo);
+        } else {
+            ((PersonalTask) taskToEdit).setDetails(newInfo);
         }
     }
 
-    private List<TaskInfo> prepareTasksDataForArchive() {
-        List<TaskInfo> tasksForArchive = new ArrayList<>();
-        tasks.forEach(task -> {
-            String taskName = task.getName();
-            String dueDate = task.getDueDate().toString();
-            String status = task.getStatusObject().getStatus();
-            String priority = task.getPriorityObject().getPriority();
-            tasksForArchive.add(new TaskInfo(taskName, dueDate, status, priority));
-        });
-        return tasksForArchive;
+    public void setRemarks(final int index, final String remarks) {
+        Task taskToEdit = tasks.get(index - 1);
+        taskToEdit.setRemarks(remarks);
     }
 
-    public void writeTasksToFile() {
-        List<TaskInfo> tasksToArchive = prepareTasksDataForArchive();
-        taskDataIO.archiveTasks(tasksToArchive);
+    private List<Task> readTasksFromFile() {
+        List<Task> tasksFromFile = new ArrayList<>();
+        List<SubTaskInfo> tasksToRead = taskDataIO.readTasksDataFromDataFile();
+        if (!tasksToRead.isEmpty()) {
+            tasksToRead.forEach(taskData -> {
+                String className = taskData.getClassName();
+                switch (className) {
+                    case "PersonalTask":
+                        Task task = new PersonalTask(taskData.getTaskInfo(), motivationalQuotes, taskData.getTypeSpecificAttribute());
+                        tasksFromFile.add(task);
+                        break;
+                    case "WorkTask":
+                        task = new WorkTask(taskData.getTaskInfo(), motivationalQuotes);
+                        List<String> collaborators = new ArrayList<>();
+                        if (!(taskData.getTypeSpecificAttribute().isEmpty())) {
+                            Scanner tokenizer = new Scanner(taskData.getTypeSpecificAttribute());
+                            tokenizer.useDelimiter(", ");
+                            collaborators.add(tokenizer.next());
+                            collaborators.forEach(((WorkTask) task)::addCollaborators);
+                        }
+                        tasksFromFile.add(task);
+                        break;
+                }
+            });
+        }
+        return tasksFromFile;
+    }
+
+    public void readTasksToSystem() {
+        tasks = readTasksFromFile();
+        workTasks = filterTaskByType("WorkTask");
+        personalTasks = filterTaskByType("PersonalTask");
+    }
+
+    public void writeTasksToFile(final String userName) {
+        taskDataIO.writeTasksToFile(tasks, userName);
     }
 
     public boolean removeAllTasks() {
@@ -132,7 +195,7 @@ public class TaskCollection {
     }
 
     public void deleteSpecificTask(final int index) {
-        tasks.remove(index-1);
+        tasks.remove(index - 1);
     }
 
     public void deleteTasksThatWereDone(final List<Task> tasks) {

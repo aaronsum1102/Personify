@@ -3,13 +3,11 @@ package com.Personify.textView;
 import com.Personify.base.IllegalUserInfoException;
 import com.Personify.controller.Controller;
 
-import java.io.IOException;
-
-public class UserManagementInterface extends UserInterface{
-    private Controller controller;
+public class UserManagementInterface extends UserInterface {
+    private final Controller controller;
     private String currentUserProfileInUse;
 
-    public UserManagementInterface() throws IOException {
+    public UserManagementInterface() {
         controller = new Controller();
     }
 
@@ -22,22 +20,22 @@ public class UserManagementInterface extends UserInterface{
     }
 
     private boolean logIn() {
-        System.out.print("UserManagement Name: ");
+        System.out.print("Username: ");
         String userName = commandReader.nextLine();
         currentUserProfileInUse = userName;
-        System.out.print("Password : ");
+        System.out.print("Password: ");
         String password = commandReader.nextLine();
-        return controller.logIn(userName, password);
+        return controller.userInfoValidation(userName, password);
     }
 
     private void createUser() throws IllegalUserInfoException {
-        System.out.print("UserManagement Name: ");
+        System.out.print("Username: ");
         String userName = commandReader.nextLine();
         controller.validateNewUserName(userName);
         System.out.println("\nHint: Password should be alphanumeric and contains minimum 6 characters.");
-        System.out.print("Password : ");
+        System.out.print("Password: ");
         String password = commandReader.nextLine();
-        controller.createUser(userName,password);
+        controller.createUser(userName, password);
     }
 
     public boolean startup() {
@@ -66,26 +64,26 @@ public class UserManagementInterface extends UserInterface{
                             logInCounter++;
                             System.err.println("Warning: Invalid user name or password.");
                         }
-                        toProceed();
                         break;
                     case 2:
                         createUser();
                         System.out.println("Congrats! You can log in the system now.");
                         logInCounter = 1;
-                        toProceed();
                         break;
                     case 3:
                         System.out.println("Good bye!");
+                        commandReader.close();
                         System.exit(0);
                         break;
                 }
+                toProceed();
             } catch (NumberFormatException e) {
                 System.err.println("Warning: I'm smart enough to know you didn't given me a number. Don't try to challenge me.");
                 toProceed();
             } catch (InvalidCommandException | IllegalUserInfoException e) {
                 System.err.println(e.getMessage());
                 toProceed();
-            } finally{
+            } finally {
                 controller.saveUserProfile();
             }
         }

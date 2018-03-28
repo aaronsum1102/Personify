@@ -1,12 +1,12 @@
 package com.Personify.base;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A class to manage the status of a task.
  *
  * @author aaronsum
- * @version 2.0, 2018-03-13
  */
 public class Status {
     private static final List<String> STATUSES = Arrays.asList("to do", "in progress", "done", "overdue");
@@ -20,14 +20,6 @@ public class Status {
         this.status = setInitialStatus(status);
     }
 
-    private String setInitialStatus(final String status) {
-        if (isValidStatus(status)) {
-            return status.toLowerCase();
-        } else {
-            return "to do";
-        }
-    }
-
     /**
      * Provide a string of all valid status.
      *
@@ -37,12 +29,20 @@ public class Status {
         String statuses = "";
         for (int index = 0; index <= STATUSES.size() - 1; index++) {
             if (index != (STATUSES.size() - 1)) {
-                statuses += String.format("\"%s\" or ", STATUSES.get(index));
+                statuses = statuses.concat(String.format("\"%s\" or ", STATUSES.get(index)));
             } else {
-                statuses += String.format("\"%s\"", STATUSES.get(index));
+                statuses = statuses.concat(String.format("\"%s\"", STATUSES.get(index)));
             }
         }
         return statuses;
+    }
+
+    private String setInitialStatus(final String status) {
+        if (isValidStatus(status)) {
+            return status.toLowerCase();
+        } else {
+            return "to do";
+        }
     }
 
     /**
@@ -52,14 +52,6 @@ public class Status {
      */
     public String getStatus() {
         return status;
-    }
-
-    private boolean isValidStatus(final String status) {
-        return STATUSES.contains(status.toLowerCase());
-    }
-
-    private boolean isRepeatedStatus(final String newStatus) {
-        return status.toLowerCase().equals(newStatus.toLowerCase());
     }
 
     /**
@@ -80,5 +72,13 @@ public class Status {
         } else {
             throw new IllegalArgumentException("Warning: That is not a valid status!");
         }
+    }
+
+    private boolean isValidStatus(final String status) {
+        return STATUSES.contains(status.toLowerCase());
+    }
+
+    private boolean isRepeatedStatus(final String newStatus) {
+        return status.toLowerCase().equals(newStatus.toLowerCase());
     }
 }
