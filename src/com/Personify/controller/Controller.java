@@ -29,7 +29,11 @@ public class Controller {
     }
 
     public List<Task> getAllWorkTasks() {
-        return tasks.getWorkTask();
+        return tasks.getWorkTasks();
+    }
+
+    public List<String> getTasksSummary() {
+        return tasks.getTasksSummary();
     }
 
     public List<Task> getTasksWithSpecificStatus(final String taskType, final String status) {
@@ -40,12 +44,14 @@ public class Controller {
         return tasks.getTasksToCompleteWithSpecificType(taskType);
     }
 
-    public String addPersonalTaskAndGetSummary(final TaskInfo TaskInfo, final String details) throws IllegalArgumentException {
+    public String addPersonalTaskAndGetSummary(final TaskInfo TaskInfo, final String details)
+            throws IllegalArgumentException {
         Task task = new PersonalTask(TaskInfo, motivationalQuotes, details);
         return tasks.getAddTaskSummary(task);
     }
 
-    public String addWorkTaskAndGetSummary(final TaskInfo TaskInfo, final String collaborator) throws IllegalArgumentException {
+    public String addWorkTaskAndGetSummary(final TaskInfo TaskInfo, final String collaborator)
+            throws IllegalArgumentException {
         Task task = new WorkTask(TaskInfo, motivationalQuotes);
         ((WorkTask) task).addCollaborators(collaborator);
         return tasks.getAddTaskSummary(task);
@@ -135,7 +141,8 @@ public class Controller {
         userManagement.editUserName(currentUserName, newUserName);
     }
 
-    public void editPassword(final String currentUserName, final String currentPassword, final String newPassword) throws IllegalUserInfoException {
+    public void editPassword(final String currentUserName, final String currentPassword, final String newPassword)
+            throws IllegalUserInfoException {
         userManagement.editPassword(currentUserName, currentPassword, newPassword);
     }
 

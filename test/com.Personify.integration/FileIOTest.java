@@ -23,13 +23,13 @@ class FileIOTest {
 	private final ByteArrayOutputStream errOut = new ByteArrayOutputStream();
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		file = new FileIO();
 		System.setErr(new PrintStream(errOut));
 	}
 
 	@AfterEach
-	void tearDown() throws Exception {
+	void tearDown() {
 		file = null;
 		System.setErr(System.err);
 	}

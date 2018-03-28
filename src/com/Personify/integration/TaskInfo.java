@@ -8,7 +8,8 @@ public class TaskInfo {
     private final String remarks;
 
 
-    public TaskInfo(final String name, final String dueDate, final String status, final String priority, final String remarks) {
+    public TaskInfo(final String name, final String dueDate, final String status, final String priority,
+                    final String remarks) {
         NAME = name;
         DUE_DATE = dueDate;
         STATUS = status;

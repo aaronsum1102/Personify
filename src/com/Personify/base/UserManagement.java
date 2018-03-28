@@ -114,7 +114,8 @@ public class UserManagement {
         users.put(newUserName, user);
     }
 
-    public void editPassword(final String currentUserName, final String currentPassword, final String newPassword) throws IllegalUserInfoException {
+    public void editPassword(final String currentUserName, final String currentPassword, final String newPassword)
+            throws IllegalUserInfoException {
         if (!userInfoValidation(currentUserName, currentPassword)) {
             throw new IllegalUserInfoException("Warning: You entered password does not match the record.");
         }

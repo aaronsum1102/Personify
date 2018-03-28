@@ -136,7 +136,8 @@ public abstract class Task {
         } else if (isDateFormatValid(newDueDate)) {
             throw new IllegalArgumentException("Warning: You didn't give me a date with correct format.");
         } else {
-            throw new IllegalArgumentException(String.format("Warning: You didn't give me a new due date. Current due date is %s.", dueDate));
+            throw new IllegalArgumentException(String.format("Warning: You didn't give me a new due date. " +
+                    "Current due date is %s.", dueDate));
         }
     }
 

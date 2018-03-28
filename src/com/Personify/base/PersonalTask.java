@@ -28,7 +28,7 @@ public class PersonalTask extends Task {
         String summary = super.getSummary();
         summary += String.format("%-12s%-2s%s\n", "Details", ":", details);
         summary += String.format("%-12s%-2s%s\n", "Remarks", ":", remarks);
-        summary += String.format("Reminder : %s\n", reminder.getReminder());
+        summary += String.format("%-12s%-2s%s\n", "Reminder", ":", reminder.getReminder());
         String motivationalQuote = super.getMotivationalQuote();
         if (!motivationalQuote.isEmpty()) {
             summary += String.format("\nQuote of the day: \n\"%s\".", super.getMotivationalQuote());

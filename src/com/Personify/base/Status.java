@@ -12,7 +12,7 @@ import java.util.List;
 public class Status {
     private static final List<String> STATUSES = Arrays.asList("to do", "in progress", "done", "overdue");
     private String status;
-    private LocalDate dueDate;
+    private final LocalDate dueDate;
 
     /**
      * Construct object with the specify value. If the value is invalid, object will

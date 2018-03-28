@@ -1,2 +1,3 @@
-PersonalTask;laundry;2018-03-29;to do;medium;make sure you wash laundry properly;weekly activity;-;
-WorkTask;commit changes to git;2018-03-26;to do;high;this is a test as well;aaron;-;
+WorkTask;write test;2018-03-29;in progress;high;write Junit test;aaron;-;
+WorkTask;write Javadoc;2018-03-29;to do;high;;aaron;-;
+WorkTask;update class diagram;2018-03-29;to do;high;to update class diagram in astah;aaron;-;

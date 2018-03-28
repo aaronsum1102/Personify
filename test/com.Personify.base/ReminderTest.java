@@ -10,7 +10,7 @@ class ReminderTest {
 	private LocalDate now;
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		now = LocalDate.now();
 	}
 	

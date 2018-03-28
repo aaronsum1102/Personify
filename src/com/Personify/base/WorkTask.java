@@ -46,7 +46,7 @@ public class WorkTask extends Task {
         String summary = super.getSummary();
         summary += String.format("%-12s%-2s%s\n", "Remarks", ":", remarks);
         summary += String.format("%-12s%-2s%s\n", "Collaborator", ":", getCollaboratorsAsString());
-        summary += String.format("Reminder : %s\n", reminder.getReminder());
+        summary += String.format("%-12s%-2s%s\n", "Reminder", ":", reminder.getReminder());
         String motivationalQuote = super.getMotivationalQuote();
         if (!motivationalQuote.isEmpty()) {
             summary += String.format("\nReminder : \n\"%s\".", super.getMotivationalQuote());

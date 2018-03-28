@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.Personify.base.Priority;
-import com.Personify.integration.Messenger;
 
 class PriorityTest {
 	private Priority priority;
@@ -15,7 +14,7 @@ class PriorityTest {
 	private static final String DEFAULT_PRIORITY = "high";
 	
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		initialPriority = "low";
 		priority = new Priority(messages, initialPriority);
 	}

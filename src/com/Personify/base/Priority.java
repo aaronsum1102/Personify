@@ -12,7 +12,7 @@ import java.util.List;
 public class Priority {
     private static final List<String> PRIORITIES = Arrays.asList("low", "medium", "high");
     private String priority;
-    private LocalDate dueDate;
+    private final LocalDate dueDate;
 
     /**
      * Construct object with the specify value. If the value is invalid, the object

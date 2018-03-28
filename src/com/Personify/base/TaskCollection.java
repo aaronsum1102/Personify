@@ -25,6 +25,7 @@ public class TaskCollection {
 
     public String getAddTaskSummary(final Task task) {
         tasks.add(task);
+        updateWorkTasksAndPersonalTasks();
         return task.getSummary();
     }
 
@@ -42,9 +43,14 @@ public class TaskCollection {
         return tasks.stream().noneMatch(task -> task.getName().toLowerCase().equals(taskName.toLowerCase()));
     }
 
-    private void sortTasksByDueDate(List<Task> tasks) {
+    private void sortTasksByDueDate(final List<Task> tasks) {
         tasks.sort(Comparator.comparingLong(firstTask -> firstTask.getReminderObject().findDaysLeft()));
         Collections.reverse(tasks);
+    }
+
+    private void updateWorkTasksAndPersonalTasks() {
+        workTasks = filterTaskByType("WorkTask");
+        personalTasks = filterTaskByType("PersonalTask");
     }
 
     private List<Task> filterTaskByType(final String TaskClassName) {
@@ -58,47 +64,44 @@ public class TaskCollection {
         return tasks;
     }
 
-    public List<Task> getWorkTask() {
+    public List<Task> getWorkTasks() {
         sortTasksByDueDate(workTasks);
         return workTasks;
     }
 
     private List<Task> getTasksWithSpecificStatus(final List<Task> tasks, final String status) {
+        sortTasksByDueDate(tasks);
         return tasks.stream()
                 .filter(task -> task.getStatusObject().getStatus().equals(status))
                 .collect(Collectors.toList());
     }
 
     public List<Task> getTasksWithSpecificStatusAndType(final String taskType, final String status) {
-        List<Task> filteredTasks = new ArrayList<>();
         switch (taskType) {
             case "WorkTask":
-                filteredTasks = getTasksWithSpecificStatus(workTasks, status);
+                return getTasksWithSpecificStatus(workTasks, status);
             case "PersonalTask":
-                filteredTasks = getTasksWithSpecificStatus(personalTasks, status);
-            case "Task":
-                filteredTasks = getTasksWithSpecificStatus(tasks, status);
+                return getTasksWithSpecificStatus(personalTasks, status);
         }
-        sortTasksByDueDate(filteredTasks);
-        return filteredTasks;
+        return getTasksWithSpecificStatus(tasks, status);
     }
 
+
     private List<Task> getTasksToComplete(final List<Task> tasks) {
+        sortTasksByDueDate(tasks);
         return tasks.stream()
                 .filter(task -> !(task.getStatusObject().getStatus().equals("done")))
                 .collect(Collectors.toList());
     }
 
     public List<Task> getTasksToCompleteWithSpecificType(final String taskType) {
-        List<Task> filteredTasks = new ArrayList<>();
         switch (taskType) {
             case "WorkTask":
-                filteredTasks = getTasksToComplete(workTasks);
+                return getTasksToComplete(workTasks);
             case "PersonalTask":
-                filteredTasks = getTasksToComplete(personalTasks);
+                return getTasksToComplete(personalTasks);
         }
-        sortTasksByDueDate(filteredTasks);
-        return filteredTasks;
+        return getTasksToComplete(tasks);
     }
 
     public void editTaskName(final int taskIndex, final String newName) {
@@ -125,12 +128,12 @@ public class TaskCollection {
         return ((WorkTask) workTasks.get(taskIndex - 1)).getCollaboratorsForDisplay();
     }
 
-    public int getCollaboratorsSize(final int taskIndex){
+    public int getCollaboratorsSize(final int taskIndex) {
         return ((WorkTask) workTasks.get(taskIndex - 1)).getCollaborators().size();
     }
 
-    public void deleteSpecificCollaborator(final int taskIndex, final int collaboratorIndex){
-        ((WorkTask) workTasks.get(taskIndex - 1)).getCollaborators().remove(collaboratorIndex-1);
+    public void deleteSpecificCollaborator(final int taskIndex, final int collaboratorIndex) {
+        ((WorkTask) workTasks.get(taskIndex - 1)).getCollaborators().remove(collaboratorIndex - 1);
     }
 
     public void setAttribute(final int taskIndex, final String newInfo) {
@@ -148,6 +151,22 @@ public class TaskCollection {
         taskToEdit.setRemarks(remarks);
     }
 
+    private Task addPersonalTasksToSystem(final SubTaskInfo taskData) {
+        return new PersonalTask(taskData.getTaskInfo(), motivationalQuotes, taskData.getTypeSpecificAttribute());
+    }
+
+    private Task addWorkTask(final SubTaskInfo taskData) {
+        Task task = new WorkTask(taskData.getTaskInfo(), motivationalQuotes);
+        List<String> collaborators = new ArrayList<>();
+        if (!(taskData.getTypeSpecificAttribute().isEmpty())) {
+            Scanner tokenizer = new Scanner(taskData.getTypeSpecificAttribute());
+            tokenizer.useDelimiter(", ");
+            collaborators.add(tokenizer.next());
+            collaborators.forEach(((WorkTask) task)::addCollaborators);
+        }
+        return task;
+    }
+
     private List<Task> readTasksFromFile() {
         List<Task> tasksFromFile = new ArrayList<>();
         List<SubTaskInfo> tasksToRead = taskDataIO.readTasksDataFromDataFile();
@@ -156,19 +175,10 @@ public class TaskCollection {
                 String className = taskData.getClassName();
                 switch (className) {
                     case "PersonalTask":
-                        Task task = new PersonalTask(taskData.getTaskInfo(), motivationalQuotes, taskData.getTypeSpecificAttribute());
-                        tasksFromFile.add(task);
+                        tasksFromFile.add(addPersonalTasksToSystem(taskData));
                         break;
                     case "WorkTask":
-                        task = new WorkTask(taskData.getTaskInfo(), motivationalQuotes);
-                        List<String> collaborators = new ArrayList<>();
-                        if (!(taskData.getTypeSpecificAttribute().isEmpty())) {
-                            Scanner tokenizer = new Scanner(taskData.getTypeSpecificAttribute());
-                            tokenizer.useDelimiter(", ");
-                            collaborators.add(tokenizer.next());
-                            collaborators.forEach(((WorkTask) task)::addCollaborators);
-                        }
-                        tasksFromFile.add(task);
+                        tasksFromFile.add(addWorkTask(taskData));
                         break;
                 }
             });
@@ -196,9 +206,27 @@ public class TaskCollection {
 
     public void deleteSpecificTask(final int index) {
         tasks.remove(index - 1);
+        updateWorkTasksAndPersonalTasks();
     }
 
     public void deleteTasksThatWereDone(final List<Task> tasks) {
         this.tasks.removeAll(tasks);
+        updateWorkTasksAndPersonalTasks();
+    }
+
+    public List<String> getTasksSummary() {
+        List<String> summary = new ArrayList<>();
+        summary.add(String.format("%-48s%-2s%d\n", "Total number of task", ":", tasks.size()));
+        summary.add(String.format("%-48s%-2s%d", "Total number of personal task", ":", personalTasks.size()));
+        summary.add(String.format("%-48s%-2s%d", "Total number of personal task that are overdue", ":",
+                getTasksWithSpecificStatus(personalTasks, "overdue").size()));
+        summary.add(String.format("%-48s%-2s%d\n", "Total number of personal task that are done", ":",
+                getTasksWithSpecificStatus(personalTasks, "done").size()));
+        summary.add(String.format("%-48s%-2s%d", "Total number of work of task", ":", workTasks.size()));
+        summary.add(String.format("%-48s%-2s%d", "Total number of work task that are overdue", ":",
+                getTasksWithSpecificStatus(workTasks, "overdue").size()));
+        summary.add(String.format("%-48s%-2s%d\n", "Total number of work task that are done", ":",
+                getTasksWithSpecificStatus(workTasks, "done").size()));
+        return summary;
     }
 }
