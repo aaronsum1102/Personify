@@ -35,8 +35,8 @@ public abstract class Task {
     public Task(final TaskInfo taskInfo, final Motivation motivationQuotes) {
         name = taskInfo.getTaskName();
         dueDate = setInitialDueDate(taskInfo.getTaskDueDate());
-        status = new Status(taskInfo.getTaskStatus());
-        priority = new Priority(taskInfo.getTaskPriority());
+        status = new Status(taskInfo.getTaskStatus(), dueDate);
+        priority = new Priority(taskInfo.getTaskPriority(), dueDate);
         reminder = new Reminder(this.dueDate);
         motivation = motivationQuotes;
         remarks = taskInfo.getRemarks();
