@@ -6,10 +6,16 @@ import com.Personify.integration.FilePath;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Provide methods to load menus use in operation from files into system.
+ */
 class Menu {
     private final List<String> menuDetails;
     private final HashMap<String, List<String>> menus;
 
+    /**
+     * Construct <code>Menu</code> object and load menus from file into system.
+     */
     Menu() {
         menuDetails = getCommandsFromFile();
         menus = new HashMap<>();
@@ -38,6 +44,12 @@ class Menu {
         }
     }
 
+    /**
+     * Provide the menu content based on specific menu name.
+     *
+     * @param menuName name of the menu.
+     * @return a collection of the String content of the menu.
+     */
     List<String> getMenu(final String menuName) {
         return menus.get(menuName);
     }

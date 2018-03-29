@@ -5,9 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A class to manage the status of a task.
+ * Manage the status of a <code>Task</code> object.
  *
- * @author aaronsum
  */
 public class Status {
     private static final List<String> STATUSES = Arrays.asList("to do", "in progress", "done", "overdue");
@@ -17,6 +16,8 @@ public class Status {
     /**
      * Construct object with the specify value. If the value is invalid, object will
      * created with default value of "to do".
+     * @param status status to set for a specific <code>Task</code> object.
+     * @param dueDate due date of a of a specific <code>Task</code> object.
      */
     public Status(final String status, final LocalDate dueDate) {
         this.dueDate = dueDate;

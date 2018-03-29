@@ -6,31 +6,24 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 /**
- * Task provides a object for managing a task. Each task object will hold
- * information about the task name, due date, priority and status. There is also
- * a reminder and motivational message provided in a task object depending on
- * each situation.
- *
- * @author aaronsum
- * @version 2.0, 2018-03-13
+ * Task provides an object for managing a task. Each task object will hold information about the task name, due date,
+ * priority, status and remarks of a task. There is also a reminder and motivational message provided in a task object
+ * depending on each situation.
  */
 public abstract class Task {
+    final Reminder reminder;
     private final Status status;
     private final Priority priority;
-    final Reminder reminder;
     private final Motivation motivation;
     String remarks;
     private String name;
     private LocalDate dueDate;
 
     /**
-     * Instantiate an task object with the specify elements. Due date, status and
-     * priority of the task will be initialized with default value, if the specified
-     * parameters are invalid.
+     * Instantiate a task object with task information, and motivational quotes.
      *
-     * @param taskInfo         detail of a task. It include task name, due date, status, and
-     *                         priority.
-     * @param motivationQuotes is an object which hold a collections of motivational quotes.
+     * @param taskInfo         Detail information of a task.
+     * @param motivationQuotes An object which hold a collections of motivational quotes.
      */
     public Task(final TaskInfo taskInfo, final Motivation motivationQuotes) {
         name = taskInfo.getTaskName();
@@ -97,10 +90,20 @@ public abstract class Task {
         return reminder;
     }
 
+    /**
+     * Provide remarks associated with the object.
+     *
+     * @return Remarks of the task.
+     */
     public String getRemarks() {
         return remarks;
     }
 
+    /**
+     * Set the remarks associated with the object.
+     *
+     * @param remarks new Remarks of the object.
+     */
     public void setRemarks(final String remarks) {
         this.remarks = remarks;
     }
@@ -158,8 +161,10 @@ public abstract class Task {
     }
 
     /**
-     * Provide a summary of the object information. It also include a reminder
-     * message and motivational quotes.
+     * Provide a String representation of the object with specific formatting on the name of the fields. Information in
+     * the string include task name, due date, status and priority of a <code>Task</code> object.
+     *
+     * @return a String representation of this object.
      */
     public String getSummary() {
         String summary = "Here is a summary of the task that you had just added.\n";
@@ -171,18 +176,18 @@ public abstract class Task {
     }
 
     /**
-     * Set the status of the object.
+     * Call {@link Status#setStatus(String)} method to set the status of the object.
      *
-     * @param newStatus To be set for the object.
+     * @param newStatus new status to be set for the object.
      */
     public void setStatus(final String newStatus) {
         status.setStatus(newStatus);
     }
 
     /**
-     * Set the priority of the object.
+     * Call {@link Priority#setPriority(String)} method to set the priority of the object.
      *
-     * @param newPriority To be set for the object.
+     * @param newPriority new priority to be set for the object.
      */
     public void setPriority(final String newPriority) {
         priority.setPriority(newPriority);
@@ -196,7 +201,8 @@ public abstract class Task {
     }
 
     /**
-     * Convert the object attributes to String.
+     * Return a String representation of this object. The String representation consist task name, due date, status
+     * and priority of the object.
      */
     @Override
     public String toString() {

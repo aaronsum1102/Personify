@@ -1,15 +1,23 @@
 package com.Personify.base;
 
+import com.Personify.exception.IllegalUserInfoException;
 import com.Personify.integration.FileIO;
 import com.Personify.integration.FilePath;
 
 import java.util.*;
 
+/**
+ * Provide functionality related to user management. Some key method include register new user into collection and edit
+ * user information.
+ */
 public class UserManagement {
     private final HashMap<String, User> users;
     private final FilePath userFilePath;
     private final FileIO userFile;
 
+    /**
+     * Instantiate a user management object and read all user profile into system.
+     */
     public UserManagement() {
         userFilePath = new FilePath("src/data", "user.txt");
         userFile = new FileIO();
@@ -41,6 +49,9 @@ public class UserManagement {
         return userInfo;
     }
 
+    /**
+     * Write user profile to file.
+     */
     public void saveUserProfile() {
         userFile.writeTaskToFile(userFilePath.getPathToFile(), prepareUserProfileForSavingToFile());
     }
@@ -49,6 +60,13 @@ public class UserManagement {
         return users.containsKey(userName) && password.equals(users.get(userName).getPassword());
     }
 
+    /**
+     * Validate the specify password of a user match the record for the specify username.
+     *
+     * @param userName username of a user.
+     * @param password password of as user
+     * @return true if the password match the record for the specify user.
+     */
     public boolean userInfoValidation(final String userName, final String password) {
         return userValidation(userName, password);
     }
@@ -90,6 +108,13 @@ public class UserManagement {
         return true;
     }
 
+    /**
+     * Check if the specify username is valid.
+     *
+     * @param userName username to check if it is valid.
+     * @return true if username is not empty, unique in system and contains letters or digits only.
+     * @throws IllegalUserInfoException if the username is invalid.
+     */
     public boolean validateNewUser(final String userName) throws IllegalUserInfoException {
         return isUserNameInSystem(userName) && isNewUserNameValid(userName);
     }
@@ -100,6 +125,13 @@ public class UserManagement {
         return isPasswordHasSufficientLength(password) && isPasswordLetterOrDigit(passwordChars);
     }
 
+    /**
+     * Create new user object with the specify parameters.
+     *
+     * @param userName username of the new user object.
+     * @param password password of the new user object.
+     * @throws IllegalUserInfoException If the password is invalid.
+     */
     public void createUser(final String userName, final String password) throws IllegalUserInfoException {
         if (validateNewPassword(password)) {
             User newUser = new User(userName, password);
@@ -107,6 +139,12 @@ public class UserManagement {
         }
     }
 
+    /**
+     * Set the username of a user object in record with the specify username.
+     *
+     * @param currentUserName existing username of an user object.
+     * @param newUserName     new username of an user object.
+     */
     public void editUserName(final String currentUserName, final String newUserName) {
         User user = users.get(currentUserName);
         users.remove(currentUserName);
@@ -114,6 +152,14 @@ public class UserManagement {
         users.put(newUserName, user);
     }
 
+    /**
+     * Set the password of a user object in record with the specify password.
+     *
+     * @param currentUserName username of an user object.
+     * @param currentPassword current password for an user object.
+     * @param newPassword     new password to be set for an user object.
+     * @throws IllegalUserInfoException if the password does not match the specify username.
+     */
     public void editPassword(final String currentUserName, final String currentPassword, final String newPassword)
             throws IllegalUserInfoException {
         if (!userInfoValidation(currentUserName, currentPassword)) {
