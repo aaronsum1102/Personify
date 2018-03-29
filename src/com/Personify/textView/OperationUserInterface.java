@@ -1,12 +1,12 @@
 package com.Personify.textView;
 
-import com.Personify.base.IllegalUserInfoException;
+import com.Personify.exception.IllegalUserInfoException;
 import com.Personify.base.Priority;
 import com.Personify.base.Status;
 import com.Personify.base.Task;
 import com.Personify.controller.Controller;
+import com.Personify.exception.InvalidCommandException;
 import com.Personify.integration.TaskInfo;
-import com.Personify.integration.TaskTableColumnName;
 
 import java.time.LocalDate;
 import java.util.ArrayDeque;
@@ -16,8 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * UserInterface for interacting with user.
- *
- * @author aaronsum
  */
 public class OperationUserInterface extends UserInterface {
     private final Controller controller;
@@ -25,8 +23,12 @@ public class OperationUserInterface extends UserInterface {
     private String currentUserProfileInUse;
 
     /**
-     * Instantiate an object for the interacting with user. At the same time it will
-     * instantiate a {@link Controller} object.
+     * Construct <code>OperationUserInterface</code> object for the interacting with user. At the same time it will call
+     * {@link Controller#afterLogIn(String)} method to load data into system from file and construct an
+     * <code>Deque</code> object to keep track of current menu type.
+     *
+     * @param controller              <code>Controller</code> object which was construct when system start up.
+     * @param currentUserProfileInUse username of the user in current session.
      */
     public OperationUserInterface(final Controller controller, final String currentUserProfileInUse) {
         super();

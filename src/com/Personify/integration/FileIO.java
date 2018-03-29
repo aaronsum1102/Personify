@@ -9,8 +9,17 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Provides methods to read data from file and write data to file.
+ */
 public class FileIO {
-
+    /**
+     * Read each line of the information from the specify <code>Path</code> object as a collection of String if the file
+     * is exists and readable.
+     *
+     * @param pathToFile <code>Path</code> object which contains information of the path to target file.
+     * @return a collection of string read from file.
+     */
     public List<String> readEachLineOfFile(final Path pathToFile) {
         List<String> fileContents = new ArrayList<>();
         try {
@@ -27,6 +36,12 @@ public class FileIO {
         return fileContents;
     }
 
+    /**
+     * Write the specific collection of information to the specify path.
+     *
+     * @param pathToFile  <code>Path</code> object which contains information of the path to target file.
+     * @param information a collection of String to be written to file.
+     */
     public void writeTaskToFile(final Path pathToFile, final List<String> information) {
         Charset charset = Charset.forName("UTF-8");
         try (BufferedWriter writer = Files.newBufferedWriter(pathToFile, charset)) {

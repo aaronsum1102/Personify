@@ -11,9 +11,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Provide method to read task data from file and write task data to file.
+ */
 public class TaskFileIO extends FileIO {
     private final FilePath TASK_FILE_PATH;
 
+    /**
+     * Construct <code>TaskFileIO</code> object to read and write task data of a specific user in current session from
+     * or to file.
+     *
+     * @param userProfile username of the user in current session.
+     */
     public TaskFileIO(final String userProfile) {
         TASK_FILE_PATH = new FilePath("src/data", String.format("%s_tasksData.csv", userProfile));
     }
@@ -31,7 +40,7 @@ public class TaskFileIO extends FileIO {
         return tasksInfo;
     }
 
-    private List<SubTaskInfo> readTaskToTaskInfoCollection() {
+    private List<SubTaskInfo> readEachTaskAndPackToDTOCollection(final List<String> tokenizeData) {
         List<SubTaskInfo> tasksData = new ArrayList<>();
         String className;
         String taskName;
@@ -40,9 +49,7 @@ public class TaskFileIO extends FileIO {
         String priority;
         String remarks;
         String typeSpecificAttribute = "";
-        List<String> eachTask = readEachLineOfFile(TASK_FILE_PATH.getPathToFile());
-        List<String> tokenizeTaskData = tokenizeTasksDetails(eachTask);
-        Iterator<String> it = tokenizeTaskData.iterator();
+        Iterator<String> it = tokenizeData.iterator();
         while (it.hasNext()) {
             className = it.next();
             taskName = it.next();
@@ -63,11 +70,21 @@ public class TaskFileIO extends FileIO {
         return tasksData;
     }
 
+    private List<SubTaskInfo> readTaskToTaskInfoCollection() {
+        List<String> eachTask = readEachLineOfFile(TASK_FILE_PATH.getPathToFile());
+        List<String> tokenizeTaskData = tokenizeTasksDetails(eachTask);
+        return readEachTaskAndPackToDTOCollection(tokenizeTaskData);
+    }
+
     private boolean isTaskDataFileExistsAndReadable() {
         return Files.isReadable(TASK_FILE_PATH.getPathToFile());
     }
 
-
+    /**
+     * Read task data from of a user to system.
+     *
+     * @return a collection of <code>SubTaskInfo</code> objects.
+     */
     public List<SubTaskInfo> readTasksDataFromDataFile() {
         List<SubTaskInfo> taskData = new ArrayList<>();
         if (isTaskDataFileExistsAndReadable()) {
@@ -116,6 +133,12 @@ public class TaskFileIO extends FileIO {
         writeFile.writeTaskToFile(newFile.getPathToFile(), tasksToWriteToFile);
     }
 
+    /**
+     * Write user specific task data to file.
+     *
+     * @param tasks    collection of <code>Task</code> object for specific user.
+     * @param userName username of the user in current session.
+     */
     public void writeTasksToFile(final List<Task> tasks, final String userName) {
         List<SubTaskInfo> tasksToArchive = prepareTasksDataForArchive(tasks);
         List<String> tasksToWriteToFile = formattingTaskDataForArchive(tasksToArchive);

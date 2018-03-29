@@ -5,18 +5,19 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Priority responsible for the management of the priority of a task.
- *
- * @author aaronsum
+ * Responsible for the management of the priority of a task.
  */
 public class Priority {
     private static final List<String> PRIORITIES = Arrays.asList("low", "medium", "high");
-    private String priority;
     private final LocalDate dueDate;
+    private String priority;
 
     /**
-     * Construct object with the specify value. If the value is invalid, the object
-     * will be instantiated with default value of "high".
+     * Construct object with the specify value. If the value is invalid, or the due date of the task is behind current
+     * date the object will be instantiated with default value of "high".
+     *
+     * @param priority priority to set for a specific <code>Task</code> object.
+     * @param dueDate  due date of a specific <code>Task</code> object.
      */
     public Priority(final String priority, final LocalDate dueDate) {
         this.dueDate = dueDate;
@@ -41,7 +42,7 @@ public class Priority {
     }
 
     private String setInitialPriority(final String priority) {
-        if (dueDate.compareTo(LocalDate.now()) < 0){
+        if (dueDate.compareTo(LocalDate.now()) < 0) {
             return "high";
         } else {
             if (isValidPriority(priority)) {
@@ -62,9 +63,8 @@ public class Priority {
     }
 
     /**
-     * Modify the priority with the specify element. If it is one of the valid
-     * priority in the list and is unique regardless of its letter case, then the
-     * priority will be updated.
+     * Modify the priority with the specify element. If it is one of the valid priority in the list and is unique
+     * regardless of its letter case, then the priority will be updated.
      *
      * @param newPriority Element for modification of the existing priority.
      */
@@ -82,22 +82,10 @@ public class Priority {
         }
     }
 
-    /**
-     * Check if the specify element is one of the allowable priority.
-     *
-     * @param priority Element to be checked.
-     * @return true If the specify element is in default list.
-     */
     private boolean isValidPriority(final String priority) {
         return PRIORITIES.contains(priority.toLowerCase());
     }
 
-    /**
-     * Check if the specify element is the same as existing priority.
-     *
-     * @param newPriority Element to be checked.
-     * @return true If the specify element is repeated.
-     */
     private boolean isRepeatedPriority(final String newPriority) {
         return priority.toLowerCase().equals(newPriority.toLowerCase());
     }

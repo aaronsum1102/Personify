@@ -1,5 +1,7 @@
 package com.Personify.textView;
 
+import com.Personify.exception.InvalidCommandException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;

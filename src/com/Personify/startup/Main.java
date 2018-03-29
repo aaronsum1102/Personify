@@ -6,13 +6,14 @@ import com.Personify.textView.UserManagementInterface;
 /**
  * Initialized the Personify program.
  *
- * @author aaronsum
- * @version 2.0, 2018-03-13
  */
 class Main {
 
     /**
-     * Startup the system operation loop.
+     * Construct {@link UserManagementInterface} object and call method {@link UserManagementInterface#startup()}
+     * method to initialised user login or registration process. If login is successful it will construct
+     * {@link OperationUserInterface} and call {@link OperationUserInterface#operation()} method for the operations
+     * in the program.
      *
      * @param args There are no command line expected.
      */
