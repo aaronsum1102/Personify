@@ -189,7 +189,7 @@ public class OperationUserInterface extends UserInterface {
             case 5:
             case 7:
                 int taskIndex = getTaskNumberToEditFromUser(controller.getAllTasks());
-                isValidCommand(controller.getTasksSize(), taskIndex);
+                isValidCommand(controller.getAllTasks().size(), taskIndex);
                 switch (inputFromUser) {
                     case 1:
                         System.out.println("Please give me a new name for the task.");
@@ -243,7 +243,7 @@ public class OperationUserInterface extends UserInterface {
         switch (inputFromUser) {
             case 1:
                 int taskIndex = getTaskNumberToEditFromUser(controller.getAllTasks());
-                isValidCommand(controller.getTasksSize(), taskIndex);
+                isValidCommand(controller.getAllTasks().size(), taskIndex);
                 controller.deleteSpecificTask(taskIndex);
                 messages.add("Task deleted.");
                 break;
@@ -253,7 +253,7 @@ public class OperationUserInterface extends UserInterface {
             case 3:
                 List<Task> filteredTasks = controller.getTasksWithSpecificStatus("Task", "done");
                 if (filteredTasks.isEmpty()) {
-                    messages.add("You don't have any tasks to remove.");
+                    messages.add("You don't have any tasks to clear.");
                 } else {
                     controller.deleteTasksThatWereDone(filteredTasks);
                     messages.add(String.format("I have deleted %d task for you", filteredTasks.size()));
@@ -346,7 +346,7 @@ public class OperationUserInterface extends UserInterface {
         if (controller.removeAllTasks()) {
             messages.add("All tasks were removed.");
         } else {
-            messages.add("You have no task to remove.");
+            messages.add("You have no task to clear.");
         }
     }
 

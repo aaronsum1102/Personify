@@ -1,8 +1,9 @@
 package com.Personify.textView;
 
 import com.Personify.integration.FileIO;
-import com.Personify.integration.FilePath;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,9 +24,9 @@ class Menu {
     }
 
     private List<String> getCommandsFromFile() {
-        FilePath path = new FilePath("src/data", "Commands.txt");
+        Path path = Paths.get("src/data", "Commands.txt");
         FileIO fileIn = new FileIO();
-        return fileIn.readEachLineOfFile(path.getPathToFile());
+        return fileIn.readEachLineOfFile(path);
     }
 
     private void addMenuToMenus() {

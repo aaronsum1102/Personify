@@ -1,116 +1,101 @@
-
-import static org.junit.jupiter.api.Assertions.*;
+package com.Personify.base;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.Personify.base.Status;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StatusTest {
-	private Status status;
-	private Messenger messages = new Messenger();
-	private static final String DEFAULT_STATUS = "to do";
+    LocalDate dueDate;
+    Status status;
+    String initialStatus;
 
-	@BeforeEach
-	void setup() {
-		status = new Status(messages, "to do");
-	}
-	
-	@AfterEach
-	void tearDown() {
-		status = null;
-	}
-	
-	@Test
-	void testInstantiationWithOneOfTheValidStatusInLowerCase() {
-		String newStatus = "in progress";
-		status = new Status(messages, newStatus);
-		String initialStatus = status.getStatus();
-		assertEquals(newStatus, initialStatus);
-	}
-	
-	@Test
-	void testInstantiationWithOneOfTheValidStatusInUpperCase() {
-		String newStatus = "IN PROGRESS";
-		status = new Status(messages, newStatus);
-		String initialStatus = status.getStatus();
-		assertEquals(newStatus.toLowerCase(), initialStatus);
-	}
-	
-	@Test
-	void testInstantiationWithOneOfTheValidStatusInMixedCase() {
-		String newStatus = "In PrOgReSs";
-		status = new Status(messages, newStatus);
-		String initialStatus = status.getStatus();
-		assertEquals(newStatus.toLowerCase(), initialStatus);
-	}
-	
-	@Test
-	void testInstantiationWithEmptyString() {
-		status = new Status(messages, "");
-		String initialStatus = status.getStatus();
-		assertEquals(DEFAULT_STATUS, initialStatus);
-	}
-	
-	@Test
-	void testInstantiationWithNumberWrapInString() {
-		status = new Status(messages, "124");
-		String initialStatus = status.getStatus();
-		assertEquals(DEFAULT_STATUS, initialStatus);
-	}
-	
-	@Test
-	void testSetStatusWithNewValidStatusInLowerCase() {
-		String newStatus = "done";
-		boolean result = status.setStatus(newStatus);
-		assertEquals(true, result);
-		assertEquals(newStatus, status.getStatus());
-	}
-	
-	@Test
-	void testSetStatusWitStatusOutOfValidStatusList() {
-		String newStatus = "To Dod";
-		boolean result = status.setStatus(newStatus);
-		assertEquals(false, result);
-		assertEquals(DEFAULT_STATUS, status.getStatus());
-	}
-	
-	@Test
-	void testSetStatusWithValidStatusInUpperCase() {
-		String newStatus = "DONE";
-		boolean result = status.setStatus(newStatus);
-		assertEquals(true, result);
-		assertEquals(newStatus.toLowerCase(), status.getStatus());
-	}
-	
-	@Test
-	void testSetStatusWithValidStatusInMixedCase() {
-		String newStatus = "DoNe";
-		boolean result = status.setStatus(newStatus);
-		assertEquals(true, result);
-		assertEquals(newStatus.toLowerCase(), status.getStatus());
-	}
-	
-	@Test
-	void testSetStatusWithRepeatedStatus() {
-		String newStatus = "To do";
-		boolean result = status.setStatus(newStatus);
-		assertEquals(false, result);
-		assertEquals(DEFAULT_STATUS, status.getStatus());
-	}
-	
-	@Test
-	void testSetStatusWithEmptyString() {
-		boolean result = status.setStatus("");
-		assertEquals(false, result);
-		assertEquals(DEFAULT_STATUS, status.getStatus());
-	}
-	
-	@Test
-	void testSetStatusWithNumberWrapInString() {
-		boolean result = status.setStatus("6987352");
-		assertEquals(false, result);
-		assertEquals(DEFAULT_STATUS, status.getStatus());
-	}
+    @BeforeEach
+    void setup() {
+        initialStatus = "in progress";
+        dueDate = LocalDate.now();
+        status = new Status(initialStatus, dueDate);
+    }
+
+    @AfterEach
+    void tearDown() {
+        status = null;
+    }
+
+    @Test
+    void testConstructionOfStatusObject() {
+        assertEquals(initialStatus, status.getStatus());
+    }
+
+    @Test
+    void testConstructionOfStatusObjectWithDueDateBehindTodayDate() {
+        LocalDate dueDate = LocalDate.now().minusDays(3);
+        status = new Status(initialStatus, dueDate);
+        assertEquals("overdue", status.getStatus());
+    }
+
+    @Test
+    void testConstructionOfStatusObjectWithNoPriority() {
+        status = new Status("", dueDate);
+        assertEquals("to do", status.getStatus());
+    }
+
+    @Test
+    void testConstructionOfStatusObjectWithInvalidPriority() {
+        status = new Status("I don't know", dueDate);
+        assertEquals("to do", status.getStatus());
+    }
+
+    @Test
+    void testConstructionOfStatusObjectWithNumberAsPriority() {
+        status = new Status("213", dueDate);
+        assertEquals("to do", status.getStatus());
+    }
+
+    @Test
+    void testSetStatusWithNewValidStatus() {
+        String newStatus = "done";
+        status.setStatus(newStatus);
+        assertEquals(newStatus, status.getStatus());
+    }
+
+    @Test
+    void testSetStatusWitInvalidStatus() {
+        String newStatus = "To Dod";
+        assertThrows(IllegalArgumentException.class, () -> status.setStatus(newStatus));
+    }
+
+    @Test
+    void testSetStatusWithValidStatusInUpperCase() {
+        String newStatus = "DONE";
+        status.setStatus(newStatus);
+        assertEquals(newStatus.toLowerCase(), status.getStatus());
+    }
+
+    @Test
+    void testSetStatusWithValidStatusInMixedCase() {
+        String newStatus = "DoNe";
+        status.setStatus(newStatus);
+        assertEquals(newStatus.toLowerCase(), status.getStatus());
+    }
+
+    @Test
+    void testSetStatusWithRepeatedStatus() {
+        String newStatus = "low";
+        assertThrows(IllegalArgumentException.class, () -> status.setStatus(newStatus));
+    }
+
+    @Test
+    void testSetStatusWithEmptyString() {
+        assertThrows(IllegalArgumentException.class, () -> status.setStatus(""));
+    }
+
+    @Test
+    void testSetStatusWithNumberWrapInString() {
+        assertThrows(IllegalArgumentException.class, () -> status.setStatus("12342"));
+    }
 }

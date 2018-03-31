@@ -62,17 +62,17 @@ public class UserManagementInterface extends UserInterface {
             case 1:
                 Boolean isLogin = logIn();
                 if (isLogin) {
-                    tracker.setPrimaryInformation(isLogin);
+                    tracker.setKey(isLogin);
                 } else {
-                    Integer counter = tracker.getSecondaryInformation();
-                    tracker.setSecondaryInformation(++counter);
+                    Integer counter = tracker.getValue();
+                    tracker.setValue(++counter);
                     System.err.println("Warning: Invalid user name or password.");
                 }
                 break;
             case 2:
                 createUser();
                 System.out.println("Congrats! You can log in the system now.");
-                tracker.setSecondaryInformation(1);
+                tracker.setValue(1);
                 break;
             case 3:
                 System.out.println("Good bye!");
@@ -93,7 +93,7 @@ public class UserManagementInterface extends UserInterface {
         int logInCounter = 1;
         InformationPair<Boolean, Integer> tracker = new InformationPair<>(isLogin, logInCounter);
         while (!isLogin) {
-            if (tracker.getSecondaryInformation() >= 4) {
+            if (tracker.getValue() >= 4) {
                 System.err.println("Warning: Maximum attempt for login exceeded!");
                 System.exit(0);
             }
@@ -102,7 +102,7 @@ public class UserManagementInterface extends UserInterface {
                 final int commandToExit = getCommandNoToExitAndDisplayMenu(menuName);
                 int userChoices = getUserInputSelectionAndSanityCheck(commandToExit);
                 switchLoginOptions(userChoices, tracker);
-                isLogin = tracker.getPrimaryInformation();
+                isLogin = tracker.getKey();
             } catch (NumberFormatException e) {
                 System.err.println("Warning: I'm smart enough to know you didn't given me a number. Don't try to challenge me.");
             } catch (InvalidCommandException | IllegalUserInfoException e) {
@@ -112,6 +112,6 @@ public class UserManagementInterface extends UserInterface {
                 controller.saveUserProfile();
             }
         }
-        return tracker.getPrimaryInformation();
+        return tracker.getKey();
     }
 }

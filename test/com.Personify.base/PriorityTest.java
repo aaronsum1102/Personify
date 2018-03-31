@@ -1,117 +1,111 @@
-
-import static org.junit.jupiter.api.Assertions.*;
+package com.Personify.base;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.Personify.base.Priority;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PriorityTest {
-	private Priority priority;
-	private Messenger messages = new Messenger();
-	private String initialPriority;
-	private static final String DEFAULT_PRIORITY = "high";
-	
-	@BeforeEach
-	void setUp() {
-		initialPriority = "low";
-		priority = new Priority(messages, initialPriority);
-	}
-	
-	@AfterEach
-	void tearDown() {
-		priority = null;
-	}
-	
-	@Test
-	void testInstantiationOfPriorityObject() {
-		assertEquals(initialPriority, priority.getPriority());
-	}
-	
-	@Test
-	void testInstantiationOfPriorityObjectWithPriorityInCapitalCase() {
-		initialPriority = "LOW";
-		priority = new Priority(messages, initialPriority);
-		assertEquals(initialPriority.toLowerCase(), priority.getPriority());
-	}
-	
-	@Test
-	void testInstantiationOfPriorityObjectWithEmptyString() {
-		initialPriority = "";
-		priority = new Priority(messages, initialPriority);
-		assertEquals(DEFAULT_PRIORITY, priority.getPriority());
-	}
-	
-	@Test
-	void testInstantiationOfPriorityObjectWithNumberWrapInString() {
-		initialPriority = "214";
-		priority = new Priority(messages, initialPriority);
-		assertEquals(DEFAULT_PRIORITY, priority.getPriority());
-	}
-	
-	@Test
-	void testSetPriorityWithNewValueInPriorityCollection() {
-		String newPriority = "Medium";
-		boolean result = priority.setPriority(newPriority);
-		assertEquals(true, result);
-		assertEquals(newPriority.toLowerCase(), priority.getPriority());
-	}
-	
-	@Test
-	void testSetPriorityWithValueNotInValidPriorityCollection() {
-		String newPriority = "Lowa";
-		boolean result = priority.setPriority(newPriority);
-		assertEquals(false, result);
-		assertEquals(initialPriority, priority.getPriority());
-	}
-	
-	@Test
-	void testSetPriorityWithEmptyString() {
-		String newPriority = "";
-		boolean result = priority.setPriority(newPriority);
-		assertEquals(false, result);
-		assertEquals(initialPriority, priority.getPriority());
-	}
-	
-	@Test
-	void testSetPriorityWithNumberWrapInString() {
-		String newPriority = "124";
-		boolean result = priority.setPriority(newPriority);
-		assertEquals(false, result);
-		assertEquals(initialPriority, priority.getPriority());
-	}
-	
-	@Test
-	void testSetPriorityWithSamePriority() {
-		String newPriority = initialPriority;
-		boolean result = priority.setPriority(newPriority);
-		assertEquals(false, result);
-		assertEquals(initialPriority, priority.getPriority());
-	}
-	
-	@Test
-	void testSetPriorityWithNewPriorityInLowerCase() {
-		String priorityToCheck = "medium";
-		boolean result = priority.setPriority(priorityToCheck);
-		assertEquals(true, result);
-		assertEquals(priorityToCheck, priority.getPriority());
-	}
-	
-	@Test
-	void testSetPriorityWithNewPriorityInUpperCase() {
-		String priorityToCheck = "MEDIUM";
-		boolean result = priority.setPriority(priorityToCheck);
-		assertEquals(true, result);
-		assertEquals(priorityToCheck.toLowerCase(), priority.getPriority());
-	}
-	
-	@Test
-	void testSetPriorityWithNewPriorityInCamelCase() {
-		String priorityToCheck = "mEdiUm";
-		boolean result = priority.setPriority(priorityToCheck);
-		assertEquals(true, result);
-		assertEquals(priorityToCheck.toLowerCase(), priority.getPriority());
-	}
-	
+    Priority priority;
+    String initialPriority;
+    LocalDate dueDate;
+
+    @BeforeEach
+    void setUp() {
+        initialPriority = "low";
+        dueDate = LocalDate.now();
+        priority = new Priority(initialPriority, dueDate);
+    }
+
+    @AfterEach
+    void tearDown() {
+        priority = null;
+    }
+
+    @Test
+    void testConstructionOfPriorityObject() {
+        assertEquals(initialPriority, priority.getPriority());
+    }
+
+    @Test
+    void testConstructionOfPriorityObjectWithDueDateBehindTodayDate() {
+        LocalDate dueDate = LocalDate.now().minusDays(3);
+        priority = new Priority(initialPriority, dueDate);
+        assertEquals("high", priority.getPriority());
+    }
+
+    @Test
+    void testConstructionOfPriorityObjectWithNoPriority() {
+        priority = new Priority("", dueDate);
+        assertEquals("high", priority.getPriority());
+    }
+
+    @Test
+    void testConstructionOfPriorityObjectWithInvalidPriority() {
+        priority = new Priority("I don't know", dueDate);
+        assertEquals("high", priority.getPriority());
+    }
+
+    @Test
+    void testConstructionOfPriorityObjectWithNumberAsPriority() {
+        priority = new Priority("213", dueDate);
+        assertEquals("high", priority.getPriority());
+    }
+
+    @Test
+    void testSetPriorityWithNewPriority() {
+        String newPriority = "Medium";
+        priority.setPriority(newPriority);
+        assertEquals(newPriority.toLowerCase(), priority.getPriority());
+    }
+
+    @Test
+    void testSetPriorityWithValueNotInValidPriority() {
+        String newPriority = "Lowa";
+        assertThrows(IllegalArgumentException.class, () -> priority.setPriority(newPriority));
+    }
+
+    @Test
+    void testSetPriorityWithEmptyString() {
+        String newPriority = "";
+        assertThrows(IllegalArgumentException.class, () -> priority.setPriority(newPriority));
+    }
+
+    @Test
+    void testSetPriorityWithNumberWrapInString() {
+        String newPriority = "124";
+        assertThrows(IllegalArgumentException.class, () -> priority.setPriority(newPriority));
+    }
+
+    @Test
+    void testSetPriorityWithSamePriority() {
+        String newPriority = initialPriority;
+        assertThrows(IllegalArgumentException.class, () -> priority.setPriority(newPriority));
+    }
+
+    @Test
+    void testSetPriorityWithNewPriorityInLowerCase() {
+        String priorityToCheck = "medium";
+        priority.setPriority(priorityToCheck);
+        assertEquals(priorityToCheck, priority.getPriority());
+    }
+
+    @Test
+    void testSetPriorityWithNewPriorityInUpperCase() {
+        String priorityToCheck = "MEDIUM";
+        priority.setPriority(priorityToCheck);
+        assertEquals(priorityToCheck.toLowerCase(), priority.getPriority());
+    }
+
+    @Test
+    void testSetPriorityWithNewPriorityInCamelCase() {
+        String priorityToCheck = "mEdiUm";
+        priority.setPriority(priorityToCheck);
+        assertEquals(priorityToCheck.toLowerCase(), priority.getPriority());
+    }
+
 }

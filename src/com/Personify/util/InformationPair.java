@@ -1,60 +1,70 @@
 package com.Personify.util;
 
 /**
- * Provide a generic implementation of primaryInformation pairs. It provide methods to set and get the
+ * Provide a generic implementation of key pairs. It provide methods to set and get the
  * information pair.
  *
- * @param <K> primaryInformation of a <code>InformationPair</code> object.
- * @param <V> secondaryInformation of a <code>InformationPair</code> object.
+ * @param <K> key of a <code>InformationPair</code> object.
+ * @param <V> value of a <code>InformationPair</code> object.
  */
 public class InformationPair<K, V> {
-    private K primaryInformation;
-    private V secondaryInformation;
+    private K key;
+    private V value;
 
     /**
-     * Construct a <code>InformationPair</code> object with specify primaryInformation and secondaryInformation.
+     * Construct a <code>InformationPair</code> object with specify key and value.
      *
-     * @param primaryInformation   primaryInformation of a <code>InformationPair</code> object.
-     * @param secondaryInformation secondaryInformation of a <code>InformationPair</code> object.
+     * @param key   key of a <code>InformationPair</code> object.
+     * @param value value of a <code>InformationPair</code> object.
      */
-    public InformationPair(K primaryInformation, V secondaryInformation) {
-        this.primaryInformation = primaryInformation;
-        this.secondaryInformation = secondaryInformation;
+    public InformationPair(K key, V value) {
+        this.key = key;
+        this.value = value;
     }
 
     /**
-     * Provide the primaryInformation of a <code>InformationPair</code> object.
+     * Provide the key of a <code>InformationPair</code> object.
      *
-     * @return primaryInformation of a <code>InformationPair</code> object.
+     * @return key of a <code>InformationPair</code> object.
      */
-    public K getPrimaryInformation() {
-        return primaryInformation;
+    public K getKey() {
+        return key;
     }
 
     /**
-     * Set the primaryInformation of a <code>InformationPair</code> object.
+     * Set the key of a <code>InformationPair</code> object.
      *
-     * @param primaryInformation new primaryInformation to set for a <code>InformationPair</code> object.
+     * @param key new key to set for a <code>InformationPair</code> object.
      */
-    public void setPrimaryInformation(K primaryInformation) {
-        this.primaryInformation = primaryInformation;
+    public void setKey(K key) {
+        this.key = key;
     }
 
     /**
-     * Provide the secondaryInformation of a <code>InformationPair</code> object.
+     * Provide the value of a <code>InformationPair</code> object.
      *
-     * @return secondaryInformation for the primaryInformation.
+     * @return value for the key.
      */
-    public V getSecondaryInformation() {
-        return secondaryInformation;
+    public V getValue() {
+        return value;
     }
 
     /**
-     * Set the secondaryInformation of a <code>InformationPair</code> object.
+     * Set the value of a <code>InformationPair</code> object.
      *
-     * @param secondaryInformation new secondaryInformation to set for a <code>InformationPair</code> object.
+     * @param value new value to set for a <code>InformationPair</code> object.
      */
-    public void setSecondaryInformation(V secondaryInformation) {
-        this.secondaryInformation = secondaryInformation;
+    public void setValue(V value) {
+        this.value = value;
+    }
+
+    /**
+     * Provide String representation of <code>InformationPair</code> object.
+     *
+     * @return a String representation of <code>InformationPair</code> object.
+     */
+    @Override
+    public String toString() {
+        return String.format("%s;%s", key, value);
     }
 }

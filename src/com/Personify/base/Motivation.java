@@ -1,10 +1,11 @@
 package com.Personify.base;
 
 import com.Personify.integration.FileIO;
-import com.Personify.integration.FilePath;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,9 +16,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  */
 public class Motivation {
-    private final static FilePath defaultPathToQuoteFile = new FilePath("src/data", "motivationalQuotes.txt");
+    private final static Path defaultPathToQuoteFile = Paths.get("src/data", "motivationalQuotes.txt");
     private final List<String> quotes;
-    private FilePath motivationalQuoteFile;
+    private Path motivationalQuoteFile;
 
     /**
      * Instantiate a <code>Motivation</code> object with a default collection of quote read from file.
@@ -25,12 +26,12 @@ public class Motivation {
      * @param userName username of the user in current session.
      */
     public Motivation(final String userName) {
-        motivationalQuoteFile = new FilePath("src/data", String.format("%s_motivationalQuotes.txt", userName));
-        if (!Files.exists(motivationalQuoteFile.getPathToFile())) {
+        motivationalQuoteFile = Paths.get("src/data", String.format("%s_motivationalQuotes.txt", userName));
+        if (!Files.exists(motivationalQuoteFile)) {
             motivationalQuoteFile = defaultPathToQuoteFile;
         }
         FileIO motivationalQuotesFile = new FileIO();
-        quotes = motivationalQuotesFile.readEachLineOfFile(motivationalQuoteFile.getPathToFile());
+        quotes = motivationalQuotesFile.readEachLineOfFile(motivationalQuoteFile);
     }
 
     /**
@@ -105,20 +106,20 @@ public class Motivation {
     }
 
     /**
-     * Write the motivational quotes specoific to the user of current session.
+     * Write the motivational quotes specific to the user of current session.
      *
      * @param userName username of the user in current session.
      */
     public void writeMotivationalQuoteToFIle(final String userName) {
         try {
             if (!motivationalQuoteFile.equals(defaultPathToQuoteFile)) {
-                Files.deleteIfExists(motivationalQuoteFile.getPathToFile());
+                Files.deleteIfExists(motivationalQuoteFile);
             }
         } catch (IOException e) {
             System.err.println("IO error while manipulating file.");
         }
-        FilePath path = new FilePath("src/data", String.format("%s_motivationalQuotes.txt", userName));
+        Path path = Paths.get("src/data", String.format("%s_motivationalQuotes.txt", userName));
         FileIO motivationalQuotesFileIO = new FileIO();
-        motivationalQuotesFileIO.writeTaskToFile(path.getPathToFile(), quotes);
+        motivationalQuotesFileIO.writeTaskToFile(path, quotes);
     }
 }
