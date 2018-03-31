@@ -317,6 +317,7 @@ public class Controller {
      *
      * @param currentUserName username of the user in current session.
      * @param newUserName     new username to be used for the user in current session.
+     * @throws IllegalUserInfoException if the specify new username is invalid.
      */
     public void editUserName(final String currentUserName, final String newUserName) throws IllegalUserInfoException {
         userManagement.setUsername(currentUserName, newUserName);

@@ -160,6 +160,7 @@ public class UserManagement {
      *
      * @param currentUsername existing username of an user object.
      * @param newUsername     new username of an user object.
+     * @throws IllegalUserInfoException if the specify new username is invalid.
      */
     public void setUsername(final String currentUsername, final String newUsername) throws IllegalUserInfoException {
         if (validateNewUsername(newUsername)) {
