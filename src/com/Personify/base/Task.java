@@ -25,7 +25,7 @@ public abstract class Task {
      * @param taskInfo         Detail information of a task.
      * @param motivationQuotes An object which hold a collections of motivational quotes.
      */
-    public Task(final TaskInfo taskInfo, final Motivation motivationQuotes) {
+    Task(final TaskInfo taskInfo, final Motivation motivationQuotes) {
         name = taskInfo.getTaskName();
         dueDate = setInitialDueDate(taskInfo.getTaskDueDate());
         status = new Status(taskInfo.getTaskStatus(), dueDate);

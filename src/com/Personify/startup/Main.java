@@ -5,7 +5,6 @@ import com.Personify.textView.UserManagementInterface;
 
 /**
  * Initialized the Personify program.
- *
  */
 class Main {
 
@@ -25,5 +24,6 @@ class Main {
                     currentUser);
             view.operation();
         }
+        System.exit(0);
     }
 }

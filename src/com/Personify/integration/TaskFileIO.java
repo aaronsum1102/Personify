@@ -6,6 +6,8 @@ import com.Personify.base.WorkTask;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.Scanner;
  * Provide method to read task data from file and write task data to file.
  */
 public class TaskFileIO extends FileIO {
-    private final FilePath TASK_FILE_PATH;
+    private final Path path;
 
     /**
      * Construct <code>TaskFileIO</code> object to read and write task data of a specific user in current session from
@@ -24,7 +26,7 @@ public class TaskFileIO extends FileIO {
      * @param userProfile username of the user in current session.
      */
     public TaskFileIO(final String userProfile) {
-        TASK_FILE_PATH = new FilePath("src/data", String.format("%s_tasksData.csv", userProfile));
+        path = Paths.get("src/data", String.format("%s_tasksData.csv", userProfile)).toAbsolutePath();
     }
 
     private List<String> tokenizeTasksDetails(List<String> tasks) {
@@ -71,13 +73,13 @@ public class TaskFileIO extends FileIO {
     }
 
     private List<SubTaskInfo> readTaskToTaskInfoCollection() {
-        List<String> eachTask = readEachLineOfFile(TASK_FILE_PATH.getPathToFile());
+        List<String> eachTask = readEachLineOfFile(path);
         List<String> tokenizeTaskData = tokenizeTasksDetails(eachTask);
         return readEachTaskAndPackToDTOCollection(tokenizeTaskData);
     }
 
     private boolean isTaskDataFileExistsAndReadable() {
-        return Files.isReadable(TASK_FILE_PATH.getPathToFile());
+        return Files.isReadable(path);
     }
 
     /**
@@ -124,13 +126,13 @@ public class TaskFileIO extends FileIO {
 
     private void writeToFile(final List<String> tasksToWriteToFile, final String userName) {
         try {
-            Files.deleteIfExists(TASK_FILE_PATH.getPathToFile());
+            Files.deleteIfExists(path);
         } catch (IOException e) {
             System.err.println("IO error while manipulating file.");
         }
-        final FilePath newFile = new FilePath("src/data", String.format("%s_tasksData.csv", userName));
+        final Path newFile = Paths.get("src/data", String.format("%s_tasksData.csv", userName));
         FileIO writeFile = new FileIO();
-        writeFile.writeTaskToFile(newFile.getPathToFile(), tasksToWriteToFile);
+        writeFile.writeTaskToFile(newFile, tasksToWriteToFile);
     }
 
     /**

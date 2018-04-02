@@ -31,53 +31,39 @@ public class Controller {
     public void afterLogIn(final String userProfileName) {
         motivationalQuotes = new Motivation(userProfileName);
         tasks = new TaskCollection(motivationalQuotes, userProfileName);
-        readTaskDataToSystem();
-    }
-
-    private void readTaskDataToSystem() {
-        tasks.readTasksToSystem();
     }
 
     /**
-     * Call {@link TaskCollection#getTasksSize()} method to get the number of <code>Task</code> object in collection.
-     *
-     * @return number of <code>Task</code> object in collection.
-     */
-    public int getTasksSize() {
-        return tasks.getTasksSize();
-    }
-
-    /**
-     * Call {@link TaskCollection#getAllTasks()} method to get a collection of all the <code>Task</code> object.
+     * Call {@link TaskCollection#getAll()} method to get a collection of all the <code>Task</code> object.
      *
      * @return a collection of all the <code>Task</code> object.
      */
     public List<Task> getAllTasks() {
-        return tasks.getAllTasks();
+        return tasks.getAll();
     }
 
     /**
-     * Call {@link TaskCollection#getWorkTasks()} method to get a collection of all the <code>WorkTask</code> object.
+     * Call {@link TaskCollection#getWork()} method to get a collection of all the <code>WorkTask</code> object.
      *
      * @return a collection of all the <code>WorkTask</code> object.
      */
     public List<Task> getAllWorkTasks() {
-        return tasks.getWorkTasks();
+        return tasks.getWork();
     }
 
     /**
-     * Call {@link TaskCollection#getTasksSummary()} method to get a summary of all the <code>Task</code> object in
+     * Call {@link TaskCollection#getSummary()} method to get a summary of all the <code>Task</code> object in
      * <code>TaskCollection</code> object.
      *
      * @return a summary of all the <code>Task</code> object in <code>TaskCollection</code> object as a collection of
      * <code>String</code>.
      */
     public List<String> getTasksSummary() {
-        return tasks.getTasksSummary();
+        return tasks.getSummary();
     }
 
     /**
-     * Call {@link TaskCollection#getTasksWithSpecificStatus(List, String)} method to get a collection of
+     * Call {@link TaskCollection#selectByStatusAndType(String, String)} method to get a collection of
      * <code>Task</code> object with the specific status and task type.
      *
      * @param taskType specific task type of an object in either <code>WorkTask</code> or <code>PersonalTask</code>.
@@ -85,18 +71,18 @@ public class Controller {
      * @return a collection of <code>Task</code> objects with the specific status and task type.
      */
     public List<Task> getTasksWithSpecificStatus(final String taskType, final String status) {
-        return tasks.getTasksWithSpecificStatusAndType(taskType, status);
+        return tasks.selectByStatusAndType(taskType, status);
     }
 
     /**
-     * Call {@link TaskCollection#getTasksToCompleteWithSpecificType(String)} method to filter out a collection of
+     * Call {@link TaskCollection#selectTaskToDoByType(String)} method to filter out a collection of
      * <code>Task</code> object with the specific task type from a collection of <code>Task</code> object.
      *
      * @param taskType specific task type of an object in either <code>WorkTask</code> or <code>PersonalTask</code>.
      * @return a collection of <code>Task</code> objects with the specific task type.
      */
     public List<Task> getTasksToComplete(final String taskType) {
-        return tasks.getTasksToCompleteWithSpecificType(taskType);
+        return tasks.selectTaskToDoByType(taskType);
     }
 
     /**
@@ -108,7 +94,7 @@ public class Controller {
      */
     public String addPersonalTaskAndGetSummary(final TaskInfo TaskInfo, final String details) {
         Task task = new PersonalTask(TaskInfo, motivationalQuotes, details);
-        return tasks.getAddTaskSummary(task);
+        return tasks.addTaskWithSummary(task);
     }
 
     /**
@@ -123,72 +109,72 @@ public class Controller {
             throws IllegalArgumentException {
         Task task = new WorkTask(TaskInfo, motivationalQuotes);
         ((WorkTask) task).addCollaborators(collaborator);
-        return tasks.getAddTaskSummary(task);
+        return tasks.addTaskWithSummary(task);
     }
 
     /**
-     * Call {@link TaskCollection#isTaskNameValid(String)} to check the validity of the specify task name.
+     * Call {@link TaskCollection#isNameValid(String)} to check the validity of the specify task name.
      *
      * @param taskName task name to be checked for validity.
      * @return true if the task name if valid.
      */
     public boolean isTaskNameValid(final String taskName) {
-        return tasks.isTaskNameValid(taskName);
+        return tasks.isNameValid(taskName);
     }
 
     /**
-     * Call {@link TaskCollection#editTaskName(int, String)} method to edit the task name of the specify object with
+     * Call {@link TaskCollection#setName(int, String)} method to edit the task name of the specify object with
      * the specify name.
      *
      * @param index   task number of n task object in <code>TaskCollection</code> object.
      * @param newName new name of the specify task object.
      */
     public void editTaskName(final int index, final String newName) {
-        tasks.editTaskName(index, newName);
+        tasks.setName(index, newName);
     }
 
     /**
-     * Call {@link TaskCollection#editDueDate(int, String)} method to edit the due date of the specify object with the
+     * Call {@link TaskCollection#setDueDate(int, String)} method to edit the due date of the specify object with the
      * specify due date.
      *
      * @param index      task number of n task object in <code>TaskCollection</code> object.
      * @param newDueDate new due date of the specify object.
      */
     public void editDueDate(final int index, final String newDueDate) {
-        tasks.editDueDate(index, newDueDate);
+        tasks.setDueDate(index, newDueDate);
     }
 
     /**
-     * Call {@link TaskCollection#editStatus(int, String)} method to edit the status of the specify object with the
+     * Call {@link TaskCollection#setStatus(int, String)} method to edit the status of the specify object with the
      * specify status.
      *
      * @param index     task number of a task object in <code>TaskCollection</code> object.
      * @param newStatus new status of the specify object.
      */
     public void editTaskStatus(final int index, final String newStatus) {
-        tasks.editStatus(index, newStatus);
+        tasks.setStatus(index, newStatus);
     }
 
     /**
-     * Call {@link TaskCollection#editPriority(int, String)} to edit the priority of the specify <code>Task</code>
+     * Call {@link TaskCollection#setPriority(int, String)} to edit the priority of the specify <code>Task</code>
      * object with the specify priority.
      *
      * @param index       task number of a task object in <code>TaskCollection</code> object.
      * @param newPriority new priority of the specify object.
      */
     public void editTaskPriority(final int index, final String newPriority) {
-        tasks.editPriority(index, newPriority);
+        tasks.setPriority(index, newPriority);
     }
 
     /**
-     * Call {@link TaskCollection#getCollaboratorsForDisplay(int)} method to get all the collaborators of the specific
+     * Call {@link TaskCollection#showCollaborators(int)} method to get all the collaborators of the specific
      * <code>WorkTask</code> object
      *
      * @param index task number of a task object in <code>TaskCollection</code>collection.
      * @return all collaborators of a <code>WorkTask</code> object.
      */
     public String getCollaboratorsForDisplay(final int index) {
-        return tasks.getCollaboratorsForDisplay(index);
+        return tasks.showCollaborators(index);
     }
 
     /**
@@ -204,7 +190,7 @@ public class Controller {
     }
 
     /**
-     * Call {@link TaskCollection#deleteSpecificTask(int)} method to delete specific collaborator of a
+     * Call {@link TaskCollection#clearCollaborator(int, int)} method to delete specific collaborator of a
      * <code>WorkTask</code> object.
      *
      * @param taskIndex         the task number of a task object in the collection of a <code>TaskCollection</code>
@@ -212,7 +198,7 @@ public class Controller {
      * @param collaboratorIndex the collaborator number of an object in the collection of a <code>WorkTask</code> object.
      */
     public void deleteCollaborator(final int taskIndex, final int collaboratorIndex) {
-        tasks.deleteSpecificCollaborator(taskIndex, collaboratorIndex);
+        tasks.clearCollaborator(taskIndex, collaboratorIndex);
     }
 
     /**
@@ -237,45 +223,45 @@ public class Controller {
     }
 
     /**
-     * Call {@link TaskCollection#writeTasksToFile(String)} method to write the task data of a specify username to file.
+     * Call {@link TaskCollection#writeToFile(String)} method to write the task data of a specify username to file.
      *
      * @param userName username in current session.
      */
     public void writeTaskDataToSystem(final String userName) {
-        tasks.writeTasksToFile(userName);
+        tasks.writeToFile(userName);
     }
 
     /**
-     * Call {@link TaskCollection#removeAllTasks()} method to remove all task objects in the collection.
+     * Call {@link TaskCollection#clear()} method to clear all task objects in the collection.
      *
      * @return true if the collection is empty after operation.
      */
     public boolean removeAllTasks() {
-        return tasks.removeAllTasks();
+        return tasks.clear();
     }
 
     /**
-     * Call {@link TaskCollection#deleteSpecificTask(int)} to remove specific task object in the
+     * Call {@link TaskCollection#remove(int)} to clear specific task object in the
      * collection.
      *
      * @param index the task number to be removed from collection.
      */
     public void deleteSpecificTask(int index) {
-        tasks.deleteSpecificTask(index);
+        tasks.remove(index);
     }
 
     /**
-     * Call {@link TaskCollection#deleteTasksThatWereDone(List)} to remove all task objects with the
+     * Call {@link TaskCollection#removeDoneTasks(List)} to clear all task objects with the
      * status of "done".
      *
      * @param filteredTasks the collection of tasks to to removed task object with status marked as "done".
      */
     public void deleteTasksThatWereDone(final List<Task> filteredTasks) {
-        tasks.deleteTasksThatWereDone(filteredTasks);
+        tasks.removeDoneTasks(filteredTasks);
     }
 
     /**
-     * Call {@link UserManagement#userInfoValidation(String, String)} method to validate the
+     * Call {@link UserManagement#userValidation(String, String)} method to validate the
      * specify password for the specify user match the record in system.
      *
      * @param userName username to be tested.
@@ -283,15 +269,15 @@ public class Controller {
      * @return true if the password for the specific username match the record in system.
      */
     public boolean userInfoValidation(final String userName, final String password) {
-        return userManagement.userInfoValidation(userName, password);
+        return userManagement.userValidation(userName, password);
     }
 
     /**
-     * Call {@link UserManagement#saveUserProfile()} method to write the user information of the user in current
+     * Call {@link UserManagement#saveProfile()} method to write the user information of the user in current
      * session to file.
      */
     public void saveUserProfile() {
-        userManagement.saveUserProfile();
+        userManagement.saveProfile();
     }
 
     /**
@@ -316,28 +302,29 @@ public class Controller {
     }
 
     /**
-     * Call {@link UserManagement#validateNewUser(String)} method to check if the specify username is valid.
+     * Call {@link UserManagement#validateNewUsername(String)} method to check if the specify username is valid.
      *
      * @param userName username to be checked.
      * @return true if the username is valid.
      * @throws IllegalUserInfoException if the username is invalid.
      */
     public boolean validateNewUserName(final String userName) throws IllegalUserInfoException {
-        return userManagement.validateNewUser(userName);
+        return userManagement.validateNewUsername(userName);
     }
 
     /**
-     * Call {@link UserManagement#editUserName(String, String)} method to set username of the user in current session.
+     * Call {@link UserManagement#setUsername(String, String)} method to set username of the user in current session.
      *
      * @param currentUserName username of the user in current session.
      * @param newUserName     new username to be used for the user in current session.
+     * @throws IllegalUserInfoException if the specify new username is invalid.
      */
-    public void editUserName(final String currentUserName, final String newUserName) {
-        userManagement.editUserName(currentUserName, newUserName);
+    public void editUserName(final String currentUserName, final String newUserName) throws IllegalUserInfoException {
+        userManagement.setUsername(currentUserName, newUserName);
     }
 
     /**
-     * Call {@link UserManagement#editPassword(String, String, String)} method to set password of the user in current
+     * Call {@link UserManagement#setPassword(String, String, String)} method to set password of the user in current
      * session.
      *
      * @param currentUserName username of the user in current session.
@@ -347,7 +334,7 @@ public class Controller {
      */
     public void editPassword(final String currentUserName, final String currentPassword, final String newPassword)
             throws IllegalUserInfoException {
-        userManagement.editPassword(currentUserName, currentPassword, newPassword);
+        userManagement.setPassword(currentUserName, currentPassword, newPassword);
     }
 
     /**
@@ -380,7 +367,7 @@ public class Controller {
     }
 
     /**
-     * Call {@link Motivation#removeQuote(int)} to remove specific quote from the collection of a
+     * Call {@link Motivation#removeQuote(int)} to clear specific quote from the collection of a
      * <code>Motivation</code> object.
      *
      * @param index quote number of the specific quote in the collection of a <code>Motivation</code> object.
@@ -390,7 +377,7 @@ public class Controller {
     }
 
     /**
-     * Call{@link Motivation#removeAllQuote()} to remove all quotes from the collection of a <code>Motivation</code>
+     * Call{@link Motivation#removeAllQuote()} to clear all quotes from the collection of a <code>Motivation</code>
      * object.
      */
     public void deleteAllQuotes() {

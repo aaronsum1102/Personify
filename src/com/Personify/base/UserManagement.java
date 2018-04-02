@@ -2,8 +2,14 @@ package com.Personify.base;
 
 import com.Personify.exception.IllegalUserInfoException;
 import com.Personify.integration.FileIO;
-import com.Personify.integration.FilePath;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.*;
 
 /**
@@ -11,53 +17,63 @@ import java.util.*;
  * user information.
  */
 public class UserManagement {
-    private final HashMap<String, User> users;
-    private final FilePath userFilePath;
+    private final HashMap<String, String> users;
+    private final Path path;
     private final FileIO userFile;
 
     /**
      * Instantiate a user management object and read all user profile into system.
      */
     public UserManagement() {
-        userFilePath = new FilePath("src/data", "user.txt");
+        path = Paths.get("src/data", "user.txt").toAbsolutePath();
         userFile = new FileIO();
         users = new HashMap<>();
-        readUsersProfileFromFile();
+        readProfiles();
+    }
+
+    public int getUsersSize() {
+        return users.size();
     }
 
     private List<String> readFile() {
-        return userFile.readEachLineOfFile(userFilePath.getPathToFile());
+        return userFile.readEachLineOfFile(path);
     }
 
-    private void readUsersProfileFromFile() {
-        Iterator it = readFile().iterator();
-        while (it.hasNext()) {
-            String userName = it.next().toString();
-            String password = it.next().toString();
-            User user = new User(userName, password);
-            users.put(userName, user);
+    private void readProfiles() {
+        if (!Files.exists(path)) {
+            try {
+                Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-rw-rw-");
+                FileAttribute fileAttribute = PosixFilePermissions.asFileAttribute(perms);
+                Files.createFile(path, fileAttribute);
+            } catch (IOException e) {
+                System.err.println("IO error when accessing file.");
+            }
+        } else {
+            List<String> usersInfo = readFile();
+            usersInfo.forEach(userInfo -> {
+                Scanner sc = new Scanner(userInfo);
+                sc.useDelimiter(";");
+                users.put(sc.next(), sc.next());
+            });
         }
     }
 
-    private List<String> prepareUserProfileForSavingToFile() {
+    private List<String> prepareProfileForSaving() {
         List<String> userInfo = new ArrayList<>();
-        Set<Map.Entry<String, User>> entrySet = users.entrySet();
-        entrySet.forEach(entry -> {
-            userInfo.add(entry.getValue().getUsername());
-            userInfo.add(entry.getValue().getPassword());
-        });
+        users.forEach((key, value) -> userInfo.add(key + ";" + value));
         return userInfo;
     }
 
     /**
      * Write user profile to file.
      */
-    public void saveUserProfile() {
-        userFile.writeTaskToFile(userFilePath.getPathToFile(), prepareUserProfileForSavingToFile());
+    public void saveProfile() {
+        userFile.writeTaskToFile(path, prepareProfileForSaving());
     }
 
-    private boolean userValidation(final String userName, final String password) {
-        return users.containsKey(userName) && password.equals(users.get(userName).getPassword());
+
+    private boolean validation(final String username, final String password) {
+       return users.containsKey(username) && users.get(username).equals(password);
     }
 
     /**
@@ -67,8 +83,8 @@ public class UserManagement {
      * @param password password of as user
      * @return true if the password match the record for the specify user.
      */
-    public boolean userInfoValidation(final String userName, final String password) {
-        return userValidation(userName, password);
+    public boolean userValidation(final String userName, final String password) {
+        return validation(userName, password);
     }
 
     private boolean isPasswordLetterOrDigit(final char[] chars) throws IllegalUserInfoException {
@@ -83,40 +99,40 @@ public class UserManagement {
     private boolean isPasswordHasSufficientLength(final String password) throws IllegalUserInfoException {
         final int minimumPasswordLength = 6;
         final int maximumPasswordLength = 12;
-        if (!(password.length() >= minimumPasswordLength && password.length() < maximumPasswordLength)) {
-            throw new IllegalUserInfoException(String.format("Warning: Password length must be between %d to %d.",
+        if (!(password.length() >= minimumPasswordLength && password.length() <= maximumPasswordLength)) {
+            throw new IllegalUserInfoException(String.format("Warning: Password length must be between %d to %d digit.",
                     minimumPasswordLength, maximumPasswordLength));
         }
         return true;
     }
 
-    private boolean isNewUserNameValid(final String userName) throws IllegalUserInfoException {
+    private boolean isUsernameValid(final String userName) throws IllegalUserInfoException {
+        if (userName.isEmpty()) throw new IllegalUserInfoException("Warning: Hey! You didn't type in anything.");
         for (int i = 0; i < userName.length(); i++) {
             if (!Character.isLetterOrDigit(userName.charAt(i))) {
                 throw new IllegalUserInfoException(String.format("Warning: User name of \"%s\" is invalid.", userName));
             }
         }
-        if (userName.isEmpty()) throw new IllegalUserInfoException("Warning: Hey! You didn't type in anything.");
         return true;
     }
 
-    private boolean isUserNameInSystem(final String userName) throws IllegalUserInfoException {
-        if (users.containsKey(userName)) {
+    private boolean isUsernameUnique(final String username) throws IllegalUserInfoException {
+        if (users.containsKey(username)) {
             throw new IllegalUserInfoException(String.format("\"%s\" already exists in system. Please login to your" +
-                    " account or give me a new user name.", userName));
+                    " account or give me a new user name.", username));
         }
         return true;
     }
 
     /**
-     * Check if the specify username is valid.
+     * Check if the specify new username is valid for the specific user.
      *
      * @param userName username to check if it is valid.
      * @return true if username is not empty, unique in system and contains letters or digits only.
-     * @throws IllegalUserInfoException if the username is invalid.
+     * @throws IllegalUserInfoException if the specify username is invalid.
      */
-    public boolean validateNewUser(final String userName) throws IllegalUserInfoException {
-        return isUserNameInSystem(userName) && isNewUserNameValid(userName);
+    public boolean validateNewUsername(final String userName) throws IllegalUserInfoException {
+        return isUsernameUnique(userName) && isUsernameValid(userName);
     }
 
     private boolean validateNewPassword(final String password) throws IllegalUserInfoException {
@@ -126,30 +142,32 @@ public class UserManagement {
     }
 
     /**
-     * Create new user object with the specify parameters.
+     * Create new user object with the specify parameters. The password needs to be between 6 to 12 digits or contains
+     * letter or digits only.
      *
-     * @param userName username of the new user object.
+     * @param username username of the new user object.
      * @param password password of the new user object.
-     * @throws IllegalUserInfoException If the password is invalid.
+     * @throws IllegalUserInfoException if the password is invalid.
      */
-    public void createUser(final String userName, final String password) throws IllegalUserInfoException {
+    public void createUser(final String username, final String password) throws IllegalUserInfoException {
         if (validateNewPassword(password)) {
-            User newUser = new User(userName, password);
-            users.put(userName, newUser);
+            users.put(username, password);
         }
     }
 
     /**
      * Set the username of a user object in record with the specify username.
      *
-     * @param currentUserName existing username of an user object.
-     * @param newUserName     new username of an user object.
+     * @param currentUsername existing username of an user object.
+     * @param newUsername     new username of an user object.
+     * @throws IllegalUserInfoException if the specify new username is invalid.
      */
-    public void editUserName(final String currentUserName, final String newUserName) {
-        User user = users.get(currentUserName);
-        users.remove(currentUserName);
-        user.setUsername(newUserName);
-        users.put(newUserName, user);
+    public void setUsername(final String currentUsername, final String newUsername) throws IllegalUserInfoException {
+        if (validateNewUsername(newUsername)) {
+            String currentPassword = users.get(currentUsername);
+            users.remove(currentUsername);
+            users.put(newUsername, currentPassword);
+        }
     }
 
     /**
@@ -160,12 +178,12 @@ public class UserManagement {
      * @param newPassword     new password to be set for an user object.
      * @throws IllegalUserInfoException if the password does not match the specify username.
      */
-    public void editPassword(final String currentUserName, final String currentPassword, final String newPassword)
+    public void setPassword(final String currentUserName, final String currentPassword, final String newPassword)
             throws IllegalUserInfoException {
-        if (!userInfoValidation(currentUserName, currentPassword)) {
+        if (!userValidation(currentUserName, currentPassword)) {
             throw new IllegalUserInfoException("Warning: You entered password does not match the record.");
         }
         validateNewPassword(newPassword);
-        users.get(currentUserName).setPassword(newPassword);
+        users.put(currentUserName, newPassword);
     }
 }

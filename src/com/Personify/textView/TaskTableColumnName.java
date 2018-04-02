@@ -13,6 +13,7 @@ class TaskTableColumnName {
 
     /**
      * Provide String representation of the header with specific format and column names.
+     *
      * @return a String representation of the header.
      */
     @Override

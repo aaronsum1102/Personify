@@ -5,6 +5,8 @@ import com.Personify.controller.Controller;
 import com.Personify.exception.InvalidCommandException;
 import com.Personify.util.InformationPair;
 
+import java.io.Console;
+
 /**
  * Manage the login or registration process for a user.
  */
@@ -38,21 +40,25 @@ public class UserManagementInterface extends UserInterface {
     }
 
     private boolean logIn() {
+        Console console = System.console();
         System.out.print("Username: ");
         String userName = commandReader.nextLine();
         currentUserProfileInUse = userName;
-        System.out.print("Password: ");
-        String password = commandReader.nextLine();
+        String password = String.copyValueOf(console.readPassword("Password: "));
+//        System.out.print("Password: ");
+//        String password = commandReader.nextLine();
         return controller.userInfoValidation(userName, password);
     }
 
     private void createUser() throws IllegalUserInfoException {
+        Console console = System.console();
         System.out.print("Username: ");
         String userName = commandReader.nextLine();
         controller.validateNewUserName(userName);
         System.out.println("\nHint: Password should be alphanumeric and contains minimum 6 characters.");
-        System.out.print("Password: ");
-        String password = commandReader.nextLine();
+        //System.out.print("Password: ");
+        String password = String.copyValueOf(console.readPassword("Password: "));
+        //String password = commandReader.nextLine();
         controller.createUser(userName, password);
     }
 
@@ -62,21 +68,21 @@ public class UserManagementInterface extends UserInterface {
             case 1:
                 Boolean isLogin = logIn();
                 if (isLogin) {
-                    tracker.setPrimaryInformation(isLogin);
+                    tracker.setKey(isLogin);
                 } else {
-                    Integer counter = tracker.getSecondaryInformation();
-                    tracker.setSecondaryInformation(++counter);
+                    currentUserProfileInUse = "";
+                    Integer counter = tracker.getValue();
+                    tracker.setValue(++counter);
                     System.err.println("Warning: Invalid user name or password.");
                 }
                 break;
             case 2:
                 createUser();
                 System.out.println("Congrats! You can log in the system now.");
-                tracker.setSecondaryInformation(1);
+                tracker.setValue(1);
                 break;
             case 3:
                 System.out.println("Good bye!");
-                commandReader.close();
                 System.exit(0);
                 break;
         }
@@ -93,16 +99,17 @@ public class UserManagementInterface extends UserInterface {
         int logInCounter = 1;
         InformationPair<Boolean, Integer> tracker = new InformationPair<>(isLogin, logInCounter);
         while (!isLogin) {
-            if (tracker.getSecondaryInformation() >= 4) {
+            if (tracker.getValue() >= 4) {
                 System.err.println("Warning: Maximum attempt for login exceeded!");
-                System.exit(0);
+                tracker.setKey(false);
+                break;
             }
             try {
                 final String menuName = "startup";
                 final int commandToExit = getCommandNoToExitAndDisplayMenu(menuName);
                 int userChoices = getUserInputSelectionAndSanityCheck(commandToExit);
                 switchLoginOptions(userChoices, tracker);
-                isLogin = tracker.getPrimaryInformation();
+                isLogin = tracker.getKey();
             } catch (NumberFormatException e) {
                 System.err.println("Warning: I'm smart enough to know you didn't given me a number. Don't try to challenge me.");
             } catch (InvalidCommandException | IllegalUserInfoException e) {
@@ -112,6 +119,6 @@ public class UserManagementInterface extends UserInterface {
                 controller.saveUserProfile();
             }
         }
-        return tracker.getPrimaryInformation();
+        return tracker.getKey();
     }
 }
