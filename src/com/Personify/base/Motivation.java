@@ -26,7 +26,7 @@ public class Motivation {
      * @param userName username of the user in current session.
      */
     public Motivation(final String userName) {
-        motivationalQuoteFile = Paths.get("src/data", String.format("%s_motivationalQuotes.txt", userName));
+        motivationalQuoteFile = Paths.get("src/data", String.format("%s_motivationalQuotes.txt", userName)).toAbsolutePath();
         if (!Files.exists(motivationalQuoteFile)) {
             motivationalQuoteFile = defaultPathToQuoteFile;
         }

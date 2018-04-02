@@ -25,7 +25,7 @@ public class UserManagement {
      * Instantiate a user management object and read all user profile into system.
      */
     public UserManagement() {
-        path = Paths.get("src/data", "user.txt");
+        path = Paths.get("src/data", "user.txt").toAbsolutePath();
         userFile = new FileIO();
         users = new HashMap<>();
         readProfiles();
@@ -100,19 +100,19 @@ public class UserManagement {
         final int minimumPasswordLength = 6;
         final int maximumPasswordLength = 12;
         if (!(password.length() >= minimumPasswordLength && password.length() <= maximumPasswordLength)) {
-            throw new IllegalUserInfoException(String.format("Warning: Password length must be between %d to %d.",
+            throw new IllegalUserInfoException(String.format("Warning: Password length must be between %d to %d digit.",
                     minimumPasswordLength, maximumPasswordLength));
         }
         return true;
     }
 
     private boolean isUsernameValid(final String userName) throws IllegalUserInfoException {
+        if (userName.isEmpty()) throw new IllegalUserInfoException("Warning: Hey! You didn't type in anything.");
         for (int i = 0; i < userName.length(); i++) {
             if (!Character.isLetterOrDigit(userName.charAt(i))) {
                 throw new IllegalUserInfoException(String.format("Warning: User name of \"%s\" is invalid.", userName));
             }
         }
-        if (userName.isEmpty()) throw new IllegalUserInfoException("Warning: Hey! You didn't type in anything.");
         return true;
     }
 

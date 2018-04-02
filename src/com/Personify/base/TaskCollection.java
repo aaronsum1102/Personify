@@ -305,6 +305,9 @@ public class TaskCollection {
         if (!tasks.isEmpty()) {
             workTasks = selectByType("WorkTask");
             personalTasks = selectByType("PersonalTask");
+        } else {
+            workTasks = new ArrayList<>();
+            personalTasks = new ArrayList<>();
         }
     }
 

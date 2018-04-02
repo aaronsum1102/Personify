@@ -26,7 +26,7 @@ public class TaskFileIO extends FileIO {
      * @param userProfile username of the user in current session.
      */
     public TaskFileIO(final String userProfile) {
-        path = Paths.get("src/data", String.format("%s_tasksData.csv", userProfile));
+        path = Paths.get("src/data", String.format("%s_tasksData.csv", userProfile)).toAbsolutePath();
     }
 
     private List<String> tokenizeTasksDetails(List<String> tasks) {

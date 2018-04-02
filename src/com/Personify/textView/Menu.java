@@ -24,7 +24,7 @@ class Menu {
     }
 
     private List<String> getCommandsFromFile() {
-        Path path = Paths.get("src/data", "Commands.txt");
+        Path path = Paths.get("src/data", "Commands.txt").toAbsolutePath();
         FileIO fileIn = new FileIO();
         return fileIn.readEachLineOfFile(path);
     }

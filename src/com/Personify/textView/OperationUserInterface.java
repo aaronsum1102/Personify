@@ -8,6 +8,7 @@ import com.Personify.exception.IllegalUserInfoException;
 import com.Personify.exception.InvalidCommandException;
 import com.Personify.integration.TaskInfo;
 
+import java.io.Console;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
@@ -180,10 +181,13 @@ public class OperationUserInterface extends UserInterface {
     }
 
     private void setPassword() throws IllegalUserInfoException {
-        System.out.print("Existing password: ");
-        String currentPassword = commandReader.nextLine();
-        System.out.print("New username: ");
-        String newPassword = commandReader.nextLine();
+        Console console = System.console();
+        String currentPassword = String.copyValueOf(console.readPassword("Existing password: "));
+//        System.out.print("Existing password: ");
+//        String currentPassword = commandReader.nextLine();
+        String newPassword = String.copyValueOf(console.readPassword("New password: "));
+//        System.out.print("New password: ");
+//        String newPassword = commandReader.nextLine();
         controller.editPassword(currentUserProfileInUse, currentPassword, newPassword);
     }
 

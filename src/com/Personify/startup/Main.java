@@ -24,5 +24,6 @@ class Main {
                     currentUser);
             view.operation();
         }
+        System.exit(0);
     }
 }
