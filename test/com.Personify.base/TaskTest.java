@@ -15,14 +15,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TaskTest {
-    Task task;
-    TaskInfo taskInfo;
-    Motivation motivationQuotes;
-    String taskName;
-    String dueDate;
-    String status;
-    String priority;
-    String remarks;
+    private Task task;
+    private TaskInfo taskInfo;
+    private Motivation motivationQuotes;
+    private String taskName;
+    private String dueDate;
+    private String status;
+    private String priority;
+    private String remarks;
 
     @BeforeEach
     void setUp() {

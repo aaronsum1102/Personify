@@ -18,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TaskCollectionTest {
-    String username;
-    Motivation motivationalQuotes;
-    Task task;
-    TaskCollection tasks;
+    private String username;
+    private Motivation motivationalQuotes;
+    private Task task;
+    private TaskCollection tasks;
 
     @BeforeEach
     void setUp() {

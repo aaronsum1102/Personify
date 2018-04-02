@@ -14,14 +14,14 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class WorkTaskTest {
-    WorkTask task;
-    TaskInfo taskInfo;
-    Motivation motivationQuotes;
-    String taskName;
-    String dueDate;
-    String status;
-    String priority;
-    String remarks;
+    private WorkTask task;
+    private TaskInfo taskInfo;
+    private Motivation motivationQuotes;
+    private String taskName;
+    private String dueDate;
+    private String status;
+    private String priority;
+    private String remarks;
 
     @BeforeEach
     void setUp() {

@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MotivationTest {
-    String username;
-    Motivation motivationalQuotes;
-    Path userPath;
+    private String username;
+    private Motivation motivationalQuotes;
+    private Path userPath;
 
     @BeforeEach
     void setUp() {

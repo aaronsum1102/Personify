@@ -1,13 +1,15 @@
 package com.Personify.textView;
 
-import com.Personify.exception.IllegalUserInfoException;
 import com.Personify.base.Priority;
 import com.Personify.base.Status;
 import com.Personify.base.Task;
 import com.Personify.controller.Controller;
+import com.Personify.exception.IllegalUserInfoException;
 import com.Personify.exception.InvalidCommandException;
 import com.Personify.integration.TaskInfo;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -19,7 +21,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class OperationUserInterface extends UserInterface {
     private final Controller controller;
-    private final Deque<String> menuStack;
+    private final Deque<String> menuNameStack;
+    private final Deque<Method> menuMethodStack;
+    private final Switcher switcher;
+    private final Method[] methods;
     private String currentUserProfileInUse;
 
     /**
@@ -35,7 +40,10 @@ public class OperationUserInterface extends UserInterface {
         this.controller = controller;
         this.currentUserProfileInUse = currentUserProfileInUse;
         controller.afterLogIn(currentUserProfileInUse);
-        menuStack = new ArrayDeque<>();
+        menuNameStack = new ArrayDeque<>();
+        menuMethodStack = new ArrayDeque<>();
+        switcher = new Switcher();
+        methods = switcher.getClass().getDeclaredMethods();
     }
 
     /**
@@ -56,239 +64,35 @@ public class OperationUserInterface extends UserInterface {
         int commandToExit;
         int inputFromUser;
         while (true) {
-            if (menuStack.isEmpty()) {
-                menuStack.add("main");
+            if (menuNameStack.isEmpty() && menuMethodStack.isEmpty()) {
+                menuNameStack.add("main");
+                menuMethodStack.add(methods[0]);
             }
-            String currentMenu = menuStack.pop();
+            String currentMenuName = menuNameStack.pop();
+            Method currentMethod = menuMethodStack.pop();
             try {
-                commandToExit = getCommandNoToExitAndDisplayMenu(currentMenu);
+                commandToExit = getCommandNoToExitAndDisplayMenu(currentMenuName);
                 inputFromUser = getUserInputSelectionAndSanityCheck(commandToExit);
-                switch (currentMenu) {
-                    case "main":
-                        switchMainMenuOptions(inputFromUser);
-                        break;
-                    case "add task":
-                        switchAddTaskOptions(inputFromUser);
-                        break;
-                    case "show task":
-                        switchShowTasksOptions(inputFromUser);
-                        break;
-                    case "edit task":
-                        switchEditTaskOptions(inputFromUser);
-                        break;
-                    case "delete task":
-                        switchDeleteTaskOptions(inputFromUser);
-                        break;
-                    case "personalise":
-                        switchPersonaliseOptions(inputFromUser);
-                }
+                currentMethod.invoke(switcher, inputFromUser);
                 showMessagesWithHeaders();
-                if (inputFromUser != commandToExit && !currentMenu.equals("main")) menuStack.add(currentMenu);
+                if (inputFromUser != commandToExit && !currentMenuName.equals("main")) {
+                    menuMethodStack.add(currentMethod);
+                    menuNameStack.add(currentMenuName);
+                }
             } catch (NumberFormatException e) {
                 System.err.println("Warning: I'm smart enough to know you didn't given me a number. " +
                         "Don't try to challenge me.");
-                menuStack.add(currentMenu);
-            } catch (InvalidCommandException | IllegalArgumentException | IllegalUserInfoException e) {
+                menuMethodStack.add(currentMethod);
+                menuNameStack.add(currentMenuName);
+            } catch (InvalidCommandException | IllegalArgumentException e) {
                 System.err.println(e.getMessage());
-                menuStack.add(currentMenu);
+                menuMethodStack.add(currentMethod);
+                menuNameStack.add(currentMenuName);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                System.err.println("Danger: Please contact the system administrator immediately.");
             } finally {
                 toProceed();
             }
-
-        }
-    }
-
-    private void switchMainMenuOptions(final int inputFromUser) {
-        switch (inputFromUser) {
-            case 1:
-                menuStack.add("show task");
-                break;
-            case 2:
-                menuStack.add("add task");
-                break;
-            case 3:
-                menuStack.add("edit task");
-                break;
-            case 4:
-                menuStack.add("delete task");
-                break;
-            case 5:
-                menuStack.add("personalise");
-                break;
-            case 6:
-                exitProgram();
-        }
-    }
-
-    private void switchAddTaskOptions(final int inputFromUser) {
-        switch (inputFromUser) {
-            case 1:
-            case 2:
-                final TaskInfo newTaskInfo = getInputFromUser();
-                switch (inputFromUser) {
-                    case 1:
-                        messages.add(addPersonalTask(newTaskInfo));
-                        break;
-                    case 2:
-                        messages.add(addWorkTask(newTaskInfo));
-                        break;
-                }
-            case 3:
-                break;
-        }
-    }
-
-    private String getTaskTypeOptions() throws InvalidCommandException {
-        int commandToExit = getCommandNoToExitAndDisplayMenu("task type");
-        int inputFromUser = getUserInputSelectionAndSanityCheck(commandToExit);
-        switch (inputFromUser) {
-            case 1:
-                return "PersonalTask";
-            case 2:
-                return "WorkTask";
-            case 3:
-                break;
-        }
-        return "";
-    }
-
-    private void switchShowTasksOptions(final int inputFromUser) throws InvalidCommandException {
-        String taskType;
-        switch (inputFromUser) {
-            case 1:
-                getTasksIntoFormatForDisplay(controller.getAllTasks());
-                break;
-            case 2:
-                taskType = getTaskTypeOptions();
-                if (!taskType.isEmpty()) {
-                    getTasksIntoFormatForDisplay(controller.getTasksToComplete(taskType));
-                }
-                break;
-            case 3:
-                taskType = getTaskTypeOptions();
-                if (!taskType.isEmpty()) {
-                    getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus(taskType, "done"));
-                }
-                break;
-            case 4:
-                taskType = getTaskTypeOptions();
-                if (!taskType.isEmpty()) {
-                    getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus(taskType, "overdue"));
-                }
-            case 5:
-                break;
-        }
-    }
-
-    private void switchEditTaskOptions(final int inputFromUser) throws InvalidCommandException {
-        switch (inputFromUser) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 7:
-                int taskIndex = getTaskNumberToEditFromUser(controller.getAllTasks());
-                isValidCommand(controller.getAllTasks().size(), taskIndex);
-                switch (inputFromUser) {
-                    case 1:
-                        System.out.println("Please give me a new name for the task.");
-                        String newName = commandReader.nextLine();
-                        if (controller.isTaskNameValid(newName)) {
-                            controller.editTaskName(taskIndex, newName);
-                            messages.add(String.format("Successfully change task name to %s.", newName));
-                        }
-                        break;
-                    case 2:
-                        System.out.println("Please give me a new due date with the format of \"YYYY-MM-DD\".");
-                        String newDueDate = commandReader.nextLine();
-                        controller.editDueDate(taskIndex, newDueDate);
-                        messages.add("Successfully change the due date.");
-                        break;
-                    case 3:
-                        System.out.format("Please give me a new status. Valid status is %s.\n", Status.getStatuses());
-                        String newStatus = commandReader.nextLine();
-                        controller.editTaskStatus(taskIndex, newStatus);
-                        messages.add("Successfully change the status of the task.");
-                        break;
-                    case 4:
-                        System.out.format("Please give a new priority. Valid priority is %s.\n", Priority.getPriorities());
-                        String newPriority = commandReader.nextLine();
-                        controller.editTaskPriority(taskIndex, newPriority);
-                        messages.add("Successfully change the priority of the task.");
-                        break;
-                    case 5:
-                        System.out.println("Please give me the collaborator name or details for the task.");
-                        String newInfo = commandReader.nextLine();
-                        controller.setAttribute(taskIndex, newInfo);
-                        messages.add("Successfully change collaborator name or details of the task.");
-                        break;
-                    case 7:
-                        System.out.println("Please give me the remarks for the task.");
-                        String remarks = commandReader.nextLine();
-                        controller.setRemarks(taskIndex, remarks);
-                        messages.add("Successfully change collaborator name or details of the task.");
-                        break;
-                }
-                break;
-            case 6:
-                removeSpecificCollaborator();
-                break;
-            case 8:
-                break;
-        }
-    }
-
-    private void switchDeleteTaskOptions(final int inputFromUser) throws InvalidCommandException {
-        switch (inputFromUser) {
-            case 1:
-                int taskIndex = getTaskNumberToEditFromUser(controller.getAllTasks());
-                isValidCommand(controller.getAllTasks().size(), taskIndex);
-                controller.deleteSpecificTask(taskIndex);
-                messages.add("Task deleted.");
-                break;
-            case 2:
-                removeAllTask();
-                break;
-            case 3:
-                List<Task> filteredTasks = controller.getTasksWithSpecificStatus("Task", "done");
-                if (filteredTasks.isEmpty()) {
-                    messages.add("You don't have any tasks to clear.");
-                } else {
-                    controller.deleteTasksThatWereDone(filteredTasks);
-                    messages.add(String.format("I have deleted %d task for you", filteredTasks.size()));
-                }
-            case 4:
-                break;
-        }
-    }
-
-    private void switchPersonaliseOptions(final int inputFromUser) throws IllegalUserInfoException {
-        switch (inputFromUser) {
-            case 1:
-                setUserName();
-                System.out.println("New user name successfully registered.");
-                break;
-            case 2:
-                setPassword();
-                System.out.println("New password successfully registered.");
-                break;
-            case 3:
-                showAllMotivationalQuote();
-                break;
-            case 4:
-                addMotivationalQuote();
-                System.out.println("New quote successfully registered.");
-                break;
-            case 5:
-                removeSpecificMotivationalQuote();
-                break;
-            case 6:
-                controller.deleteAllQuotes();
-                System.out.println("All quotes were successfully deleted.");
-                break;
-            case 7:
-                break;
         }
     }
 
@@ -421,5 +225,206 @@ public class OperationUserInterface extends UserInterface {
         commandReader.close();
         System.out.println("Good bye!");
         System.exit(0);
+    }
+
+    class Switcher {
+        void switchMainMenuOptions(final int inputFromUser) {
+            switch (inputFromUser) {
+                case 1:
+                    menuMethodStack.add(methods[1]);
+                    menuNameStack.add("show task");
+                    break;
+                case 2:
+                    menuMethodStack.add(methods[2]);
+                    menuNameStack.add("add task");
+                    break;
+                case 3:
+                    menuMethodStack.add(methods[3]);
+                    menuNameStack.add("edit task");
+                    break;
+                case 4:
+                    menuMethodStack.add(methods[4]);
+                    menuNameStack.add("delete task");
+                    break;
+                case 5:
+                    menuMethodStack.add(methods[5]);
+                    menuNameStack.add("personalise");
+                    break;
+                case 6:
+                    exitProgram();
+            }
+        }
+
+        void switchShowTasksOptions(final int inputFromUser) throws InvalidCommandException {
+            String taskType;
+            switch (inputFromUser) {
+                case 1:
+                    getTasksIntoFormatForDisplay(controller.getAllTasks());
+                    break;
+                case 2:
+                    taskType = getTaskTypeOptions();
+                    if (!taskType.isEmpty()) {
+                        getTasksIntoFormatForDisplay(controller.getTasksToComplete(taskType));
+                    }
+                    break;
+                case 3:
+                    taskType = getTaskTypeOptions();
+                    if (!taskType.isEmpty()) {
+                        getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus(taskType, "done"));
+                    }
+                    break;
+                case 4:
+                    taskType = getTaskTypeOptions();
+                    if (!taskType.isEmpty()) {
+                        getTasksIntoFormatForDisplay(controller.getTasksWithSpecificStatus(taskType, "overdue"));
+                    }
+                case 5:
+                    break;
+            }
+        }
+
+        void switchAddTaskOptions(final int inputFromUser) {
+            switch (inputFromUser) {
+                case 1:
+                case 2:
+                    final TaskInfo newTaskInfo = getInputFromUser();
+                    switch (inputFromUser) {
+                        case 1:
+                            messages.add(addPersonalTask(newTaskInfo));
+                            break;
+                        case 2:
+                            messages.add(addWorkTask(newTaskInfo));
+                            break;
+                    }
+                case 3:
+                    break;
+            }
+        }
+
+        void switchEditTaskOptions(final int inputFromUser) throws InvalidCommandException {
+            switch (inputFromUser) {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 7:
+                    int taskIndex = getTaskNumberToEditFromUser(controller.getAllTasks());
+                    isValidCommand(controller.getAllTasks().size(), taskIndex);
+                    switch (inputFromUser) {
+                        case 1:
+                            System.out.println("Please give me a new name for the task.");
+                            String newName = commandReader.nextLine();
+                            if (controller.isTaskNameValid(newName)) {
+                                controller.editTaskName(taskIndex, newName);
+                                messages.add(String.format("Successfully change task name to %s.", newName));
+                            }
+                            break;
+                        case 2:
+                            System.out.println("Please give me a new due date with the format of \"YYYY-MM-DD\".");
+                            String newDueDate = commandReader.nextLine();
+                            controller.editDueDate(taskIndex, newDueDate);
+                            messages.add("Successfully change the due date.");
+                            break;
+                        case 3:
+                            System.out.format("Please give me a new status. Valid status is %s.\n", Status.getStatuses());
+                            String newStatus = commandReader.nextLine();
+                            controller.editTaskStatus(taskIndex, newStatus);
+                            messages.add("Successfully change the status of the task.");
+                            break;
+                        case 4:
+                            System.out.format("Please give a new priority. Valid priority is %s.\n", Priority.getPriorities());
+                            String newPriority = commandReader.nextLine();
+                            controller.editTaskPriority(taskIndex, newPriority);
+                            messages.add("Successfully change the priority of the task.");
+                            break;
+                        case 5:
+                            System.out.println("Please give me the collaborator name or details for the task.");
+                            String newInfo = commandReader.nextLine();
+                            controller.setAttribute(taskIndex, newInfo);
+                            messages.add("Successfully change collaborator name or details of the task.");
+                            break;
+                        case 7:
+                            System.out.println("Please give me the remarks for the task.");
+                            String remarks = commandReader.nextLine();
+                            controller.setRemarks(taskIndex, remarks);
+                            messages.add("Successfully change collaborator name or details of the task.");
+                            break;
+                    }
+                    break;
+                case 6:
+                    removeSpecificCollaborator();
+                    break;
+                case 8:
+                    break;
+            }
+        }
+
+        void switchDeleteTaskOptions(final int inputFromUser) throws InvalidCommandException {
+            switch (inputFromUser) {
+                case 1:
+                    int taskIndex = getTaskNumberToEditFromUser(controller.getAllTasks());
+                    isValidCommand(controller.getAllTasks().size(), taskIndex);
+                    controller.deleteSpecificTask(taskIndex);
+                    messages.add("Task deleted.");
+                    break;
+                case 2:
+                    removeAllTask();
+                    break;
+                case 3:
+                    List<Task> filteredTasks = controller.getTasksWithSpecificStatus("Task", "done");
+                    if (filteredTasks.isEmpty()) {
+                        messages.add("You don't have any tasks to clear.");
+                    } else {
+                        controller.deleteTasksThatWereDone(filteredTasks);
+                        messages.add(String.format("I have deleted %d task for you", filteredTasks.size()));
+                    }
+                case 4:
+                    break;
+            }
+        }
+
+        void switchPersonaliseOptions(final int inputFromUser) throws IllegalUserInfoException {
+            switch (inputFromUser) {
+                case 1:
+                    setUserName();
+                    System.out.println("New user name successfully registered.");
+                    break;
+                case 2:
+                    setPassword();
+                    System.out.println("New password successfully registered.");
+                    break;
+                case 3:
+                    showAllMotivationalQuote();
+                    break;
+                case 4:
+                    addMotivationalQuote();
+                    System.out.println("New quote successfully registered.");
+                    break;
+                case 5:
+                    removeSpecificMotivationalQuote();
+                    break;
+                case 6:
+                    controller.deleteAllQuotes();
+                    System.out.println("All quotes were successfully deleted.");
+                    break;
+                case 7:
+                    break;
+            }
+        }
+
+        private String getTaskTypeOptions() throws InvalidCommandException {
+            int commandToExit = getCommandNoToExitAndDisplayMenu("task type");
+            int inputFromUser = getUserInputSelectionAndSanityCheck(commandToExit);
+            switch (inputFromUser) {
+                case 1:
+                    return "PersonalTask";
+                case 2:
+                    return "WorkTask";
+                case 3:
+                    break;
+            }
+            return "";
+        }
     }
 }

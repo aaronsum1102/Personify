@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StatusTest {
-    LocalDate dueDate;
-    Status status;
-    String initialStatus;
+    private LocalDate dueDate;
+    private Status status;
+    private String initialStatus;
 
     @BeforeEach
     void setup() {

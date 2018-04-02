@@ -12,9 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserManagementTest {
-    static Path originalPath = Paths.get("src/data", "user.txt");
-    static Path backupPath = Paths.get("src/data", "userTest.txt");
-    UserManagement userManagement;
+    static private Path originalPath = Paths.get("src/data", "user.txt");
+    static private Path backupPath = Paths.get("src/data", "userTest.txt");
+    private UserManagement userManagement;
 
     @BeforeAll
     static void initAll() throws IOException {

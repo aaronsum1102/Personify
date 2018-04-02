@@ -5,7 +5,6 @@ import com.Personify.textView.UserManagementInterface;
 
 /**
  * Initialized the Personify program.
- *
  */
 class Main {
 
